@@ -54,6 +54,7 @@ export default function RecordList() {
  
  // This method will map out the records on the table
  function recordList() {
+  if(records && records.length > 0){
    return records.map((record) => {
      return (
        <Record
@@ -63,6 +64,7 @@ export default function RecordList() {
        />
      );
    });
+ }
  }
  
  // This following section will display the table with the records of individuals.
