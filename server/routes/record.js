@@ -1,10 +1,39 @@
 const express = require("express");
+const userModel = require("../models");
  
 // recordRoutes is an instance of the express router.
 // We use it to define our routes.
 // The router will be added as a middleware and will take control of requests starting with path /record.
 const recordRoutes = express.Router();
- 
+
+const app = express();
+
+recordRoutes.route("/users").get(async (request, response) => {
+  console.log("Getting user")
+  const users = await userModel.find({});
+
+  try {
+    response.send(users);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
+recordRoutes.route("/add_user").post(async (request, response) => {
+  const user = new userModel({
+    name: request.body.name,
+    position: request.body.position,
+    level: request.body.level,
+  });
+  console.log("<>< Add user "+user); 
+  try {
+    await user.save();
+    response.send(user);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
 // This will help us connect to the database
 const dbo = require("../db/conn");
  
@@ -13,11 +42,11 @@ const ObjectId = require("mongodb").ObjectId;
  
  
 // This section will help you get a list of all the records.
-recordRoutes.route("/record").get(function (req, res) {
+recordRoutes.route("/record11").get(function (req, res) {
  let db_connect = dbo.getDb("employees");
  let result = db_connect
    .collection("records")
-   .find()
+   .find({})
     console.log("result"+JSON.stringify(result));
    res.json(result);
    // .toArray(function (err, result) {
