@@ -10,9 +10,9 @@ mongoose.connect(Db,
 const client = new MongoClient(Db); 
 var db; 
 module.exports = {
-  connectToServer: function (callback) {
+  connectToServer: async function (callback) {
 
-    db = mongoose.connection;
+    db = await mongoose.connection;
     db.on("error", console.error.bind(console, "connection error: "));
     db.once("open", function () {
       console.log("Connected successfully");
