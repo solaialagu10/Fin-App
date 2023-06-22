@@ -1,0 +1,16 @@
+.product-group{
+    display:flex;
+    padding:10px;
+    > div{
+        padding:10px;
+    }       
+}
+
+.product-group-buttons{
+    display:flex;
+    padding:5px;
+    float:right;
+    > div{
+        padding:10px;
+    } 
+}

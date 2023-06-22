@@ -36,3 +36,40 @@
     transform: rotate(360deg);
   }
 }
+.app-header{
+  /* position: absolute; */
+  top: 0;
+  left: 10;
+  border-radius: 6px;
+  background-color: #31254c;
+  border: 1px solid var(--color-darkslateblue-100);
+  box-sizing: border-box;
+  height:90px;
+  margin: 0px 10px;
+}
+.app-container{
+  height:95vh;
+  max-width:95vw;  
+  padding-top:5px;
+}
+.div-left{
+  float:left;
+  padding-left:10px;
+  width:13vw;
+}
+.div-right{
+  float:right;
+  padding-right:10px;
+  width:80vw;
+}
+
+.header-text {
+  top: 53.96px;
+  left: 39px;
+  font-size: 50px;
+  color: #f8aa0d;
+  width: 522px;
+  height: 57.09px;
+  padding-left: 20px;
+  padding-top:5px;
+}

@@ -1,5 +1,5 @@
 import React from "react";
- 
+import './App.css';
 // We use Route in order to define the different routes of our application
 import { Route, Routes } from "react-router-dom";
  
@@ -8,16 +8,33 @@ import Navbar from "./components/navbar";
 import RecordList from "./components/recordList";
 import Edit from "./components/edit";
 import Create from "./components/create";
+import Customers from "./components/Customers/customers";
+import Products from "./components/Products/products";
+import Invoices from "./components/Invoices/invoices";
+import Reports from "./components/Reports/reports";
+import Dashboard from "./components/Dashboard/dashboard";
  
 const App = () => {
  return (
-   <div>
+
+  <div>
+    <div className="app-header">
+      <div className="header-text">Billing App</div>
+    </div>
+   <div className="app-container">
+    <div className="div-left">
      <Navbar />
+     </div>
+     <div className="div-right">
      <Routes>
-       <Route exact path="/" element={<RecordList />} />
-       <Route path="/edit/:id" element={<Edit />} />
-       <Route path="/create" element={<Create />} />
+       <Route exact path="/dashboard" element={<Dashboard />} />
+       <Route path="/reports" element={<Reports />} />
+       <Route path="/invoices" element={<Invoices />} />
+       <Route path="/customers" element={<Customers />} />
+       <Route path="/products" element={<Products />} />
      </Routes>
+     </div>
+   </div>
    </div>
  );
 };

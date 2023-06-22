@@ -1,0 +1,172 @@
+.navbar-nav{
+    flex-direction: column !important;
+    width:100%;
+}
+  
+.navbar-expand-lg{
+    max-width: 150px;
+}
+
+.nav-link.active{
+  background-color: #31254c;
+  color:white !important;
+  border-radius: 5px;
+}
+  .headerChild {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 18px;
+    background-color: #31254c;
+    border: 1px solid var(--color-darkslateblue-100);
+    box-sizing: border-box;
+    width: 1229px;
+    height: 165px;
+  }
+  .headerItem {
+    position: absolute;
+    top: 56.3px;
+    left: 989px;
+    border-radius: 5px;
+    background-color: #426b1f;
+    width: 218px;
+    height: 52.39px;
+  }
+  .logout {
+    top: 61.78px;
+    left: 1033px;
+    font-weight: 600;
+    width: 174px;
+    height: 37.54px;
+  }
+  .logout,
+  .myProfile,
+  .poornaBooks {
+    position: absolute;
+    display: inline-block;
+  }
+  .poornaBooks {
+    top: 53.96px;
+    left: 39px;
+    font-size: 60px;
+    color: #f8aa0d;
+    width: 522px;
+    height: 57.09px;
+  }
+  .myProfile {
+    top: 63.34px;
+    left: 746px;
+    font-weight: 600;
+    color: #f5f5f5;
+    width: 243px;
+    height: 37.54px;
+  }
+  .header {
+    position: absolute;
+    top: 72px;
+    left: 115px;
+    width: 1229px;
+    height: 165px;
+  }
+  .groupChild,
+  .navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: var(--br-mini);
+    background-color: var(--color-lavender);
+    width: 336px;
+    height: 684px;
+  }
+  .groupChild {
+    border-radius: var(--br-3xs);
+    height: 61px;
+  }
+  .dashboard {
+    position: absolute;
+    top: 12px;
+    left: 51px;
+    letter-spacing: 0.01em;
+    display: inline-block;
+    width: 248.93px;
+    height: 18.35px;
+    -webkit-text-stroke: 1px #000;
+  }
+  .groupInner,
+  .rectangleGroup,
+  .rectangleParent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 336px;
+    height: 61px;
+  }
+  .groupInner,
+  .rectangleGroup {
+    top: 61px;
+  }
+  .groupInner {
+    top: 0;
+    border-radius: var(--br-3xs);
+    background-color: var(--color-darkslateblue-100);
+  }
+  .product {
+    position: absolute;
+    top: 12px;
+    left: 51px;
+    letter-spacing: 0.01em;
+    font-weight: 600;
+    display: inline-block;
+    width: 248.93px;
+    height: 18.35px;
+  }
+  .rectangleContainer {
+    position: absolute;
+    top: 122px;
+    left: 0;
+    width: 336px;
+    height: 61px;
+    color: var(--color-white);
+  }
+  .groupDiv,
+  .rectangleParent1 {
+    position: absolute;
+    top: 175px;
+    left: 0;
+    width: 336px;
+    height: 61px;
+  }
+  .rectangleParent1 {
+    top: 236px;
+  }
+  .customersPageChild,
+  .navigation {
+    position: absolute;
+    /* top: 280px; */
+    height: 584px;
+    display:block !important;
+  }
+  .navigation {
+    /* left: 115px; */
+    width: 336px;
+    font-size: var(--font-size-13xl);
+    color: var(--color-gray);
+  }
+  .customersPageChild {
+    left: 480px;
+    border-radius: var(--br-mini);
+    background-color: var(--color-lavender);
+    width: 864px;
+  }
+  .customersPage {
+    position: relative;
+    background-color: var(--color-white);
+    width: 100%;
+    height: 1032px;
+    overflow: hidden;
+    text-align: left;
+    font-size: var(--font-size-21xl);
+    color: var(--color-white);
+    font-family: var(--font-inter);
+  }
+  

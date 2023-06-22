@@ -10,7 +10,7 @@ router.get("/users",getUsers);
 
 router.get("/user/:id",getUserById);
 
-router.post("/add_user",addUser);
+router.post("/add_customer",addUser);
 
 router.post("/update/:id",editUser);
 

@@ -1,5 +1,11 @@
 {
   "dependencies": {
     "mongoose": "^7.3.0"
-  }
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "scripts": {
+       "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\" "
+   }
 }

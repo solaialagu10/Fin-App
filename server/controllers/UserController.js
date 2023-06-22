@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const userModel = require("../models");
 
 const getUsers = async (req, res) => {    
-        console.log("Getting users from controller");
         const users = await userModel.find({});      
         try {
           res.send(users);
@@ -13,7 +12,6 @@ const getUsers = async (req, res) => {
 };
 
 const getUserById = async (req, res) => {    
-    console.log("Getting user from controller");
     const user = await userModel.findById(req.params.id);
     try {
       res.send(user);  
@@ -53,7 +51,6 @@ const editUser = async (req, res) => {
 
 
 const deleteUser = async (req, res) => {    
-    console.log("Delete a record "+JSON.stringify(req.body));
     let myquery = { _id: req.params.id }
     await userModel.findOneAndRemove(myquery,req.body);
     res.send();     
