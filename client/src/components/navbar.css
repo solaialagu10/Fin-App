@@ -1,4 +1,4 @@
-.navbar-nav{
+.navbar-1{
     flex-direction: column !important;
     width:100%;
 }
@@ -11,6 +11,28 @@
   background-color: #31254c;
   color:white !important;
   border-radius: 5px;
+}
+.navbar-2{
+  /* width:fit-content; */
+}
+.navbar-ul-2{
+  flex-direction: row !important;
+  background-color: white;
+  /* margin:10px; */
+  > li{
+    /* margin:10px; */
+    border: 1px solid #31254c;
+    /* padding: 0px 10px; */
+    border-radius: 8px;
+    width: 10%;
+    text-align: center;
+  }
+  > li:hover{
+    cursor: pointer;
+  }
+}
+.customer-nav-bar{
+  margin:20px 0px;
 }
   .headerChild {
     position: absolute;

@@ -44,7 +44,7 @@
   background-color: #31254c;
   border: 1px solid var(--color-darkslateblue-100);
   box-sizing: border-box;
-  height:90px;
+  height:60px;
   margin: 0px 10px;
 }
 .app-container{
@@ -66,7 +66,7 @@
 .header-text {
   top: 53.96px;
   left: 39px;
-  font-size: 50px;
+  font-size: 32px;
   color: #f8aa0d;
   width: 522px;
   height: 57.09px;

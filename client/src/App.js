@@ -5,10 +5,9 @@ import { Route, Routes } from "react-router-dom";
  
 // We import all the components we need in our app
 import Navbar from "./components/navbar";
-import RecordList from "./components/recordList";
-import Edit from "./components/edit";
-import Create from "./components/create";
 import Customers from "./components/Customers/customers";
+import AddCustomers from "./components/Customers/addCustomers";
+import CustomerList from "./components/Customers/customerList";
 import Products from "./components/Products/products";
 import Invoices from "./components/Invoices/invoices";
 import Reports from "./components/Reports/reports";
@@ -32,6 +31,8 @@ const App = () => {
        <Route path="/invoices" element={<Invoices />} />
        <Route path="/customers" element={<Customers />} />
        <Route path="/products" element={<Products />} />
+       <Route path="/customerList" element={<CustomerList />} />
+       <Route path="/addCustomers" element={<AddCustomers />} />
      </Routes>
      </div>
    </div>

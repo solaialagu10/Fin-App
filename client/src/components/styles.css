@@ -11,6 +11,65 @@
     padding:5px;
     float:right;
     > div{
-        padding:10px;
+        padding:8px;
     } 
+}
+
+.form-control-sm:focus,
+.form-control:focus{
+    box-shadow: none !important;
+    border: 1px solid #dee2e6 !important;
+    }
+
+
+.dataTables_length{
+    padding-left:5px;
+    > label{
+        display: inline-flex;
+        > select{
+            margin:0px 5px;
+        }
+    }
+}
+
+.table {
+    > thead tr th{
+    background-color: #31254c !important;
+    color:white;
+    }
+}
+
+.pagination .active a{
+    background: #31254c !important;
+    border: 1px solid #31254c !important;   
+}
+
+.pagination .active{   
+    >:focus{
+        box-shadow: none !important;
+    }
+}
+
+.delete-btn{
+    float:right;
+        > input, > input:hover {
+            background-color: #F2AE43;
+            border: #F2AE43;
+        }
+        > input:active{
+            background-color: #ca9945 !important;
+            border: #ca9945 !important;
+        }
+}
+.cancel-btn{
+        > input, > input:hover {
+            background-color: #c1c3c5;
+            border: #c1c3c5;
+            color:#31254c
+        }
+        > input:active{
+            background-color: #d4d8db !important;
+            border: #d4d8db !important;
+            color:#31254c !important;
+        }
 }

@@ -1,25 +1,24 @@
-import React, { useMemo }  from "react";
+import React, { useMemo, useState }  from "react";
 
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit';
-
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-
 
   
   function ReactBSTables (props){
 
+    const [selected, setSelected] = useState([]);
     const dataTable = props.data;
-
-    const columns =  React.useMemo(() => Object.keys(dataTable[0]).map((key,id) => {
-        return {
-            dataField: key,
-            text: key,
-            sort: true
-        };
-      }),[]);
+    const columns = props.columns;
+    //  const columns =  React.useMemo(() => Object.keys(dataTable[0]).map((key,id) => {
+    //     return {
+    //         dataField: key,
+    //         text: key,
+    //         sort: true
+    //     };
+    //   }),[]);
 
 
     const pagination = paginationFactory({
@@ -30,7 +29,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         sizePerPageRenderer: ({ options, currSizePerPage, onSizePerPageChange }) => (
           <div className="dataTables_length" id="datatable-basic_length">
             <label>
-              Show{" "}
+              Show {" "}
               {
                 <select
                   name="datatable-basic_length"
@@ -49,22 +48,56 @@ import 'bootstrap/dist/css/bootstrap.min.css';
           </div>
         )
       });
+
+      function handleOnSelect (row, isSelect) {
+        
+        if (isSelect) {         
+          setSelected(selected => [...selected,{"_id":row._id}]);
+        } else {     
+          setSelected(selected.filter(x => x._id !== row._id))
+          };
+        }
+      
+
+      function handleOnSelectAll (isSelect, rows) {
+        const ids = rows.map(r => ({"_id" : r._id}));
+        if (isSelect) {
+          setSelected(ids);
+        } else {
+          setSelected([]);
+        }
+      }
       
       const { SearchBar } = Search;
+
+      const selectRow = {
+        mode: 'checkbox',
+        clickToSelect: true,
+        onSelect: handleOnSelect,
+        onSelectAll: handleOnSelectAll        
+      };
       
-      return (
+      return (          
         <>
+          <div className="form-group delete-btn">
+          <input
+            type="submit"
+            value="Delete"
+            className="btn btn-primary"
+            onClick={()=> props.deleteRecord(selected)}
+          />
+        </div>
           <ToolkitProvider
             data={dataTable}
-            keyField="name"
+            keyField="productName"
             columns={columns}
             search
           >
             {props => (
-              <div className="py-4">
+              <div className="py-2">
                 <div
                   id="datatable-basic_filter"
-                  className="dataTables_filter px-4 pb-1"
+                  className="dataTables_filter  pb-2"
                 >
                   <label>
                     <SearchBar
@@ -79,7 +112,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
                   {...props.baseProps}
                   bootstrap4={true}
                   pagination={pagination}
-                  bordered={false}
+                  bordered={true}
+                  selectRow={ selectRow }
                 />
               </div>
             )}

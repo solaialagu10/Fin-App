@@ -12,6 +12,12 @@ app.use(cors());
 
 app.use(express.json());
 
+
+// app.use(function (req, res, next) {
+//   req.headers['content-type'] = 'application/json';
+//   next();
+// });
+
 app.use(require("./routes/routes"));
 
 // Get MongoDB driver connection

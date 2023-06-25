@@ -12,7 +12,7 @@ export default function Navbar() {
    <div>     
      <nav className="navigation navbar navbar-expand-lg navbar-light bg-light">       
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-         <ul className="navbar-nav ml-auto">
+         <ul className="navbar-nav ml-auto navbar-1">
            <li className="nav-item">
              <NavLink className="nav-link" to="/dashboard">
                Dashboard
