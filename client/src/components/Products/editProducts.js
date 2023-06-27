@@ -1,10 +1,16 @@
 import React, { useState,useEffect } from "react";
-import { useForm } from "react-hook-form"; 
+import { useForm } from "react-hook-form";
 import '../styles.css';
-export default function AddProducts(props) {
- const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset } = useForm({})
- const [records, setRecords] = useState([]);
+ 
+export default function EditProducts(props) {
+const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue } = useForm({})
+ const [form, setForm] = useState({
+   productName: "",
+   productId: "",
+   price: ""
 
+ });
+ const [records, setRecords] = useState([]);
  useEffect(() => {
   async function getRecords() {    
     const response = await fetch(`http://localhost:5000/products/`);
@@ -16,11 +22,26 @@ export default function AddProducts(props) {
     const records = await response.json();
     setRecords(records);
   }
+  
+  async function setData() {
+    console.log("<><< Edit page "+JSON.stringify(props.row[0]));
+    setForm(props.row[0]);
+  }
+  setData();
   getRecords();
   return;
-}, []);
+}, [props.row]);
+useEffect(() => {
+  // reset form with product data
+  reset(form);
+}, [form]);
+ // These methods will update the state properties.
+ function updateForm(value) {
+   return setForm((prev) => {
+     return { ...prev, ...value };
+   });
+ } 
 
- 
  function formValidation(data){
   const pNameCount = records.filter(x => x.productName === data.productName).length;   
   if(pNameCount != 0) {
@@ -40,103 +61,107 @@ export default function AddProducts(props) {
    } 
    return true;
  }
-
+ 
  // This function will handle the submission.
  async function handleRegistration(data) {
-   const valid = formValidation(data);
-   if(valid){
-      // When a post request is sent to the create url, we'll add a new record to the database.
-      await fetch("http://localhost:5000/add_product", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-      .catch(error => {
-        window.alert(error);
-        return;
-      });
-      reset({ productName: "", productId: "", price: "" });
-   }   
+  // const valid = formValidation(data);
+
+ 
+   // When a post request is sent to the create url, we'll add a new record to the database.
+   const newProduct = { ...form };
+ 
+   await fetch("http://localhost:5000/update", {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+     },
+     body: JSON.stringify(data),
+   })
+   .catch(error => {
+     window.alert(error);
+     return;
+   }); 
+   props.changeTab('Add','Success');
+  //  setForm({ productName: "", productId: "", price: "" });
+  //  reset({ productName: "", productId: "", price: "" });
+  
  }
  
  // This following section will display the form that takes the input from the user.
  return (
    <div>
      {/* <h3>Add Products</h3> */}
-     <form onSubmit={handleSubmit(handleRegistration)}>
-     {isSubmitSuccessful && <div className="text-success">Product added successfully.</div>}      
-     {props.row === 'Success' && <div className="text-success">Product edited successfully.</div>}
+     <form onSubmit={handleSubmit(handleRegistration)}> 
       <div className="product-group col-md-12">
        <div className="form-group col-md-12">
          <label htmlFor="productName">Name</label>
          <input
            type="text"
            className="form-control"
-           name="productName"            
-           placeholder="Enter Product Name"   
+           id="productName"
+           placeholder="Enter Product Name"
            disabled={isSubmitting}        
            {...register('productName', {
-             required: "Please enter product name",
-             minLength: { value: 3, message: "Min Length must be more than 3" },
-             maxLength: { value: 30, message: "Max Length cannot exceed more than 30" } }) }               
+            required: "Please enter product name",
+            value:form.productName,
+            minLength: { value: 3, message: "Min Length must be more than 3" },
+            maxLength: { value: 30, message: "Max Length cannot exceed more than 30" } }) }   
          />
           <small className="text-danger">
           {errors?.productName && errors.productName.message}
-        </small>      
+        </small>  
        </div>
        <div className="form-group col-md-12">
          <label htmlFor="productId">Id</label>
          <input
            type="text"
            className="form-control"
-           name="productId"
-           placeholder="Enter Product Id"
-           disabled={isSubmitting}
+           id="productId"
+           placeholder="Enter Product Id"      
+           disabled={isSubmitting}             
            {...register('productId', { 
             required: "Please enter product id",
             minLength: { value: 3, message: "Min Length must be more than 3" },
             maxLength: { value: 30, message: "Max Length cannot exceed more than 30" } }) }
          />
-         <small className="text-danger">
+        <small className="text-danger">
           {errors?.productId && errors.productId.message}
-        </small>          
+        </small>  
        </div>    
        <div className="form-group col-md-12">
          <label htmlFor="price">Price</label>
          <input
            type="number"
            className="form-control"
-           name="price"
+           id="price"
            placeholder="Enter Product Price"
-           disabled={isSubmitting}
+           disabled={isSubmitting}        
            {...register('price', { 
             required: "Please enter price",
             maxLength: { value: 4, message: "Price cannot be more than 9999" } }) }
          />
-         <small className="text-danger">
+          <small className="text-danger">
           {errors?.price && errors.price.message}
-        </small>      
+        </small>  
        </div>   
        </div>
        <div className="product-group-buttons ">    
-        <div className="form-group  pull-right delete-btn">
-          <input
-            type="submit"
-            value="Save"
-            className="btn btn-primary"
-          />
-        </div>
-        <div className="cancel-btn">
-          <button
-            value="Cancel"
-            className="btn btn-primary"
-            onClick={()=> reset({ productName: "", productId: "", price: "" })}
-          >Cancel</button>
-        </div>
-       </div>   
-       
+       <div className="form-group  pull-right delete-btn">
+         <input
+           type="submit"
+           value="Save"
+           className="btn btn-primary"
+         />
+       </div>
+       <div className="form-group  pull-right cancel-btn">
+         <input
+           type="submit"
+           value="Cancel"
+           className="btn btn-primary"
+           onClick={()=> props.changeTab('Add')}
+         />
+       </div>
+       </div>      
      </form>
    </div>
  );

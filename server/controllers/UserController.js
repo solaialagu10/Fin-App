@@ -51,14 +51,16 @@ const addProduct = async (req, res) => {
     }  
 };
 
-const editUser = async (req, res) => {    
-    let myquery = { _id: req.params.id }; 
+const editProduct = async (req, res) => {   
+    console.log(req.body._id);
+    let myquery = { _id: req.body._id }; 
     let newvalues = {    
-        name: req.body.name,
-        position: req.body.position,
-        level: req.body.level    
+      productName: req.body.productName,
+      productId: req.body.productId,
+      price: req.body.price,      
+      modifiedDate: new Date()
     };
-    const user = await userModel.findOneAndUpdate(myquery,newvalues,{
+    const user = await productModel.findOneAndUpdate(myquery,newvalues,{
       returnOriginal: false
     });
     res.send(user);
@@ -84,7 +86,7 @@ module.exports ={
     getProducts,
     getUserById,
     addUser,
-    editUser,
+    editProduct,
     deleteProduct,
     addProduct
 }

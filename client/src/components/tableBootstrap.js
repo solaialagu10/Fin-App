@@ -10,6 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
   function ReactBSTables (props){
 
     const [selected, setSelected] = useState([]);
+    const [selectedRw, setSelectedRw] = useState([]);
     const dataTable = props.data;
     const columns = props.columns;
     //  const columns =  React.useMemo(() => Object.keys(dataTable[0]).map((key,id) => {
@@ -49,12 +50,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         )
       });
 
-      function handleOnSelect (row, isSelect) {
-        
+      function handleOnSelect (row, isSelect) {        
         if (isSelect) {         
           setSelected(selected => [...selected,{"_id":row._id}]);
+          setSelectedRw(selectedRw => [...selectedRw,row])
         } else {     
           setSelected(selected.filter(x => x._id !== row._id))
+          setSelectedRw(selectedRw.filter(x => x._id !== row._id))
           };
         }
       
@@ -63,8 +65,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         const ids = rows.map(r => ({"_id" : r._id}));
         if (isSelect) {
           setSelected(ids);
+          setSelectedRw(rows);
         } else {
           setSelected([]);
+          setSelectedRw([]);
         }
       }
       
@@ -79,6 +83,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
       
       return (          
         <>
+        <div className="form-group delete-btn">
+          <button
+            value="Edit"
+            className="btn btn-primary"
+            disabled={selectedRw.length !== 1}
+            onClick={()=> props.editRecord(selectedRw)}
+          >Edit</button>
+        </div>
           <div className="form-group delete-btn">
           <input
             type="submit"
@@ -108,13 +120,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
                     />
                   </label>
                 </div>
+                <div className="table-responsive">
                 <BootstrapTable
                   {...props.baseProps}
                   bootstrap4={true}
                   pagination={pagination}
                   bordered={true}
-                  selectRow={ selectRow }
+                  selectRow={ selectRow }                
                 />
+                </div>
               </div>
             )}
           </ToolkitProvider>
