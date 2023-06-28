@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
-const productModel = require("../models/productModel");
+const {Product} = require("../models/productModel");
 
 const getProducts = async (req, res) => {    
-        const products = await productModel.find({});      
+        const products = await Product.find({});      
         try {
           res.send(products);
         } catch (error) {
@@ -11,32 +11,8 @@ const getProducts = async (req, res) => {
         }      
 };
 
-const getUserById = async (req, res) => {    
-    const user = await productModel.findById(req.params.id);
-    try {
-      res.send(user);  
-    } catch (error) {
-      res.status(500).send(error);
-    }
-};
-
-
-const addUser = async (req, res) => {    
-    const user = new productModel({
-        name: req.body.name,
-        position: req.body.position,
-        level: req.body.level,
-      });
-      try {
-        await user.save();
-        res.send(user);
-      } catch (error) {
-        res.status(500).send(error);
-      }  
-};
-
 const addProduct = async (req, res) => {    
-  const product = new productModel({
+  const product = new Product({
       productName: req.body.productName,
       productId: req.body.productId,
       price: req.body.price,
@@ -52,7 +28,6 @@ const addProduct = async (req, res) => {
 };
 
 const editProduct = async (req, res) => {   
-    console.log(req.body._id);
     let myquery = { _id: req.body._id }; 
     let newvalues = {    
       productName: req.body.productName,
@@ -60,7 +35,7 @@ const editProduct = async (req, res) => {
       price: req.body.price,      
       modifiedDate: new Date()
     };
-    const user = await productModel.findOneAndUpdate(myquery,newvalues,{
+    const user = await Product.findOneAndUpdate(myquery,newvalues,{
       returnOriginal: false
     });
     res.send(user);
@@ -68,9 +43,7 @@ const editProduct = async (req, res) => {
 
 
 const deleteProduct = async (req, res) => {  
-  console.log("<><><");
     const toDelete = req.body.selected ;
-    console.log("<><><"+JSON.stringify(toDelete));
     // let myquery = { _id: req.params.id }
     // var usersDelete = [];
     // var ObjectID = req.mongo.ObjectID;   //req is request from express
@@ -78,14 +51,12 @@ const deleteProduct = async (req, res) => {
     //   console.log("<>>>> item"+item._id);
     //   usersDelete.push(ObjectID(item));
     // });
-    await productModel.deleteMany({_id:{$in:toDelete}});
+    await Product.deleteMany({_id:{$in:toDelete}});
     res.send();     
 };
 
 module.exports ={
     getProducts,
-    getUserById,
-    addUser,
     editProduct,
     deleteProduct,
     addProduct

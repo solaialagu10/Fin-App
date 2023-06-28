@@ -101,7 +101,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         </div>
           <ToolkitProvider
             data={dataTable}
-            keyField="productName"
+            keyField={props.keyField}
             columns={columns}
             search
           >

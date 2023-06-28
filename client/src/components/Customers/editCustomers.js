@@ -5,7 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import '../styles.css';
  
-export default function AddCustomers(props) {
+export default function EditCustomers(props) {
 
    // form validation rules 
    const validationSchema = Yup.object().shape({    
@@ -15,22 +15,23 @@ export default function AddCustomers(props) {
 const formOptions = { resolver: yupResolver(validationSchema) };
   const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset } = useForm(formOptions)
   const [records, setRecords] = useState([]);
-
+  const [form, setForm] = useState({
+    customerName: "",
+    location: "",
+    mobileNo: "",
+    email:""
+  });
   useEffect(() => {
-    async function getRecords() {    
-      const response = await fetch(`http://localhost:5000/products/`);
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`;
-        window.alert(message);
-        return;
-      }
-      const records = await response.json();
-      setRecords(records);
+    async function setData() {
+      console.log("<><< Edit page "+JSON.stringify(props.row[0]));
+      setForm(props.row[0]);
     }
-    getRecords();
+    setData();
     return;
-  }, []); 
-
+  }, [props.row]);
+  useEffect(() => {
+    reset(form);
+  }, [form]);
 
  
  // This function will handle the submission.
@@ -39,7 +40,7 @@ const formOptions = { resolver: yupResolver(validationSchema) };
    // When a post request is sent to the create url, we'll add a new record to the database.
   //  const newPerson = { ...form };
  
-   await fetch("http://localhost:5000/add_customer", {
+   await fetch("http://localhost:5000/edit_customer", {
      method: "POST",
      headers: {
        "Content-Type": "application/json",
@@ -51,19 +52,15 @@ const formOptions = { resolver: yupResolver(validationSchema) };
      window.alert(error);
      return;
    });
-   reset({ name: "",
-   location: "",
-   mobileNo: "",
-   email:"" });
+   props.changeTab('Add','Success');
+  
  }
  
  // This following section will display the form that takes the input from the user.
  return (
    <div>    
      {/* <h3>Add New Customers</h3> */}
-     <form onSubmit={handleSubmit(handleRegistration)}>
-     {isSubmitSuccessful && <div className="text-success">Customer added successfully.</div>}      
-     {props.row === 'Success' && <div className="text-success">Customer edited successfully.</div>}
+     <form onSubmit={handleSubmit(handleRegistration)}> 
      <div className="product-group col-md-12">
        <div className="form-group col-md-12">
          <label htmlFor="name">Name</label>         

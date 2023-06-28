@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form"; 
 import '../styles.css';
+
 export default function AddProducts(props) {
  const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset } = useForm({})
  const [records, setRecords] = useState([]);
@@ -120,7 +121,7 @@ export default function AddProducts(props) {
         </small>      
        </div>   
        </div>
-       <div className="product-group-buttons ">    
+       <div className="product-group-buttons">    
         <div className="form-group  pull-right delete-btn">
           <input
             type="submit"
@@ -128,12 +129,12 @@ export default function AddProducts(props) {
             className="btn btn-primary"
           />
         </div>
-        <div className="cancel-btn">
-          <button
+        <div className="cancel-btn">          
+           <input
+            type="reset"
             value="Cancel"
-            className="btn btn-primary"
-            onClick={()=> reset({ productName: "", productId: "", price: "" })}
-          >Cancel</button>
+            className="btn btn-primary"           
+          ></input>
         </div>
        </div>   
        

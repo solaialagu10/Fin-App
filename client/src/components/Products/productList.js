@@ -71,7 +71,7 @@ async function deleteRecord(selected) {
   return (
     <div>   
       {deletemessage === true && <div className="text-success">Product deleted successfully.</div>}
-      <ReactBSTables data={records} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord} />
+      <ReactBSTables data={records} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord} keyField="productName"/>
     </div>
   );
 }

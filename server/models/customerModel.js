@@ -1,15 +1,18 @@
 const mongoose = require("mongoose");
 
-const ProductSchema = new mongoose.Schema({
-  productName: {
+const CustomerSchema = new mongoose.Schema({
+  customerName: {
     type: String,
     required: true,
   },
-  productId: {
+  location: {
     type: String
   },
-  price: {
+  mobileNo: {
     type: Number
+  },
+  email:{
+    type: String
   },
   createdDate: {
     type: Date
@@ -23,6 +26,6 @@ function loadModel(modelName, modelSchema) {
     ? mongoose.model(modelName) // If true, only retrieve it
     : mongoose.model(modelName, modelSchema) // If false, define it
 }
-const Product = loadModel("Product", ProductSchema);
+const Customer = loadModel("Customer", CustomerSchema);
 
-module.exports.Product = Product;
+module.exports.Customer = Customer;

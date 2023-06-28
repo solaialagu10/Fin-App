@@ -12,36 +12,30 @@ const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessf
  });
  const [records, setRecords] = useState([]);
  useEffect(() => {
-  async function getRecords() {    
-    const response = await fetch(`http://localhost:5000/products/`);
-    if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
-      window.alert(message);
-      return;
-    }
-    const records = await response.json();
-    setRecords(records);
-  }
+  // async function getRecords() {    
+  //   const response = await fetch(`http://localhost:5000/products/`);
+  //   if (!response.ok) {
+  //     const message = `An error occurred: ${response.statusText}`;
+  //     window.alert(message);
+  //     return;
+  //   }
+  //   const records = await response.json();
+  //   setRecords(records);
+  // }
   
   async function setData() {
     console.log("<><< Edit page "+JSON.stringify(props.row[0]));
     setForm(props.row[0]);
   }
   setData();
-  getRecords();
+  // getRecords();
   return;
 }, [props.row]);
 useEffect(() => {
   // reset form with product data
   reset(form);
 }, [form]);
- // These methods will update the state properties.
- function updateForm(value) {
-   return setForm((prev) => {
-     return { ...prev, ...value };
-   });
- } 
-
+ 
  function formValidation(data){
   const pNameCount = records.filter(x => x.productName === data.productName).length;   
   if(pNameCount != 0) {
@@ -82,8 +76,6 @@ useEffect(() => {
      return;
    }); 
    props.changeTab('Add','Success');
-  //  setForm({ productName: "", productId: "", price: "" });
-  //  reset({ productName: "", productId: "", price: "" });
   
  }
  
