@@ -3,7 +3,7 @@ import ReactBSTables from '../tableBootstrap';
 import moment from "moment";
 
 export default function CustomerList(props){
-
+  
    function dateFormatter(cell, row) {
     return (
     <span>{moment(cell).format("LLL")}</span>
@@ -76,7 +76,6 @@ function editRecord(selectedRow){
 
   return (
     <div>
-      <h3>Customer List</h3>
       {deletemessage === true && <div className="text-success">Customer(s) deleted successfully.</div>}     
       <ReactBSTables data={records} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord}  keyField="customerName"/>
     </div>

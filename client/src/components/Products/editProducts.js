@@ -12,23 +12,23 @@ const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessf
  });
  const [records, setRecords] = useState([]);
  useEffect(() => {
-  // async function getRecords() {    
-  //   const response = await fetch(`http://localhost:5000/products/`);
-  //   if (!response.ok) {
-  //     const message = `An error occurred: ${response.statusText}`;
-  //     window.alert(message);
-  //     return;
-  //   }
-  //   const records = await response.json();
-  //   setRecords(records);
-  // }
+  async function getRecords() {    
+    const response = await fetch(`http://localhost:5000/products/`);
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      window.alert(message);
+      return;
+    }
+    const records = await response.json();
+    setRecords(records);
+  }
   
   async function setData() {
     console.log("<><< Edit page "+JSON.stringify(props.row[0]));
     setForm(props.row[0]);
   }
   setData();
-  // getRecords();
+  getRecords();
   return;
 }, [props.row]);
 useEffect(() => {
@@ -58,12 +58,8 @@ useEffect(() => {
  
  // This function will handle the submission.
  async function handleRegistration(data) {
-  // const valid = formValidation(data);
-
- 
-   // When a post request is sent to the create url, we'll add a new record to the database.
-   const newProduct = { ...form };
- 
+  const valid = formValidation(data); 
+   if(valid){
    await fetch("http://localhost:5000/update", {
      method: "POST",
      headers: {
@@ -76,7 +72,7 @@ useEffect(() => {
      return;
    }); 
    props.changeTab('Add','Success');
-  
+  }  
  }
  
  // This following section will display the form that takes the input from the user.

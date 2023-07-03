@@ -6,13 +6,16 @@ const CustomerSchema = new mongoose.Schema({
     required: true,
   },
   location: {
-    type: String
+    type: String,
+    required: true
   },
   mobileNo: {
-    type: Number
+    type: Number,
+    required: true
   },
   email:{
-    type: String
+    type: String,
+    required: true
   },
   createdDate: {
     type: Date
