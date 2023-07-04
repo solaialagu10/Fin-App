@@ -27,8 +27,8 @@ export default function AddCustomers(props) {
         .email('Email is invalid')
         .matches(/[^@\s]+@[^@\s]+\.[^@\s]+/,'Email is invalid')
 });
-const formOptions = { resolver: yupResolver(validationSchema) };
-  const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,clearErrors,resetField,setFocus,setValue} = useForm(formOptions)
+  const formOptions = { resolver: yupResolver(validationSchema) };
+  const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus} = useForm(formOptions)
   const [records, setRecords] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [
@@ -76,7 +76,6 @@ const formOptions = { resolver: yupResolver(validationSchema) };
 
   function formValidation(data){
     const custNameCount = customers.filter(x => x.customerName === data.customerName).length;  
-    console.log("<><><custNameCount"+custNameCount);
     if(custNameCount != 0) {
       setError("customerName", {
         type: "manual",
@@ -148,7 +147,6 @@ const formOptions = { resolver: yupResolver(validationSchema) };
            className={`form-control ${errors.customerName ? 'is-invalid' : ''}`}
            name="customerName"            
            placeholder="Enter Customer Name"   
-           onChange={() => setValue("isSuccessfullySubmitted", "")}
            disabled={isSubmitting}        
            {...register('customerName') }               
          />

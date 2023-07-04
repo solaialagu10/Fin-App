@@ -1,9 +1,29 @@
 import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form";
 import '../styles.css';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
  
 export default function EditProducts(props) {
-const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue } = useForm({})
+
+  // form validation rules 
+  const validationSchema = Yup.object().shape({ 
+    productName:  Yup.string()
+        .required('Please enter product name')
+        .min(3,"Name must be at least 3 characters")
+        .max(75,"Name cannot exceed more than 75 characters")
+        .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
+    productId:  Yup.string()
+        .required('Please enter product id')
+        .min(3,"Location must be at least 3 characters")
+        .max(75,"Location cannot exceed more than 75 characters")
+        .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
+    price:  Yup.string()
+        .required('Please enter product price')
+        .max(4, "Price cannot be more than 9999")    
+});
+const formOptions = { resolver: yupResolver(validationSchema) };
+const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setValue } = useForm(formOptions)
  const [form, setForm] = useState({
    productName: "",
    productId: "",

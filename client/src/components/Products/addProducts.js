@@ -1,10 +1,40 @@
 import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form"; 
 import '../styles.css';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
 
 export default function AddProducts(props) {
- const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset } = useForm({})
- const [records, setRecords] = useState([]);
+
+  // form validation rules 
+  const validationSchema = Yup.object().shape({ 
+    productName:  Yup.string()
+        .required('Please enter product name')
+        .min(3,"Name must be at least 3 characters")
+        .max(75,"Name cannot exceed more than 75 characters")
+        .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
+    productId:  Yup.string()
+        .required('Please enter product id')
+        .min(3,"Location must be at least 3 characters")
+        .max(75,"Location cannot exceed more than 75 characters")
+        .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
+    price:  Yup.string()
+        .required('Please enter product price')
+        .max(4, "Price cannot be more than 9999")    
+});
+
+const formOptions = { resolver: yupResolver(validationSchema) };
+const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus } = useForm(formOptions)
+const [records, setRecords] = useState([]);
+const [
+  isSuccessfullySubmitted,
+  setIsSuccessfullySubmitted,
+] = useState('');
+const [form, setForm] = useState({
+  productName: "",
+  productId: "",
+  price: ""
+});
 
  useEffect(() => {
   async function getRecords() {    
@@ -18,9 +48,13 @@ export default function AddProducts(props) {
     setRecords(records);
   }
   getRecords();
+  setFocus("productName")
   return;
-}, []);
+}, [setFocus,form]);
 
+useEffect(() => {
+  reset(form);
+}, [form])
  
  function formValidation(data){
   const pNameCount = records.filter(x => x.productName === data.productName).length;   
@@ -46,18 +80,24 @@ export default function AddProducts(props) {
  async function handleRegistration(data) {
    const valid = formValidation(data);
    if(valid){
-      // When a post request is sent to the create url, we'll add a new record to the database.
-      await fetch("http://localhost:5000/add_product", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-      .catch(error => {
-        window.alert(error);
-        return;
-      });
+    const settings = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    };
+    try {
+      const fetchResponse =  await fetch("http://localhost:5000/add_product", settings)
+      if(fetchResponse.ok){ 
+          setIsSuccessfullySubmitted('Success');
+        }
+        else{
+          setIsSuccessfullySubmitted('Error');
+        }
+      } catch (e) {        
+        console.log("<><<>< error"+e);
+    } 
       reset({ productName: "", productId: "", price: "" });
    }   
  }
@@ -67,57 +107,50 @@ export default function AddProducts(props) {
    <div>
      {/* <h3>Add Products</h3> */}
      <form onSubmit={handleSubmit(handleRegistration)}>
-     {isSubmitSuccessful && <div className="text-success">Product added successfully.</div>}      
+     <div className="text-success">{isSuccessfullySubmitted === 'Success' ? "Product added successfully." : ""}</div>      
+     <div className="text-danger">{isSuccessfullySubmitted === 'Error' ? "Error in adding product" : ""}</div> 
      {props.row === 'Success' && <div className="text-success">Product edited successfully.</div>}
       <div className="product-group col-md-12">
        <div className="form-group col-md-12">
          <label htmlFor="productName">Name</label>
          <input
            type="text"
-           className="form-control"
+           className={`form-control ${errors.productName ? 'is-invalid' : ''}`}
            name="productName"            
            placeholder="Enter Product Name"   
            disabled={isSubmitting}        
-           {...register('productName', {
-             required: "Please enter product name",
-             minLength: { value: 3, message: "Min Length must be more than 3" },
-             maxLength: { value: 30, message: "Max Length cannot exceed more than 30" } }) }               
+           {...register('productName') }               
          />
-          <small className="text-danger">
-          {errors?.productName && errors.productName.message}
+          <small className="invalid-feedback">
+          {errors.productName?.message}
         </small>      
        </div>
        <div className="form-group col-md-12">
          <label htmlFor="productId">Id</label>
          <input
            type="text"
-           className="form-control"
+           className={`form-control ${errors.productId ? 'is-invalid' : ''}`}
            name="productId"
            placeholder="Enter Product Id"
            disabled={isSubmitting}
-           {...register('productId', { 
-            required: "Please enter product id",
-            minLength: { value: 3, message: "Min Length must be more than 3" },
-            maxLength: { value: 30, message: "Max Length cannot exceed more than 30" } }) }
+           {...register('productId') }
          />
-         <small className="text-danger">
-          {errors?.productId && errors.productId.message}
+         <small className="invalid-feedback">
+          {errors.productId?.message}
         </small>          
        </div>    
        <div className="form-group col-md-12">
          <label htmlFor="price">Price</label>
          <input
            type="number"
-           className="form-control"
+           className={`form-control ${errors.price ? 'is-invalid' : ''}`}
            name="price"
            placeholder="Enter Product Price"
            disabled={isSubmitting}
-           {...register('price', { 
-            required: "Please enter price",
-            maxLength: { value: 4, message: "Price cannot be more than 9999" } }) }
+           {...register('price') }
          />
-         <small className="text-danger">
-          {errors?.price && errors.price.message}
+         <small className="invalid-feedback">
+          {errors.price?.message}
         </small>      
        </div>   
        </div>
@@ -126,6 +159,7 @@ export default function AddProducts(props) {
           <input
             type="submit"
             value="Save"
+            disabled={isSubmitting}
             className="btn btn-primary"
           />
         </div>
@@ -133,7 +167,15 @@ export default function AddProducts(props) {
            <input
             type="reset"
             value="Cancel"
-            className="btn btn-primary"           
+            disabled={isSubmitting}
+            className="btn btn-primary"    
+            onClick={() =>
+              setForm({
+                productName: '',
+                productId: '',
+                price: ''
+              })
+            }       
           ></input>
         </div>
        </div>   

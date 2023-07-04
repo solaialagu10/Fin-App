@@ -186,7 +186,8 @@ const formOptions = { resolver: yupResolver(validationSchema) };
             type="reset"
             value="Cancel"
             disabled={isSubmitting}
-            className="btn btn-primary"           
+            className="btn btn-primary"  
+            onClick={()=> props.changeTab('Add')}         
           ></input>
         </div>
        </div>
