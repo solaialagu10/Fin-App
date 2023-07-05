@@ -11,17 +11,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
     const [selected, setSelected] = useState([]);
     const [selectedRw, setSelectedRw] = useState([]);
-    const dataTable = props.data;
+    const [columns1, setColumns1] = useState([]);
+    const dataTable = props.data;  
     const columns = props.columns;
-    //  const columns =  React.useMemo(() => Object.keys(dataTable[0]).map((key,id) => {
-    //     return {
-    //         dataField: key,
-    //         text: key,
-    //         sort: true
-    //     };
-    //   }),[]);
-
-
+    if(dataTable[0] && columns1?.length===0 && props.keyField === 'customerName')
+    {   
+    Object.keys(dataTable[0].retailPrices).map((key, index) => {
+      let header = {};
+      header = {
+        "dataField": key,
+        "text": key,  
+        "sort": true
+      }
+      columns1.push(header);
+    })
+  }
     const pagination = paginationFactory({
         page: 1,
         alwaysShowAllBtns: true,
@@ -80,7 +84,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         onSelect: handleOnSelect,
         onSelectAll: handleOnSelectAll        
       };
-      
+
+      const expandRow = {        
+        renderer: row => (
+          <BootstrapTable data={[row.retailPrices]} 
+          columns={columns1} keyField={columns1[0].dataField}/>
+        ),
+        onlyOneExpanding: true,
+        showExpandColumn: true,
+        expandHeaderColumnRenderer: ({ isAnyExpands }) => (null)
+      };
       return (          
         <>
         <div className="form-group delete-btn">
@@ -120,15 +133,23 @@ import 'bootstrap/dist/css/bootstrap.min.css';
                     />
                   </label>
                 </div>
+                {columns1.length > 0 ?
                 <div className="table-responsive">
                 <BootstrapTable
                   {...props.baseProps}
-                  bootstrap4={true}
                   pagination={pagination}
                   bordered={true}
-                  selectRow={ selectRow }                
+                  selectRow={ selectRow } 
+                  expandRow={expandRow}
                 />
-                </div>
+                </div> : <div className="table-responsive">
+                <BootstrapTable
+                  {...props.baseProps}
+                  pagination={pagination}
+                  bordered={true}
+                  selectRow={ selectRow }                   
+                />
+                </div>}
               </div>
             )}
           </ToolkitProvider>

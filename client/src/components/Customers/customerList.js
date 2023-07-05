@@ -12,7 +12,7 @@ export default function CustomerList(props){
   const [records, setRecords] = useState([]);
   const [deleteFlag, setDeleteFlag] = useState(false);
   const [deletemessage, setDeletemessage] = useState(false);
-  const columns=[{
+  let [columns,setColumns]=useState([{
     "dataField": "customerName",
     "text": "Name",
     "sort": true
@@ -29,16 +29,11 @@ export default function CustomerList(props){
   "text": "Email Id",
   "sort": true
 },{
-  "dataField": "createdDate",
-  "text": "Created Date",
-  "sort": true,
-  formatter: dateFormatter
-},{
   "dataField": "modifiedDate",
   "text": "Modified Date",
   "sort": true,
   formatter: dateFormatter
-}]
+}])
 
  // This method fetches the records from the database.
  useEffect(() => {
@@ -49,7 +44,7 @@ export default function CustomerList(props){
       window.alert(message);
       return;
     }
-    const records = await response.json();
+    const records = await response.json();    
     setRecords(records);
   }
   getCustomers();
