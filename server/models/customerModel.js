@@ -17,6 +17,10 @@ const CustomerSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  retailPrices:{
+    type: Object,
+    required: true
+  },
   createdDate: {
     type: Date
   },

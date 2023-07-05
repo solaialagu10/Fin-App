@@ -1,35 +1,11 @@
 import React, { useState,useEffect } from "react";
-import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form"; 
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
 import '../styles.css';
  
 export default function AddCustomers(props) {
-
-   // form validation rules 
-   const validationSchema = Yup.object().shape({ 
-    customerName:  Yup.string()
-        .required('Please enter customer name')
-        .min(3,"Name must be at least 3 characters")
-        .max(75,"Name cannot exceed more than 75 characters")
-        .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
-    location:  Yup.string()
-        .required('Please enter location')
-        .min(3,"Location must be at least 3 characters")
-        .max(75,"Location cannot exceed more than 75 characters")
-        .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
-    mobileNo:  Yup.string()
-        .required('Please enter mobile no')
-        .matches(/[0789][0-9]{9}/, "Invalid mobile no"),
-    email: Yup.string()
-        .required('Please enter email id')
-        .email('Email is invalid')
-        .matches(/[^@\s]+@[^@\s]+\.[^@\s]+/,'Email is invalid')
-});
-  const formOptions = { resolver: yupResolver(validationSchema) };
-  const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus} = useForm(formOptions)
-  const [records, setRecords] = useState([]);
+  
+  const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus} = useForm()
+  const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [
     isSuccessfullySubmitted,
@@ -43,7 +19,7 @@ export default function AddCustomers(props) {
   });
 
   useEffect(() => {
-    async function getRecords() {    
+    async function getProducts() {    
       const response = await fetch(`http://localhost:5000/products/`);
       console.log(response);
       if (!response.ok) {
@@ -51,8 +27,8 @@ export default function AddCustomers(props) {
         window.alert(message);
         return;
       }
-      const records = await response.json();
-      setRecords(records);
+      const products = await response.json();
+      setProducts(products);
     }
     async function getCustomers() {
     const response = await fetch(`http://localhost:5000/customers/`);
@@ -65,7 +41,7 @@ export default function AddCustomers(props) {
     setCustomers(customers);
   }
     getCustomers();
-    getRecords();
+    getProducts();
     setFocus("customerName")
     return;
   }, [setFocus,form]); 
@@ -103,10 +79,10 @@ export default function AddCustomers(props) {
     }
  
  // This function will handle the submission.
- const handleRegistration=  async (data) => {
- 
+ const handleRegistration=  async (data) => { 
    // When a post request is sent to the create url, we'll add a new record to the database.
   //  const newPerson = { ...form };
+  console.log("<><><><> "+JSON.stringify(data));
   const valid = formValidation(data);
   if(valid){
     const settings = {
@@ -130,6 +106,47 @@ export default function AddCustomers(props) {
     setForm({ customerName: "", location: "", mobileNo: "",email:"" });
   }
  }
+
+ const Record = (props) => (
+  <tr>
+    <td>{props.product.productName}</td>
+    <td>{props.product.productId}</td>
+    <td style={{display:"flex"}}>
+    <input
+           type="number"
+           className="form-control"
+           name={`retailPrices.${props.product.productId}`}         
+           placeholder="Enter Price"   
+           disabled={isSubmitting}
+           style={{width:"100%"}}    
+           pattern="[0-9]+" title="please enter number only"    
+           {...register(`retailPrices.${props.product.productId}`,{
+            required: "Please enter price",
+            validate: {
+              matchPattern: (v) => /^[0-9]\d*/.test(v) || "Only positive values are allowed"
+            }
+          })}               
+         />
+         <div className="invalid-feedback" style={{display:"flex"}}>
+          {errors.retailPrices?.[props.product.productId]?.message}
+        </div>
+    </td>    
+  </tr>
+ );
+ // This method will map out the records on the table
+ function recordList() {
+  if(products && products.length > 0){
+   return products.map((product,index) => {
+     return (
+       <Record
+         product={product}
+         key={product._id}
+         index={index}
+       />
+     );
+   });
+ }
+ }
  
  // This following section will display the form that takes the input from the user.
  return (
@@ -148,11 +165,18 @@ export default function AddCustomers(props) {
            name="customerName"            
            placeholder="Enter Customer Name"   
            disabled={isSubmitting}        
-           {...register('customerName') }               
+           {...register('customerName',{
+            required:'Please enter customer name',
+            validate: {
+              minLength: (v) => v.length >= 3 || "Name must be at least 3 characters",
+              maxLength: (v) => v.length <75 || "Name cannot exceed more than 75 characters",
+              matchPattern: (v) => /^[a-zA-Z0-9- ]+$/.test(v) || "Name must contain only letters, numbers and -",
+            }
+           })}             
          />
           <small className="invalid-feedback">
           {errors.customerName?.message}
-        </small>
+          </small>
        </div>
        <div className="form-group col-md-12">
          <label htmlFor="location">Location</label>         
@@ -162,7 +186,14 @@ export default function AddCustomers(props) {
            name="location"            
            placeholder="Enter customer's location"   
            disabled={isSubmitting}        
-           {...register('location') }               
+           {...register('location',{
+            required:'Please enter location',
+            validate: {
+              minLength: (v) => v.length >= 3 || "Name must be at least 3 characters",
+              maxLength: (v) => v.length <75 || "Name cannot exceed more than 75 characters",
+              matchPattern: (v) => /^[a-zA-Z0-9- ]+$/.test(v) || "Location must contain only letters, numbers and -",
+            }
+           })}               
          />
           <small className="invalid-feedback">
           {errors.location?.message}
@@ -176,7 +207,12 @@ export default function AddCustomers(props) {
            name="mobileNo"            
            placeholder="Enter customer's mobile no"   
            disabled={isSubmitting}        
-           {...register('mobileNo') }               
+           {...register('mobileNo',{
+           required : "Please enter mobile no",
+           validate: {
+            maxLength: (v) => v.length <= 11 || "Mobile no should not exceed 11 digits",
+            matchPattern: (v) => /[0789][0-9]{9}/.test(v) || "Invalid mobile no" }
+            })}               
          />
           <small className="invalid-feedback">
           {errors.mobileNo?.message}
@@ -190,12 +226,31 @@ export default function AddCustomers(props) {
            name="email"            
            placeholder="Enter customer's email id"   
            disabled={isSubmitting}        
-           {...register('email') }               
+           {...register('email',{
+            required : "Please enter email id",
+            validate: {
+              maxLength: (v) =>
+              v.length <= 50 || "The email should have at most 50 characters",
+              matchPattern: (v) =>
+              /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || "Email must be a valid address", }
+             }) }               
          />
           <small className="invalid-feedback">
           {errors.email?.message}
           </small>
-       </div>   
+       </div>  
+       <div className="cust-table" style={{ marginTop: 20 }}>
+       <table className="table table-striped table-bordered " >
+       <thead>
+         <tr>
+           <th>Product Name</th>
+           <th>Product ID</th>
+           <th>Retail Price</th>
+         </tr>
+       </thead>
+       <tbody>{recordList()}</tbody>
+     </table> 
+     </div>
        <div className="product-group-buttons"> 
        <div className="form-group  pull-right delete-btn">
          <input

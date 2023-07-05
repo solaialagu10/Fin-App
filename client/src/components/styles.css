@@ -1,13 +1,13 @@
 .product-group{
     /* display:flex; */
     padding:10px;
-    > div{
+    > .form-group{
         padding:10px;
-        display: inline-flex;
+        /* display: inline-flex;
         > label {
             padding-top: 8px;
             width:10%;
-        }
+        } */
     }       
 }
 
@@ -20,7 +20,7 @@
     } 
 }
 .product-group .form-control{
-    width:60%;    
+    width:50%;    
 }
 
 .form-control-sm:focus,
@@ -99,6 +99,10 @@ input[type=number]::-webkit-outer-spin-button {
     overflow-y: scroll;
     overflow-x: hidden;
 }
+.cust-table{
+    max-height:300px;
+    overflow-x: hidden !important;
+}
 .table-responsive{
     max-height:450px;
     overflow-x: hidden !important;
@@ -110,7 +114,7 @@ thead {
     background-color: white;
   }
 
-  .table-responsive {
+  .table-responsive,.cust-table {
     &::-webkit-scrollbar {
         width: 0.6rem;  
         height: 0.6rem;

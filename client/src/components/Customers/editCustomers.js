@@ -1,40 +1,18 @@
 import React, { useState,useEffect } from "react";
-import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form"; 
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
 import '../styles.css';
  
 export default function EditCustomers(props) {
-
-   // form validation rules 
-   const validationSchema = Yup.object().shape({ 
-    customerName:  Yup.string()
-        .required('Please enter customer name')
-        .min(3,"Name must be at least 3 characters")
-        .max(75,"Name cannot exceed more than 75 characters")
-        .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
-    location:  Yup.string()
-        .required('Please enter location')
-        .min(3,"Location must be at least 3 characters")
-        .max(75,"Location cannot exceed more than 75 characters")
-        .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
-    mobileNo:  Yup.string()
-        .required('Please enter mobile no')
-        .matches(/[0789][0-9]{9}/, "Invalid mobile no"),
-    email: Yup.string()
-        .required('Please enter email id')
-        .email('Email is invalid')
-        .matches(/[^@\s]+@[^@\s]+\.[^@\s]+/,'Email is invalid')
-});
-const formOptions = { resolver: yupResolver(validationSchema) };
-  const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset } = useForm(formOptions)
+   
+  const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset } = useForm()
   const [customers, setCustomers] = useState([]);
+  const [products, setProducts] = useState([]);
   const [form, setForm] = useState({
     customerName: "",
     location: "",
     mobileNo: "",
-    email:""
+    email:"",
+    retailPrices:""
   });
   useEffect(() => {
     async function setData() {
@@ -50,8 +28,20 @@ const formOptions = { resolver: yupResolver(validationSchema) };
       const customers = await response.json();
       setCustomers(customers);
     }
+    async function getProducts() {    
+      const response = await fetch(`http://localhost:5000/products/`);
+      console.log(response);
+      if (!response.ok) {
+        const message = `An error occurred: ${response.statusText}`;
+        window.alert(message);
+        return;
+      }
+      const products = await response.json();
+      setProducts(products);
+    }
     setData();
     getCustomers();
+    getProducts();
     return;
   }, [props.row]);
   useEffect(() => {
@@ -59,8 +49,7 @@ const formOptions = { resolver: yupResolver(validationSchema) };
   }, [form]);
 
   function formValidation(data){
-    const custNameCount = customers.filter(x => x.customerName === data.customerName).length;  
-    console.log("<><><custNameCount"+custNameCount);
+    const custNameCount = customers.filter(x => (x.customerName === data.customerName && form.customerName !== data.customerName)).length;  
     if(custNameCount != 0) {
       setError("customerName", {
         type: "manual",
@@ -68,7 +57,7 @@ const formOptions = { resolver: yupResolver(validationSchema) };
       })
      return false;
      }
-    const mobileNoCount = customers.filter(x => parseInt(x.mobileNo,10) === parseInt(data.mobileNo,10)).length;   
+    const mobileNoCount = customers.filter(x => (parseInt(x.mobileNo,10) === parseInt(data.mobileNo,10) &&  parseInt(form.mobileNo,10) !== parseInt(data.mobileNo,10))).length;   
     if(mobileNoCount != 0) {
       setError("mobileNo", {
         type: "manual",
@@ -76,7 +65,7 @@ const formOptions = { resolver: yupResolver(validationSchema) };
       })
      return false;
      }
-     const emailCount = customers.filter(x => x.email === data.email).length;   
+     const emailCount = customers.filter(x => (x.email === data.email && form.email !== data.email)).length;   
     if(emailCount != 0) {
       setError("email", {
         type: "manual",
@@ -89,9 +78,6 @@ const formOptions = { resolver: yupResolver(validationSchema) };
  
  // This function will handle the submission.
  async function handleRegistration(data) {
- 
-   // When a post request is sent to the create url, we'll add a new record to the database.
-  //  const newPerson = { ...form };
   const valid = formValidation(data);
   if(valid){
    await fetch("http://localhost:5000/edit_customer", {
@@ -109,7 +95,43 @@ const formOptions = { resolver: yupResolver(validationSchema) };
    props.changeTab('Add','Success');
   }  
  }
- 
+ const Record = (props) => (
+  <tr>
+    <td>{props.product.productName}</td>
+    <td>{props.product.productId}</td>
+    <td style={{display:"flex"}}>
+    <input
+           type="number"
+           className="form-control"
+           name={`retailPrices.${props.product.productId}`}         
+           placeholder="Enter Price"   
+           disabled={isSubmitting}
+           style={{width:"100%"}}    
+           pattern="[0-9]+" title="please enter number only"    
+           {...register(`retailPrices.${props.product.productId}`,{
+            required: "Please enter price",
+            validate: {
+              matchPattern: (v) => /^[0-9]\d*/.test(v) || "Only positive values are allowed"
+            }
+          })}               
+         />
+         <div className="invalid-feedback" style={{display:"flex"}}>
+          {errors.retailPrices?.[props.product.productId]?.message}
+        </div>
+    </td>    
+  </tr>
+ );
+ function recordList() {
+  if(products && products.length > 0){
+   return products.map((product,index) => {
+     return (
+       <Record
+         product={product}
+       />
+     );
+   });
+ }
+ }
  // This following section will display the form that takes the input from the user.
  return (
    <div>    
@@ -124,10 +146,17 @@ const formOptions = { resolver: yupResolver(validationSchema) };
            name="customerName"            
            placeholder="Enter Customer Name"   
            disabled={isSubmitting}        
-           {...register('customerName') }               
+           {...register('customerName',{
+            required:'Please enter customer name',
+            validate: {
+              minLength: (v) => v.length >= 3 || "Name must be at least 3 characters",
+              maxLength: (v) => v.length <75 || "Name cannot exceed more than 75 characters",
+              matchPattern: (v) => /^[a-zA-Z0-9- ]+$/.test(v) || "Name must contain only letters, numbers and -",
+            }
+           })}               
          />
           <small className="text-danger">
-          {errors?.customerName && errors.customerName.message}
+          {errors.customerName?.message}
         </small>
        </div>
        <div className="form-group col-md-12">
@@ -138,10 +167,17 @@ const formOptions = { resolver: yupResolver(validationSchema) };
            name="location"            
            placeholder="Enter customer's location"   
            disabled={isSubmitting}        
-           {...register('location') }               
+           {...register('location',{
+            required:'Please enter location',
+            validate: {
+              minLength: (v) => v.length >= 3 || "Name must be at least 3 characters",
+              maxLength: (v) => v.length <75 || "Name cannot exceed more than 75 characters",
+              matchPattern: (v) => /^[a-zA-Z0-9- ]+$/.test(v) || "Location must contain only letters, numbers and -",
+            }
+           })}               
          />
           <small className="text-danger">
-          {errors?.location && errors.location.message}
+          {errors.location?.message}
         </small>
        </div>    
        <div className="form-group col-md-12">
@@ -152,10 +188,14 @@ const formOptions = { resolver: yupResolver(validationSchema) };
            name="mobileNo"            
            placeholder="Enter customer's mobile no"   
            disabled={isSubmitting}        
-           {...register('mobileNo') }               
+           {...register('mobileNo',{
+            required : "Please enter mobile no",
+            validate: {
+             matchPattern: (v) => /[0789][0-9]{9}/.test(v) || "Invalid mobile no" }
+             })}                
          />
           <small className="text-danger">
-          {errors?.mobileNo && errors.mobileNo.message}
+          {errors.mobileNo?.message}
           </small>
        </div>   
        <div className="form-group col-md-12">
@@ -166,12 +206,31 @@ const formOptions = { resolver: yupResolver(validationSchema) };
            name="email"            
            placeholder="Enter customer's email id"   
            disabled={isSubmitting}        
-           {...register('email') }               
+           {...register('email',{
+            required : "Please enter email id",
+            validate: {
+              maxLength: (v) =>
+              v.length <= 50 || "The email should have at most 50 characters",
+              matchPattern: (v) =>
+              /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || "Email must be a valid address", }
+             }) }               
          />
           <small className="text-danger">
-          {errors?.email && errors.email.message}
+          {errors.email?.message}
           </small>
-       </div>   
+       </div> 
+       <div className="cust-table" style={{ marginTop: 20 }}>
+       <table className="table table-striped table-bordered">
+       <thead>
+         <tr>
+          <th>Product Name</th>
+           <th>Product ID</th>
+           <th>Retail Price</th>
+         </tr>
+       </thead>
+       <tbody>{recordList()}</tbody>
+       </table>  
+       </div>
        <div className="product-group-buttons"> 
        <div className="form-group  pull-right delete-btn">
          <input

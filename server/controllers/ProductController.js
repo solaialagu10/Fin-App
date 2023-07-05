@@ -12,10 +12,8 @@ const getProducts = async (req, res) => {
 };
 
 const addProduct = async (req, res) => {    
-  const product = new Product({
-      productName: req.body.productName,
-      productId: req.body.productId,
-      price: req.body.price,
+  const product = new Product({    
+      ...req.body,
       createdDate: new Date(),
       modifiedDate: new Date()
     });
@@ -30,9 +28,7 @@ const addProduct = async (req, res) => {
 const editProduct = async (req, res) => {   
     let myquery = { _id: req.body._id }; 
     let newvalues = {    
-      productName: req.body.productName,
-      productId: req.body.productId,
-      price: req.body.price,      
+      ...req.body,
       modifiedDate: new Date()
     };
     const user = await Product.findOneAndUpdate(myquery,newvalues,{

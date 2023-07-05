@@ -23,10 +23,7 @@ const getCustomers = async (req, res) => {
 
 const addCustomer = async (req, res) => {  
     const user = new Customer({
-        customerName: req.body.customerName,
-        location: req.body.location,
-        mobileNo: req.body.mobileNo,
-        email: req.body.email,        
+        ... req.body,
         createdDate: new Date(),
         modifiedDate: new Date()
       });
@@ -51,11 +48,7 @@ const editCustomer = async (req, res) => {
   console.log(req.body._id);
   let myquery = { _id: req.body._id }; 
   let newvalues = {    
-        customerName: req.body.customerName,
-        location: req.body.location,
-        mobileNo: req.body.mobileNo,
-        email: req.body.email,        
-        createdDate: new Date(),
+        ...req.body,
         modifiedDate: new Date()
   };
   const customer = await Customer.findOneAndUpdate(myquery,newvalues,{
