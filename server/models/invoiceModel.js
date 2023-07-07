@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const CustomerSchema = new mongoose.Schema({
+const InvoiceSchema = new mongoose.Schema({
   customerName: {
     type: String,
     required: true,
@@ -21,7 +21,23 @@ const CustomerSchema = new mongoose.Schema({
     type: Object,
     required: true
   },
-  totalBalance:{
+  qtys:{
+    type: Object,
+    required: true
+  },
+  totals:{
+    type: Object,
+    required: true
+  },
+  billTotal:{
+    type: Number,
+    required: true
+  },
+  timeline:{
+    type: String,
+    required: true
+  },
+  totalObalance:{
     type: Number
   },
   createdDate: {
@@ -36,6 +52,6 @@ function loadModel(modelName, modelSchema) {
     ? mongoose.model(modelName) // If true, only retrieve it
     : mongoose.model(modelName, modelSchema) // If false, define it
 }
-const Customer = loadModel("Customer", CustomerSchema);
+const Invoice = loadModel("Invoice", InvoiceSchema);
 
-module.exports.Customer = Customer;
+module.exports.Invoice = Invoice;

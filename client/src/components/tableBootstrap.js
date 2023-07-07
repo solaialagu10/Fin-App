@@ -132,7 +132,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
                       {...props.searchProps}
                     />
                   </label>
-                </div>
+                </div>                
                 {columns1.length > 0 ?
                 <div className="table-responsive">
                 <BootstrapTable
@@ -142,7 +142,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
                   selectRow={ selectRow } 
                   expandRow={expandRow}
                 />
-                </div> : <div className="table-responsive">
+                </div> :  <div className="table-responsive">
+                <div></div>
                 <BootstrapTable
                   {...props.baseProps}
                   pagination={pagination}

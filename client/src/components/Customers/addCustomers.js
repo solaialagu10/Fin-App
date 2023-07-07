@@ -4,7 +4,7 @@ import '../styles.css';
  
 export default function AddCustomers(props) {
   
-  const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus} = useForm()
+  const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus,setValue} = useForm()
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [
@@ -15,7 +15,8 @@ export default function AddCustomers(props) {
     customerName: "",
     location: "",
     mobileNo: "",
-    email:""
+    email:"",
+    totalBalance:0
   });
 
   useEffect(() => {
@@ -114,7 +115,7 @@ export default function AddCustomers(props) {
     <td style={{display:"flex"}}>
     <input
            type="number"
-           className="form-control"
+           className={`form-control ${errors.retailPrices?.[props.product.productId] ? 'is-invalid' : ''}`}
            name={`retailPrices.${props.product.productId}`}         
            placeholder="Enter Price"   
            disabled={isSubmitting}
@@ -130,7 +131,7 @@ export default function AddCustomers(props) {
          <div className="invalid-feedback" style={{display:"flex"}}>
           {errors.retailPrices?.[props.product.productId]?.message}
         </div>
-    </td>    
+    </td>       
   </tr>
  );
  // This method will map out the records on the table
