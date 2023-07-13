@@ -4,6 +4,7 @@ import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import cellEditFactory from 'react-bootstrap-table2-editor';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
   
@@ -25,6 +26,30 @@ import 'bootstrap/dist/css/bootstrap.min.css';
       }
       columns1.push(header);
     })
+  }
+
+  async function afterSaveCell(oldValue, newValue, row, column, done) {   
+      row.totalBalance = row.totalBalance - row.amountPaid;
+        const settings = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(row),
+        };
+      try {        
+        const fetchResponse =  await fetch("http://localhost:5000/update_amount", settings)
+        if(fetchResponse.ok){ 
+            // setIsSuccessfullySubmitted('Success');
+          }
+          else{
+            // setIsSuccessfullySubmitted('Error');
+          }
+        } catch (e) {        
+          console.log("<><<>< error"+e);
+      }
+    
+    return { async: true };
   }
     const pagination = paginationFactory({
         page: 1,
@@ -81,6 +106,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
       const selectRow = {
         mode: 'checkbox',
         clickToSelect: true,
+        clickToEdit: true,
         onSelect: handleOnSelect,
         onSelectAll: handleOnSelectAll        
       };
@@ -115,7 +141,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
           <ToolkitProvider
             data={dataTable}
             keyField={props.keyField}
-            columns={columns}
+            columns={columns}           
             search
           >
             {props => (
@@ -141,6 +167,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
                   bordered={true}
                   selectRow={ selectRow } 
                   expandRow={expandRow}
+                  cellEdit={ cellEditFactory({ mode: 'dbclick',
+                  blurToSave: true, afterSaveCell }) }
                 />
                 </div> :  <div className="table-responsive">
                 <div></div>

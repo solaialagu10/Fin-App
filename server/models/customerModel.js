@@ -21,8 +21,16 @@ const CustomerSchema = new mongoose.Schema({
     type: Object,
     required: true
   },
+  wholeSalePrices:{
+    type: Object
+  },
   totalBalance:{
-    type: Number
+    type: Number,
+    required: true
+  },
+  amountPaid:{
+    type: Number,
+    required: true
   },
   createdDate: {
     type: Date

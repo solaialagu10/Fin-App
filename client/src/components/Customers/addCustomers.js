@@ -16,7 +16,8 @@ export default function AddCustomers(props) {
     location: "",
     mobileNo: "",
     email:"",
-    totalBalance:0
+    totalBalance:0,
+    amountPaid:0
   });
 
   useEffect(() => {
@@ -131,7 +132,15 @@ export default function AddCustomers(props) {
          <div className="invalid-feedback" style={{display:"flex"}}>
           {errors.retailPrices?.[props.product.productId]?.message}
         </div>
-    </td>       
+    </td>   
+    <input
+           type="number"
+           className="form-control"
+           name={`wholeSalePrices.${props.product.productId}`}      
+           hidden={true}
+           value={props.product.price}
+           {...register(`wholeSalePrices.${props.product.productId}`)}               
+    />    
   </tr>
  );
  // This method will map out the records on the table

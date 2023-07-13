@@ -1,7 +1,7 @@
 const express = require("express");
 const {getProducts, editProduct, deleteProduct,addProduct} = require("../controllers/ProductController"); 
-const {addCustomer, getCustomers,deleteCustomer,editCustomer} = require("../controllers/CustomerController"); 
-const {customerInvoice} = require("../controllers/InvoiceController"); 
+const {addCustomer, getCustomers,deleteCustomer,editCustomer,updateCustomerAmount} = require("../controllers/CustomerController"); 
+const {addCustomerInvoice, customerInvoices} = require("../controllers/InvoiceController"); 
 // router is an instance of the express router.
 // We use it to define our routes.
 // The router will be added as a middleware and will take control of requests starting with path /record.
@@ -23,7 +23,11 @@ router.post("/deleteCustomer",deleteCustomer);
 
 router.post("/edit_customer",editCustomer);
 
-router.post("/add_invoice",customerInvoice);
+router.post("/update_amount",updateCustomerAmount);
+
+router.post("/add_invoice",addCustomerInvoice);
+
+router.get("/get_invoices",customerInvoices);
 
 
 

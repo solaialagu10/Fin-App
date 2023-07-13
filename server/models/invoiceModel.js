@@ -5,21 +5,23 @@ const InvoiceSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  customerId:{
+    type: Number 
+  },
   location: {
-    type: String,
-    required: true
+    type: String    
   },
   mobileNo: {
-    type: Number,
-    required: true
+    type: Number    
   },
   email:{
-    type: String,
-    required: true
+    type: String    
   },
   retailPrices:{
-    type: Object,
-    required: true
+    type: Object    
+  },
+  wholeSalePrices:{
+    type: Object
   },
   qtys:{
     type: Object,
@@ -33,11 +35,14 @@ const InvoiceSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  totalCost:{
+    type: Number,
+  },
   timeline:{
     type: String,
     required: true
   },
-  totalObalance:{
+  totalBalance:{
     type: Number
   },
   createdDate: {

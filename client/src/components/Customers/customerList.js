@@ -19,19 +19,45 @@ export default function CustomerList(props){
 },{
   "dataField": "location",
   "text": "Location",
-  "sort": true
+  "sort": true,
+  "editable":false
+},{
+  "dataField": "totalBalance",
+  "text": "Total balance",
+  "sort": true,
+  "editable":false
 },{
   "dataField": "mobileNo",
   "text": "Mobile No",
-  "sort": true
+  "sort": true,
+  "editable":false
+},{
+  "dataField": "amountPaid",
+  "text": "Amount Paid",
+  "sort": true,
+  cell: {
+    backgroundColor: '#20B2AA'
+  },
+  validator: (newValue, row, column) => {
+    console.log("<><>"+JSON.stringify(row))
+    if (isNaN(newValue) || newValue < 0) {
+      return {
+        valid: false,
+        message: 'Invalid no'
+      };
+    } 
+    return true;
+  }
 },{
   "dataField": "email",
   "text": "Email Id",
-  "sort": true
+  "sort": true,
+  "editable":false
 },{
   "dataField": "modifiedDate",
   "text": "Modified Date",
   "sort": true,
+  "editable":false,
   formatter: dateFormatter
 }])
 

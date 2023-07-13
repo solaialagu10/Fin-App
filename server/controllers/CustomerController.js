@@ -57,10 +57,23 @@ const editCustomer = async (req, res) => {
   res.send(customer);
 };
 
+const updateCustomerAmount = async (req, res) => {   
+  let myquery = { _id: req.body._id }; 
+  let newvalues = {    
+        totalBalance: req.body.totalBalance,
+        modifiedDate: new Date()
+  };
+  const customer = await Customer.findOneAndUpdate(myquery,newvalues,{
+    returnOriginal: false
+  });
+  res.send(customer);
+};
+
 module.exports ={
     getUserById,
     addCustomer,
     getCustomers,
     deleteCustomer,
-    editCustomer
+    editCustomer,
+    updateCustomerAmount
 }

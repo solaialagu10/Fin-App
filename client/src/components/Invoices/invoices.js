@@ -1,9 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form"; 
 import '../styles.css';
-// import Button from "react-bootstrap/Button";
-// import Dropdown from "react-bootstrap/Dropdown";
-// import DropdownButton from "react-bootstrap/DropdownButton";
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import DatalistInput from 'react-datalist-input';
 import 'react-datalist-input/dist/styles.css';
@@ -53,15 +50,17 @@ export default function Invoices() {
 }, []);
 
 useEffect(() => {
-  console.log("<><><<>"+item);
-  const customer = customers.filter(x => x._id === item)
-  console.log("<><>< "+JSON.stringify(customer));
+  const customer = customers.filter(x => x._id === item);
   setForm(...customer)
 }, [item]);
 
 useEffect(() => {
   reset(form);
 }, [form]);
+
+function getSum(prev, cur) {
+  return prev + cur;  
+}
 
 const Record = (props) => (
   <tr>
@@ -90,6 +89,15 @@ const Record = (props) => (
             required: "Please enter qty",
             onChange: (e) => {
               setValue(`totals.${props.product.productId}`, (e.target.value * getValues(`retailPrices.${props.product.productId}`)))
+              setValue(`costTotals.${props.product.productId}`, (e.target.value * getValues(`wholeSalePrices.${props.product.productId}`)))
+              var obj = JSON.parse(JSON.stringify(getValues("totals")));
+              var values = Object.keys(obj).map(function (key) { return obj[key]; });
+              const SumValue = values.reduce(getSum,0); 
+              setValue("billTotal",SumValue);
+              var obj = JSON.parse(JSON.stringify(getValues("costTotals")));
+              var values = Object.keys(obj).map(function (key) { return obj[key]; });
+              const SumValue1 = values.reduce(getSum,0); 
+              setValue("totalCost",SumValue1);
             },
             validate: {
               matchPattern: (v) => /^[0-9]\d*/.test(v) || "Only positive values are allowed"
@@ -109,8 +117,23 @@ const Record = (props) => (
            style={{width:"100%"}}      
            {...register(`totals.${props.product.productId}`)}         
          />
-         
+         <input
+           type="number"
+           className="form-control"
+           hidden={true}
+           name={`costTotals.${props.product.productId}`} 
+           style={{width:"100%"}}      
+           {...register(`costTotals.${props.product.productId}`)}         
+         />
     </td>  
+    <input
+           type="number"
+           className="form-control"
+           name={`wholeSalePrices.${props.product.productId}`}      
+           hidden={true}
+           value={props.product.price}
+           {...register(`wholeSalePrices.${props.product.productId}`)}               
+    />    
   </tr>
  );
 
@@ -120,7 +143,6 @@ function recordList() {
      return (
        <Record
          product={product}
-         customer={customer}
        />
      );
    });
@@ -130,9 +152,9 @@ function recordList() {
  async function handleRegistration(data) {
  
   if(data){
-    let sumValue =0;
-     Object.keys(data.totals).map((key) =>   sumValue += data.totals[key])          
-          data["billTotal"] = sumValue;  
+    // let sumValue =0;
+    //  Object.keys(data.totals).map((key) =>   sumValue += data.totals[key])          
+          data["totalBalance"] = data["billTotal"] + data["totalBalance"];  
           console.log("<><><>< "+JSON.stringify(data));
           const settings = {
             method: "POST",
@@ -160,7 +182,10 @@ function recordList() {
  return (
    <div>  
      <form onSubmit={handleSubmit(handleRegistration)}> 
+     <div className="text-success">{isSuccessfullySubmitted === 'Success' ? "Invoice submitted successfully." : ""}</div>      
+    <div className="text-danger">{isSuccessfullySubmitted === 'Error' ? "Error in submitting Invoice" : ""}</div>
     <div className="invoice-container-head">
+      <div className="invoice-customers">
       <DatalistInput
       placeholder="Search..."
       label="Select Customers"
@@ -170,15 +195,33 @@ function recordList() {
         return {id :customers[key]._id,value: customers[key].customerName};
       })}
      />
-      <div className="invoice-timeframe">
-      <div className="form-group col-md-12">
+     <div className="form-group col-md-12">
          <label htmlFor="name">Balance Amount</label>         
          <input
            type="text"
            className="form-control"
-           name="totalObalance"            
+           name="totalBalance"            
            disabled={true}        
-           {...register('totalObalance')}             
+           {...register('totalBalance')}             
+         />
+       </div>
+     </div>
+      <div className="invoice-timeframe">
+      <div className="form-group col-md-12">
+         <label htmlFor="name">Bill total</label>         
+         <input
+           type="text"
+           className="form-control"
+           name="billTotal"            
+           disabled={true}        
+           {...register('billTotal')}             
+         />
+         <input
+           type="text"
+           className="form-control"
+           name="totalCost"            
+           hidden={true}        
+           {...register('totalCost')}             
          />
        </div>
       <div>

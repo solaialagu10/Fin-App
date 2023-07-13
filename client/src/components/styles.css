@@ -171,16 +171,20 @@ thead {
       .invoice-datalist{        
         width:300px !important;
         float:left;
+        margin-top: 5px;
         > label{
           font-weight: 600;
-          padding-bottom: 10px;
+          /* padding-bottom: 10px; */
+        }
+        > input {
+            height:60%;
         }
       }
 
       .invoice-timeframe{
         > div{
         float:left;
-        width:40%;
+        width:30%;
         margin-top: 3px;
         }
         > div:nth-child(2){
@@ -188,4 +192,15 @@ thead {
             width:50%;
             margin-top: 25px;
         }
+      }
+      .invoice-customers > div:nth-child(2){
+      width: 30%;
+      float: right;
+      margin-right: 20px;
+      margin-top: 3px;
+      }
+
+      .accordion-header :focus{
+        outline: 0 !important;
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
       }
