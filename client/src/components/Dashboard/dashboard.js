@@ -6,6 +6,7 @@ import Accordion from 'react-bootstrap/Accordion';
 export default function Dashboard() { 
   const [customers, setCustomers] = useState([]);
   const [invoices, setInvoices] = useState([]);
+  const [sales, setSales] = useState([]);
   useEffect(() => {
     async function getCustomers() {
       const response = await fetch(`http://localhost:5000/customers/`);
@@ -32,6 +33,25 @@ export default function Dashboard() {
     return;
   }, []);
 
+  async function getList(e){
+    console.log("<><><><"+e.target.value);
+    const inputJson = {"input":e.target.value};
+    const settings = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(inputJson) ,
+    };
+    try {
+      const response =  await fetch("http://localhost:5000/day_sales_report", settings);
+      const salesReport = await response.json();   
+      setSales(salesReport);
+      
+      } catch (e) {        
+        console.log("<><<>< error"+e);
+    }
+  }
   
  function recordList() {
   if(invoices && invoices.length > 0){
@@ -48,13 +68,27 @@ export default function Dashboard() {
    });
  }
  }
+ function recordList1() {
+  if(sales && sales.length > 0){
+   return sales.map((sales,index) => {
+     return (
+      <tr>
+        <td>{sales.productName}</td>
+        <td>{sales.qty}</td>  
+        <td>{sales.price}</td>         
+        <td>{sales.qty * sales.price}</td>
+      </tr>
+     );
+   });
+ }
+ }
  return (
    <div>
       <div style={{ display: 'block', 
                   width: 1000, padding: 30 }}>
       <Accordion>
       <Accordion.Item eventKey="0">
-        <Accordion.Header>Daily Sales Report</Accordion.Header>
+        <Accordion.Header>Customer Report</Accordion.Header>
         <Accordion.Body>
         <table className="table table-striped table-bordered " >
           <thead>
@@ -71,9 +105,34 @@ export default function Dashboard() {
         </Accordion.Body>
       </Accordion.Item>
       <Accordion.Item eventKey="1">
-        <Accordion.Header>Accordion Item #2</Accordion.Header>
+        <Accordion.Header>Total Sales Report</Accordion.Header>
         <Accordion.Body>
-         
+        <div className="dashboard-select">
+          <select
+                className="form-select custom-select"
+                  id="selectmethod"
+                  defaultValue=""
+                  name="timeline"   
+                  onChange={(e)=>getList(e)}             
+                >
+                  <option value="" disabled>Select Timeline</option>
+                  <option value="2 PM">2 PM</option>
+                  <option value="3 PM">3 PM</option>
+                  <option value="5 PM">5 PM</option>
+            </select>
+        
+        </div>
+        {sales.length > 0 ? <table className="table table-striped table-bordered " >
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Quanity</th>
+              <th>Price</th>              
+              <th>Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>{recordList1()}</tbody>
+          </table> :""}
         </Accordion.Body>
       </Accordion.Item>
     </Accordion>

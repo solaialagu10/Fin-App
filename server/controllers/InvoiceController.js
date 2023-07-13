@@ -66,7 +66,7 @@ const customerInvoices = async (req, res) => {
           {
               $match : {
                   "modifiedDate" : {
-                      $gte : new Date("2023-07-10")
+                      $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
                   }
               }
           },
@@ -98,7 +98,48 @@ const customerInvoices = async (req, res) => {
       }  
 };
 
+const daySaleReport = async (req, res) =>{
+  console.log("<><><><"+JSON.stringify(req.body));
+  try {
+    const salesReport = await Sales.aggregate([
+      {
+          $match : {
+              "modifiedDate" : {
+                  $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
+              },
+              "timeline" : req.body.input
+          }
+      },
+      {
+           $lookup:
+               {
+                from: "products",
+                localField: "productName",
+                foreignField: "productId",
+                as: "table"
+               }
+      },
+       { $unwind: { path: "$table", preserveNullAndEmptyArrays: true } },  
+       {
+          $group : {
+            "_id" :{product:"$productName",timeline:"$timeline"},
+            productName:{"$first":"$table.productName"},
+            timeline : {"$first": "$timeline"},
+            qty : {$sum: "$qty"},
+            price: { "$first" : "$table.price"}              
+          }
+      }           
+  ]);   
+    console.log("<><><"+JSON.stringify(salesReport));
+    res.send(salesReport);
+  } catch (error) {
+    console.log("<><>< error"+error);
+    res.status(500).send(error);
+  }  
+}
+
 module.exports ={
   addCustomerInvoice,
   customerInvoices,
+  daySaleReport
 }

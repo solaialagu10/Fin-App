@@ -204,3 +204,23 @@ thead {
         outline: 0 !important;
         box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
       }
+
+      .accordion-body{
+        min-height: 60px;
+      }
+
+    .dashboard-select{ 
+     float: right;
+    margin-bottom: 10px;     
+}
+.form-select{
+        outline: 0 !important;
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;        
+}
+.form-select:focus{
+    border-color: rgb(222, 226, 230) !important;
+}
+
+.react-datalist-input__textbox:focus-visible{
+    outline: rgb(222, 226, 230) !important;
+}
