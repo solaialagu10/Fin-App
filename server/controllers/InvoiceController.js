@@ -99,7 +99,6 @@ const customerInvoices = async (req, res) => {
 };
 
 const daySaleReport = async (req, res) =>{
-  console.log("<><><><"+JSON.stringify(req.body));
   try {
     const salesReport = await Sales.aggregate([
       {
@@ -130,7 +129,6 @@ const daySaleReport = async (req, res) =>{
           }
       }           
   ]);   
-    console.log("<><><"+JSON.stringify(salesReport));
     res.send(salesReport);
   } catch (error) {
     console.log("<><>< error"+error);

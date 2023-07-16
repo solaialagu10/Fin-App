@@ -17,19 +17,17 @@ export default function CustomerList(props){
     "text": "Name",
     "sort": true
 },{
-  "dataField": "location",
-  "text": "Location",
+  "dataField": "mobileNo",
+  "text": "Mobile No",
   "sort": true,
   "editable":false
 },{
   "dataField": "totalBalance",
-  "text": "Total balance",
+  "text": "Balance",
   "sort": true,
-  "editable":false
-},{
-  "dataField": "mobileNo",
-  "text": "Mobile No",
-  "sort": true,
+  style: {
+    width: '6em',
+  },
   "editable":false
 },{
   "dataField": "amountPaid",
@@ -52,7 +50,10 @@ export default function CustomerList(props){
   "dataField": "email",
   "text": "Email Id",
   "sort": true,
-  "editable":false
+  "editable":false,
+  classes: (cell, row, rowIndex, colIndex) => {
+    return 'custom-word';
+  }
 },{
   "dataField": "modifiedDate",
   "text": "Modified Date",

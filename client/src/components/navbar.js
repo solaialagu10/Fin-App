@@ -27,12 +27,7 @@ export default function Navbar() {
              <NavLink className="nav-link" to="/invoices">
                Invoices
              </NavLink>
-            </li>
-            <li className="nav-item"> 
-             <NavLink className="nav-link" to="/reports">
-               Reports
-             </NavLink>
-            </li>
+            </li>            
             <li className="nav-item"> 
              <NavLink className="nav-link" to="/products">
                Products

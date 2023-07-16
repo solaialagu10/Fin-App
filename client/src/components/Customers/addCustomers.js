@@ -113,12 +113,11 @@ export default function AddCustomers(props) {
   <tr>
     <td>{props.product.productName}</td>
     <td>{props.product.productId}</td>
-    <td style={{display:"flex"}}>
+    <td style={{display:"flex", padding:"0.2rem 0.2rem"}}>
     <input
            type="number"
            className={`form-control ${errors.retailPrices?.[props.product.productId] ? 'is-invalid' : ''}`}
-           name={`retailPrices.${props.product.productId}`}         
-           placeholder="Enter Price"   
+           name={`retailPrices.${props.product.productId}`}      
            disabled={isSubmitting}
            style={{width:"100%"}}    
            pattern="[0-9]+" title="please enter number only"    

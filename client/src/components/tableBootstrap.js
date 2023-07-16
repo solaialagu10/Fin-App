@@ -120,6 +120,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
         showExpandColumn: true,
         expandHeaderColumnRenderer: ({ isAnyExpands }) => (null)
       };
+      const rowStyle = { backgroundColor: '#c8e6c9', height: '40px', padding: '5px 0' }
       return (          
         <>
         <div className="form-group delete-btn">
@@ -169,6 +170,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
                   expandRow={expandRow}
                   cellEdit={ cellEditFactory({ mode: 'dbclick',
                   blurToSave: true, afterSaveCell }) }
+                  rowStyle={ rowStyle }
                 />
                 </div> :  <div className="table-responsive">
                 <div></div>
@@ -177,6 +179,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
                   pagination={pagination}
                   bordered={true}
                   selectRow={ selectRow }                   
+                  rowStyle={ rowStyle }
                 />
                 </div>}
               </div>

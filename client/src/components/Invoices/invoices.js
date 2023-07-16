@@ -66,27 +66,26 @@ const Record = (props) => (
   <tr>
     <td>{props.product.productName}</td>
     <td>{props.product.productId}</td>
-    <td >
+    <td style={{padding:"0.1rem",lineHeight:"0.5"}}>
     <input
            type="number"
            className="form-control"
            name={`retailPrices.${props.product.productId}`}    
-           placeholder="Enter Price"   
            disabled={true}
-           style={{width:"100%"}}    
+           style={{width:"100%",padding:"0.2rem 0.75rem",marginTop:"3px"}}    
            pattern="[0-9]+" title="please enter number only"    
            {...register(`retailPrices.${props.product.productId}`)}               
          />         
     </td>    
-    <td >
+    <td style={{padding:"0.1rem", lineHeight:"0.5"}}>
     <input
            type="number"
            className={`form-control ${errors.qtys?.[props.product.productId] ? 'is-invalid' : ''}`}
            name={`qtys.${props.product.productId}`}  
            disabled={isSubmitting}
-           style={{width:"100%"}}     
+           style={{width:"100%",padding:"0.2rem 0.75rem",marginTop:"3px",fontSize:"14px"}}     
            {...register(`qtys.${props.product.productId}`,{
-            required: "Please enter qty",
+            required: true,
             onChange: (e) => {
               setValue(`totals.${props.product.productId}`, (e.target.value * getValues(`retailPrices.${props.product.productId}`)))
               setValue(`costTotals.${props.product.productId}`, (e.target.value * getValues(`wholeSalePrices.${props.product.productId}`)))
@@ -108,13 +107,13 @@ const Record = (props) => (
           {errors.qtys?.[props.product.productId]?.message}
         </div>
     </td>  
-    <td >
+    <td style={{padding:"0.1rem", lineHeight:"0.5"}}>
     <input
            type="number"
            className="form-control"
            disabled={true}
            name={`totals.${props.product.productId}`} 
-           style={{width:"100%"}}      
+           style={{width:"100%",padding:"0.2rem 0.75rem",marginTop:"3px"}}      
            {...register(`totals.${props.product.productId}`)}         
          />
          <input
