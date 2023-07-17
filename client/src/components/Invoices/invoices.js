@@ -4,7 +4,8 @@ import '../styles.css';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import DatalistInput from 'react-datalist-input';
 import 'react-datalist-input/dist/styles.css';
-
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Accordion from 'react-bootstrap/Accordion';
  
 export default function Invoices() {
   const [item, setItem] = useState(); 
@@ -198,7 +199,7 @@ function recordList() {
       placeholder="Search..."
       label="Select Customers"
       className="invoice-datalist"
-      onSelect={(item) => setItem(item.id)}
+      onSelect={(item) => { setItem(item.id); setValue('timeline','')}}
       items= {Object.keys(customers).map(function(key) {
         return {id :customers[key]._id,value: customers[key].customerName};
       })}
@@ -238,6 +239,7 @@ function recordList() {
                   id="selectmethod"
                   defaultValue=""
                   name="timeline"
+                  disabled ={item?.length>0 ? false : true}
                   {...register("timeline", { required: 'Please select any timeline option' })}
                 >
                   <option value="" disabled>Select Timeline</option>
@@ -289,8 +291,42 @@ function recordList() {
             }          
           ></input>
         </div>
-       </div>
-    </form>
+       </div>       
+    
+    <Accordion style={{width:"100%",float:"left"}}>
+      <Accordion.Item eventKey="0">
+        <Accordion.Header>Billed invoices</Accordion.Header>
+        <Accordion.Body>
+        <table className="table table-striped table-bordered " >
+          <thead>
+            <tr>
+              <th>Timeline</th>
+           { products.map((product,index) => {
+              return (
+                      <th>{product.productName}</th>
+              );
+            })}
+             <th>Bill Total</th>
+            </tr>
+          </thead>
+          <tbody>
+          { billedinvoices.map((billedInvoice,index) => {
+              return (
+                <tr>
+                      <td>{billedInvoice.timeline}</td>
+                      {Object.keys(billedInvoice.qtys).map((key,index) =>{ 
+                     return (<td> {billedInvoice.qtys[key]} * {billedInvoice.retailPrices[key]}  </td>)
+                      })}
+                      <td>{billedInvoice.billTotal}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+          </table> 
+        </Accordion.Body>
+      </Accordion.Item>
+      </Accordion>
+      </form>
    </div>
  );
 }

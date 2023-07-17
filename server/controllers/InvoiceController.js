@@ -7,7 +7,7 @@ var moment = require('moment');
 
 const addCustomerInvoice = async (req, res) => {  
   let myquery = {_id: req.body._id}; 
-  "_id email location mobileNo retailPrices".split(" ").forEach(e => delete req.body[e]);  
+  "_id email location mobileNo wholeSalePrices".split(" ").forEach(e => delete req.body[e]);  
     const invoice = new Invoice({
         ... req.body,
         customerId: myquery._id,
@@ -20,7 +20,7 @@ const addCustomerInvoice = async (req, res) => {
       };    
         
       try {
-        req.body.qtys
+        
         await invoice.save();
         await Customer.findOneAndUpdate(myquery,newvalues,{
           returnOriginal: false
@@ -146,7 +146,7 @@ const getBIlledInvoices = async(req,res) =>{
         }
     },
     {        
-        customerId:1,timeline:1,totalBalance:1,billTotal:1,qtys:1,wholeSalePrices:1
+        customerId:1,timeline:1,totalBalance:1,billTotal:1,qtys:1,retailPrices:1
     }         
   );   
     res.send(billedInvoices);
