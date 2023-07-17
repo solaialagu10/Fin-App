@@ -172,10 +172,7 @@ thead {
         width:300px !important;
         float:left;
         margin-top: 5px;
-        > label{
-          /* font-weight: 600; */
-          /* padding-bottom: 10px; */
-        }
+        
         > input {
             height:60%;
         }
@@ -243,3 +240,14 @@ tr{
 body, html { 
     font-family: 'Vazir', sans-serif;
   }
+
+  .table-input-control{
+    width:100% !important;
+    padding:0.2rem 0.75rem !important;
+    margin-top:3px;
+    font-size: 14px !important;
+  }
+
+  .edit-class{
+    font-size: 10px;
+}

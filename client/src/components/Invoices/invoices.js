@@ -8,9 +8,9 @@ import 'react-datalist-input/dist/styles.css';
  
 export default function Invoices() {
   const [item, setItem] = useState(); 
-  const [customer, setCustomer] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [billedinvoices, setBilledinvoices] = useState([]);
   const [form, setForm] = useState({
     customerName: "",
     retailPrices:""
@@ -44,8 +44,20 @@ export default function Invoices() {
     const products = await response.json();
     setProducts(products);
   }
+  async function getBilledInvoices() {    
+    const response = await fetch(`http://localhost:5000/billedInvoices/`);
+    console.log(response);
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      window.alert(message);
+      return;
+    }
+    const invoices = await response.json();
+    setBilledinvoices(invoices);
+  }
   getProducts();
   getCustomers();
+  getBilledInvoices();
   return;
 }, []);
 
@@ -66,24 +78,22 @@ const Record = (props) => (
   <tr>
     <td>{props.product.productName}</td>
     <td>{props.product.productId}</td>
-    <td style={{padding:"0.1rem",lineHeight:"0.5"}}>
+    <td style={{padding:"0.1rem"}}>
     <input
            type="number"
-           className="form-control"
+           className="form-control table-input-control"
            name={`retailPrices.${props.product.productId}`}    
            disabled={true}
-           style={{width:"100%",padding:"0.2rem 0.75rem",marginTop:"3px"}}    
            pattern="[0-9]+" title="please enter number only"    
            {...register(`retailPrices.${props.product.productId}`)}               
          />         
     </td>    
-    <td style={{padding:"0.1rem", lineHeight:"0.5"}}>
+    <td style={{padding:"0.1rem"}}>
     <input
            type="number"
-           className={`form-control ${errors.qtys?.[props.product.productId] ? 'is-invalid' : ''}`}
+           className={`form-control table-input-control ${errors.qtys?.[props.product.productId] ? 'is-invalid' : ''}`}
            name={`qtys.${props.product.productId}`}  
-           disabled={isSubmitting}
-           style={{width:"100%",padding:"0.2rem 0.75rem",marginTop:"3px",fontSize:"14px"}}     
+           disabled={isSubmitting}   
            {...register(`qtys.${props.product.productId}`,{
             required: true,
             onChange: (e) => {
@@ -107,13 +117,12 @@ const Record = (props) => (
           {errors.qtys?.[props.product.productId]?.message}
         </div>
     </td>  
-    <td style={{padding:"0.1rem", lineHeight:"0.5"}}>
+    <td style={{padding:"0.1rem"}}>
     <input
            type="number"
-           className="form-control"
+           className="form-control table-input-control"
            disabled={true}
-           name={`totals.${props.product.productId}`} 
-           style={{width:"100%",padding:"0.2rem 0.75rem",marginTop:"3px"}}      
+           name={`totals.${props.product.productId}`}       
            {...register(`totals.${props.product.productId}`)}         
          />
          <input
@@ -232,9 +241,9 @@ function recordList() {
                   {...register("timeline", { required: 'Please select any timeline option' })}
                 >
                   <option value="" disabled>Select Timeline</option>
-                  <option value="2 PM">2 PM</option>
-                  <option value="3 PM">3 PM</option>
-                  <option value="5 PM">5 PM</option>
+                  <option value="2 PM" disabled ={true ? billedinvoices.filter(x => x.timeline === "2 PM" && x.customerId === item).length > 0: false}>2 PM</option>
+                  <option value="3 PM" disabled ={true ? billedinvoices.filter(x => x.timeline === "3 PM" && x.customerId === item).length > 0: false}>3 PM</option>
+                  <option value="5 PM" disabled ={true ? billedinvoices.filter(x => x.timeline === "5 PM" && x.customerId === item).length > 0: false}>5 PM</option>
                 </select>
         
         </div>

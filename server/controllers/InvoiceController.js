@@ -7,7 +7,7 @@ var moment = require('moment');
 
 const addCustomerInvoice = async (req, res) => {  
   let myquery = {_id: req.body._id}; 
-  "_id email location mobileNo retailPrices wholeSalePrices".split(" ").forEach(e => delete req.body[e]);  
+  "_id email location mobileNo retailPrices".split(" ").forEach(e => delete req.body[e]);  
     const invoice = new Invoice({
         ... req.body,
         customerId: myquery._id,
@@ -21,10 +21,10 @@ const addCustomerInvoice = async (req, res) => {
         
       try {
         req.body.qtys
-        // await invoice.save();
-        // await Customer.findOneAndUpdate(myquery,newvalues,{
-        //   returnOriginal: false
-        // });
+        await invoice.save();
+        await Customer.findOneAndUpdate(myquery,newvalues,{
+          returnOriginal: false
+        });
         const value = await Sales.find({ $and:[{timeline : req.body.timeline}, {modifiedDate : {$gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}}]});
         if(value.length == 0){
           Object.keys(req.body.qtys).forEach(function (key,index) { 
@@ -136,8 +136,29 @@ const daySaleReport = async (req, res) =>{
   }  
 }
 
+const getBIlledInvoices = async(req,res) =>{
+
+  try {
+    const billedInvoices = await Invoice.find(
+      {
+        "modifiedDate" : {
+            $gte : new Date("2023-07-17")
+        }
+    },
+    {        
+        customerId:1,timeline:1,totalBalance:1,billTotal:1,qtys:1,wholeSalePrices:1
+    }         
+  );   
+    res.send(billedInvoices);
+  } catch (error) {
+    console.log("<><>< error"+error);
+    res.status(500).send(error);
+  }  
+}
+
 module.exports ={
   addCustomerInvoice,
   customerInvoices,
-  daySaleReport
+  daySaleReport,
+  getBIlledInvoices
 }

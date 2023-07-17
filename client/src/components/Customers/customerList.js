@@ -33,8 +33,9 @@ export default function CustomerList(props){
   "dataField": "amountPaid",
   "text": "Amount Paid",
   "sort": true,
-  cell: {
-    backgroundColor: '#20B2AA'
+  editCellClasses:'edit-class',
+  editCellStyle: {
+    fontSize: '10px'
   },
   validator: (newValue, row, column) => {
     console.log("<><>"+JSON.stringify(row))
