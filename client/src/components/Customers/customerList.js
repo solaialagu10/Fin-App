@@ -114,7 +114,7 @@ function editRecord(selectedRow){
   return (
     <div>
       {deletemessage === true && <div className="text-success">Customer(s) deleted successfully.</div>}     
-      <ReactBSTables data={customers} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord}  keyField="customerName"/>
+      <ReactBSTables data={customers} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord} paidList={paidlist} keyField="customerName"/>
       <div className="text-info info-class">* Double click on amount paid column to enter the value</div>
     </div>
   );

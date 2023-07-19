@@ -6,7 +6,7 @@ import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit/dist/rea
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import moment from "moment";
   
   function ReactBSTables (props){
 
@@ -115,8 +115,24 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
       const expandRow = {        
         renderer: row => (
-          <BootstrapTable data={[row.retailPrices]} 
-          columns={columns1} keyField={columns1[0].dataField}/>
+          <table className="table table-striped table-bordered custom-table">
+              <thead>
+              <tr>
+                <th>Amount paid</th>
+                <th>Date</th>                
+              </tr>
+            </thead>
+            <tbody>
+              {((props.paidList).filter(x => {return x.customerId === row._id;})).map((paidlist,index) => {
+                return (
+                      <tr>
+                        <td>{paidlist.amount}</td>
+                        <td>{moment(paidlist.date).format("lll")}</td>
+                      </tr>
+                );
+              })}            
+            </tbody>
+        </table> 
         ),
         onlyOneExpanding: true,
         showExpandColumn: true,
