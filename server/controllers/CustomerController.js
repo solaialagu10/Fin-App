@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const {Customer} = require("../models/customerModel");
+const {Paid} = require("../models/paidModel");
 
 const getUserById = async (req, res) => {    
     const user = await productModel.findById(req.params.id);
@@ -45,7 +46,6 @@ const deleteCustomer = async (req, res) => {
 
 
 const editCustomer = async (req, res) => {   
-  console.log(req.body._id);
   let myquery = { _id: req.body._id }; 
   let newvalues = {    
         ...req.body,
@@ -66,6 +66,12 @@ const updateCustomerAmount = async (req, res) => {
   const customer = await Customer.findOneAndUpdate(myquery,newvalues,{
     returnOriginal: false
   });
+  const paid = new Paid({
+    customerId: req.body._id,
+    amount:req.body.amountPaid,
+    date: new Date()
+  });
+  await paid.save();
   res.send(customer);
 };
 

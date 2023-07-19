@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const {Invoice} = require("../models/invoiceModel");
 const {Customer} = require("../models/customerModel");
 const {Sales} = require("../models/salesModel");
+const {Paid} = require("../models/paidModel");
 var moment = require('moment');
 
 const addCustomerInvoice = async (req, res) => {  
@@ -59,7 +60,6 @@ const updateFun = async(Sales,req,key) =>{
 }
 
 const customerInvoices = async (req, res) => {      
-  console.log("Moment date"+ moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate());    
   //"modifiedDate":{ $gte: moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}
       try {
         const invoices = await Invoice.aggregate([
@@ -85,6 +85,7 @@ const customerInvoices = async (req, res) => {
                   "_id" :"$customerName",
                   billTotal : {$sum: "$billTotal"},
                   totalCost : {$sum: "$totalCost"},
+                  winningAmount : {$sum: "$winningAmount"},
                   totalBalance: { "$first" : "$table.totalBalance"},
                   
               }
@@ -137,19 +138,37 @@ const daySaleReport = async (req, res) =>{
 }
 
 const getBIlledInvoices = async(req,res) =>{
-
   try {
     const billedInvoices = await Invoice.find(
       {
         "modifiedDate" : {
-            $gte : new Date("2023-07-17")
+            $gte : new Date("2023-07-19")
         }
     },
     {        
-        customerId:1,timeline:1,totalBalance:1,billTotal:1,qtys:1,retailPrices:1
+        customerId:1,timeline:1,totalBalance:1,billTotal:1,qtys:1,retailPrices:1,winningAmount:1
     }         
   );   
     res.send(billedInvoices);
+  } catch (error) {
+    console.log("<><>< error"+error);
+    res.status(500).send(error);
+  }  
+}
+
+const getPaidList = async(req,res) =>{
+  try {
+    const paidList = await Paid.find(
+      {
+        "date" : {
+            $gte : new Date("2023-07-19")
+        }
+    },
+    {        
+        amount:1,customerId:1,date:1
+    }         
+  );   
+    res.send(paidList);
   } catch (error) {
     console.log("<><>< error"+error);
     res.status(500).send(error);
@@ -160,5 +179,6 @@ module.exports ={
   addCustomerInvoice,
   customerInvoices,
   daySaleReport,
-  getBIlledInvoices
+  getBIlledInvoices,
+  getPaidList
 }

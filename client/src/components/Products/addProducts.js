@@ -145,6 +145,7 @@ useEffect(() => {
            type="number"
            className={`form-control ${errors.price ? 'is-invalid' : ''}`}
            name="price"
+           onWheel={(e) => e.target.blur()}
            placeholder="Enter Product Price"
            disabled={isSubmitting}
            {...register('price') }

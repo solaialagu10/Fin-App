@@ -9,7 +9,8 @@ export default function CustomerList(props){
     <span>{moment(cell).format("LLL")}</span>
   );  
   }
-  const [records, setRecords] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [paidlist, setPaidlist] = useState([]);
   const [deleteFlag, setDeleteFlag] = useState(false);
   const [deletemessage, setDeletemessage] = useState(false);
   let [columns,setColumns]=useState([{
@@ -38,7 +39,6 @@ export default function CustomerList(props){
     fontSize: '10px'
   },
   validator: (newValue, row, column) => {
-    console.log("<><>"+JSON.stringify(row))
     if (isNaN(newValue) || newValue < 0) {
       return {
         valid: false,
@@ -72,12 +72,27 @@ export default function CustomerList(props){
       window.alert(message);
       return;
     }
-    const records = await response.json();    
-    setRecords(records);
-  }
+    const customers = await response.json();    
+    setCustomers(customers);
+  }  
   getCustomers();
   return;
 }, [deleteFlag]);
+
+useEffect(() => {
+  async function getPaidList() {
+    const response = await fetch(`http://localhost:5000/paidList/`);
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      window.alert(message);
+      return;
+    }
+    const paidList = await response.json();    
+    setPaidlist(paidList);
+  }  
+  getPaidList();
+  return;
+}, []);
 
 // This method will delete a record
 async function deleteRecord(selected) {
@@ -92,7 +107,6 @@ async function deleteRecord(selected) {
 }
 
 function editRecord(selectedRow){
-  console.log("<><<>< selectedRow"+JSON.stringify(selectedRow));
   props.changeTab('Edit',selectedRow);
  }
 
@@ -100,7 +114,8 @@ function editRecord(selectedRow){
   return (
     <div>
       {deletemessage === true && <div className="text-success">Customer(s) deleted successfully.</div>}     
-      <ReactBSTables data={records} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord}  keyField="customerName"/>
+      <ReactBSTables data={customers} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord}  keyField="customerName"/>
+      <div className="text-info info-class">* Double click on amount paid column to enter the value</div>
     </div>
   );
 }

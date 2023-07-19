@@ -13,6 +13,7 @@ export default function Invoices() {
   const [products, setProducts] = useState([]);
   const [billedinvoices, setBilledinvoices] = useState([]);
   const [form, setForm] = useState({
+    customer:"",
     customerName: "",
     retailPrices:""
   });
@@ -20,7 +21,7 @@ export default function Invoices() {
     isSuccessfullySubmitted,
     setIsSuccessfullySubmitted,
   ] = useState('');
-  const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue,getValues } = useForm({mode : "all"})
+  const { register, handleSubmit,watch,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue,getValues } = useForm({mode : "all",defaultValues:{winningAmount:0}})
   // This method fetches the records from the database.
  useEffect(() => {
   async function getCustomers() {
@@ -36,7 +37,6 @@ export default function Invoices() {
   }
   async function getProducts() {    
     const response = await fetch(`http://localhost:5000/products/`);
-    console.log(response);
     if (!response.ok) {
       const message = `An error occurred: ${response.statusText}`;
       window.alert(message);
@@ -47,7 +47,6 @@ export default function Invoices() {
   }
   async function getBilledInvoices() {    
     const response = await fetch(`http://localhost:5000/billedInvoices/`);
-    console.log(response);
     if (!response.ok) {
       const message = `An error occurred: ${response.statusText}`;
       window.alert(message);
@@ -95,6 +94,7 @@ const Record = (props) => (
            className={`form-control table-input-control ${errors.qtys?.[props.product.productId] ? 'is-invalid' : ''}`}
            name={`qtys.${props.product.productId}`}  
            disabled={isSubmitting}   
+           onWheel={(e) => e.target.blur()}
            {...register(`qtys.${props.product.productId}`,{
             required: true,
             onChange: (e) => {
@@ -161,10 +161,9 @@ function recordList() {
  async function handleRegistration(data) {
  
   if(data){
-    // let sumValue =0;
-    //  Object.keys(data.totals).map((key) =>   sumValue += data.totals[key])          
+           if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;    
           data["totalBalance"] = data["billTotal"] + data["totalBalance"];  
-          console.log("<><><>< "+JSON.stringify(data));
+          data["totalBalance"] = data["totalBalance"] - data["winningAmount"];
           const settings = {
             method: "POST",
             headers: {
@@ -199,13 +198,15 @@ function recordList() {
       placeholder="Search..."
       label="Select Customers"
       className="invoice-datalist"
+      name="customer"
       onSelect={(item) => { setItem(item.id); setValue('timeline','')}}
       items= {Object.keys(customers).map(function(key) {
         return {id :customers[key]._id,value: customers[key].customerName};
       })}
+      {...register('customer')}             
      />
      <div className="form-group col-md-12">
-         <label htmlFor="name">Balance Amount</label>         
+         <label htmlFor="name">Balance</label>         
          <input
            type="text"
            className="form-control"
@@ -225,6 +226,26 @@ function recordList() {
            disabled={true}        
            {...register('billTotal')}             
          />
+      </div>
+      <div className="form-group col-md-12">
+         <label htmlFor="name">Cash prize</label>         
+         <input
+           className={`form-control  ${errors.winningAmount ? 'is-invalid' : ''}`}
+           type="number"
+           name="winningAmount"   
+           onWheel={(e) => e.target.blur()}    
+           {...register('winningAmount',{   
+            value: 0,    
+            valueAsNumber:true,
+            validate: {
+              positive: v => parseInt(v) >= 0 || "Incorrect value"
+            }
+            })}             
+         />
+         <small className="invalid-feedback">
+          {errors.winningAmount?.message}
+          </small>
+         </div>
          <input
            type="text"
            className="form-control"
@@ -232,7 +253,7 @@ function recordList() {
            hidden={true}        
            {...register('totalCost')}             
          />
-       </div>
+       
       <div>
       <select
                 className={`form-select custom-select  ${errors.timeline ? 'is-invalid' : ''}`}
@@ -252,7 +273,8 @@ function recordList() {
       </div>
     </div>  
     <div>
-    <table className="table table-striped table-bordered">
+   
+      {watch("timeline")?.length >0 ? <table className="table table-striped table-bordered">
        <thead>
          <tr>
           <th>Product Name</th>
@@ -263,7 +285,7 @@ function recordList() {
          </tr>
        </thead>
        <tbody>{recordList()}</tbody>
-       </table> 
+       </table> :""}
     </div>
     <div className="product-group-buttons"> 
        <div className="form-group  pull-right delete-btn">
@@ -281,23 +303,22 @@ function recordList() {
             disabled={isSubmitting}
             className="btn btn-primary" 
             onClick={() =>
-              setForm({
-                customerName: '',
-                location: '',
-                mobileNo: '',
-                email:'',
-                retailPrices:{}
-              })
-            }          
+              {
+                setItem('');
+                setForm({                
+                customer:''
+              });
+              
+            }}          
           ></input>
         </div>
        </div>       
     
-    <Accordion style={{width:"100%",float:"left"}}>
+    <Accordion style={{width:"100%",float:"left",marginTop:"6px"}}>
       <Accordion.Item eventKey="0">
         <Accordion.Header>Billed invoices</Accordion.Header>
         <Accordion.Body>
-        <table className="table table-striped table-bordered " >
+        {item?.length > 0 ?<table className="table table-striped table-bordered custom-table table-fit" >
           <thead>
             <tr>
               <th>Timeline</th>
@@ -306,23 +327,25 @@ function recordList() {
                       <th>{product.productName}</th>
               );
             })}
+             <th>Winning Amount</th>
              <th>Bill Total</th>
             </tr>
           </thead>
           <tbody>
-          { billedinvoices.map((billedInvoice,index) => {
+          {(billedinvoices.filter(x => x.customerId === item)).map((billedInvoice,index) => {
               return (
                 <tr>
                       <td>{billedInvoice.timeline}</td>
                       {Object.keys(billedInvoice.qtys).map((key,index) =>{ 
                      return (<td> {billedInvoice.qtys[key]} * {billedInvoice.retailPrices[key]}  </td>)
                       })}
+                      <td>{billedInvoice.winningAmount}</td>
                       <td>{billedInvoice.billTotal}</td>
                 </tr>
               );
             })}
           </tbody>
-          </table> 
+          </table> :""}
         </Accordion.Body>
       </Accordion.Item>
       </Accordion>

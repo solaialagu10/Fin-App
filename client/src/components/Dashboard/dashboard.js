@@ -62,6 +62,7 @@ export default function Dashboard() {
         <td>{invoice.billTotal}</td>  
         <td>{invoice.totalCost}</td>         
         <td>{invoice.totalBalance}</td>
+        <td>{invoice.winningAmount}</td>
         <td>{invoice.billTotal - invoice.totalCost}</td>
       </tr>
      );
@@ -97,6 +98,7 @@ export default function Dashboard() {
               <th>Total Bill</th>
               <th>Total Cost</th>              
               <th>Total Balance</th>
+              <th>Winning Amount</th>
               <th>Profit</th>
             </tr>
           </thead>

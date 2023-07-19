@@ -29,6 +29,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
   }
 
   async function afterSaveCell(oldValue, newValue, row, column, done) {   
+    if(row.amountPaid > 0){
       row.totalBalance = row.totalBalance - row.amountPaid;
         const settings = {
           method: "POST",
@@ -50,6 +51,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
       }
     
     return { async: true };
+    }
   }
     const pagination = paginationFactory({
         page: 1,

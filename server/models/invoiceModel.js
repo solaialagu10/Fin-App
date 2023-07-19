@@ -50,6 +50,9 @@ const InvoiceSchema = new mongoose.Schema({
   },
   modifiedDate: {
     type: Date
+  },  
+  winningAmount:{
+    type: Number
   }
 });
 function loadModel(modelName, modelSchema) {

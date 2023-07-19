@@ -119,6 +119,7 @@ export default function AddCustomers(props) {
            className={`form-control table-input-control ${errors.retailPrices?.[props.product.productId] ? 'is-invalid' : ''}`}
            name={`retailPrices.${props.product.productId}`}      
            disabled={isSubmitting} 
+           onWheel={(e) => e.target.blur()}
            pattern="[0-9]+" title="please enter number only"    
            {...register(`retailPrices.${props.product.productId}`,{
             required: "Please enter price",
@@ -214,6 +215,7 @@ export default function AddCustomers(props) {
            className={`form-control ${errors.mobileNo ? 'is-invalid' : ''}`}
            name="mobileNo"            
            placeholder="Enter customer's mobile no"   
+           onWheel={(e) => e.target.blur()}
            disabled={isSubmitting}        
            {...register('mobileNo',{
            required : "Please enter mobile no",
