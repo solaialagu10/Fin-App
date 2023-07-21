@@ -1,16 +1,38 @@
-import React from "react";
+import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form";
 import '../login.css';
 import {Link} from 'react-router-dom';
-function Register() {
+function Register() {    
+    const [error,setError]=useState('')
+    const [message,setMessage]=useState('')
     const {
         register,
         handleSubmit,
         formState: { errors,isSubmitting },
     } = useForm();
  
-    const onSubmit = (data) => {
-        
+    const onSubmit = async (data) => {
+        console.log("<><><><> "+JSON.stringify(data));
+        setError("");
+        setMessage("");
+        const settings = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          };
+          try {
+            const response =  await fetch("http://localhost:5000/register", settings)
+            const res = await response.json();
+            console.log("<<><>res"+JSON.stringify(res));
+           if(res.message?.length > 0)
+                setMessage(res.message);
+                else setError(res.error);
+            } catch (e) {        
+              console.log("<><<>< error"+e);
+              setError("Error in regsitering user, please try again later");
+          } 
     };
     return (
         <div className="col-md-12">
@@ -20,20 +42,20 @@ function Register() {
                 alt="profile-img"
                 className="profile-img-card"
                 />
-                <p className="mt-6 text-center text-3xl font-extrabold text-gray-900" >
+                {!message && <div> <p className="mt-6 text-center text-3xl font-extrabold text-gray-900" >
                     Already have an account? <Link to='/login' className="font-medium text-purple-600 hover:text-purple-500">
                     Login
                     </Link>
                 </p>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-group">
-                         <label htmlFor="username">Username</label>
+                         <label htmlFor="userName">Username</label>
                          <input type="text"
                          className="form-control"
-                         name="username"
-                         {...register("username", { required: 'Username is mandatory' })} />
+                         name="userName"
+                         {...register("userName", { required: 'Username is mandatory' })} />
                           <small className="invalid-feedback">
-                                {errors.username?.message}
+                                {errors.userName?.message}
                            </small>
                     </div>
                     <div className="form-group">
@@ -63,8 +85,27 @@ function Register() {
                                 <span className="spinner-border spinner-border-sm"></span>
                             )}
                            
-                    </div>
+                    </div>                   
                 </form>
+                </div>}
+
+                {error && 
+                        <div className="text-danger">
+                            {error}
+                        </div>
+                     }
+                     {message && 
+                        <div className="success-msg">
+                            <div className="text-success"> 
+                                {message}
+                            </div>
+                            <p>
+                            Return to <Link to='/login' className="font-medium text-purple-600 hover:text-purple-500">
+                            login
+                            </Link>
+                            </p>
+                        </div>
+                     }
             </div>
         </div>
     );

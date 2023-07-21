@@ -1,12 +1,12 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from "../components/navbar";
+import Header from "./header";
 import '../App.css';
-const Layout = () => {
+
+const Layout = () => { 
   return (
     <div className="layout">
-         <div className="app-header">
-            <div className="header-text">Billing App</div>
-        </div>
+         <Header />
         <div className="app-container">
             <div className="div-left">
                 <Navbar />

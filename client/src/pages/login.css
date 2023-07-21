@@ -8,10 +8,12 @@
   label {
     display: block;
     margin-top: 10px;
+    color: gray;
+    font-weight: 400
   }
   
   .card-container.login-card {
-    max-width: 350px !important;
+    max-width: 400px !important;
     padding: 40px 40px;
   }
   
@@ -61,4 +63,12 @@
 
   .invalid-feedback{
     display: block !important;
+  }
+
+  .text-danger,.success-msg,.message{
+    text-align: center;
+    margin-top: 10px;
+    > p{
+      margin-top: 10px;
+    }
   }
