@@ -1,10 +1,13 @@
-const mongoose = require("mongoose");
-
 const {Invoice} = require("../models/invoiceModel");
 const {Customer} = require("../models/customerModel");
 const {Sales} = require("../models/salesModel");
 const {Paid} = require("../models/paidModel");
 var moment = require('moment');
+const jwt = require("jsonwebtoken");
+const express =  require("express");
+const router = express.Router();
+const passport = require('passport');
+require('../auth/passport');
 
 const addCustomerInvoice = async (req, res) => {  
   let myquery = {_id: req.body._id}; 
@@ -142,7 +145,7 @@ const getBIlledInvoices = async(req,res) =>{
     const billedInvoices = await Invoice.find(
       {
         "modifiedDate" : {
-            $gte : new Date("2023-07-19")
+            $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
         }
     },
     {        
@@ -156,24 +159,42 @@ const getBIlledInvoices = async(req,res) =>{
   }  
 }
 
-const getPaidList = async(req,res) =>{
-  try {
-    const paidList = await Paid.find(
-      {
-        "date" : {
-            $gte : new Date("2023-07-19")
-        }
-    },
-    {        
-        amount:1,customerId:1,date:1
-    }         
-  );   
+const getPaidList = async (req,res,next) =>{
+//   {
+//     "date" : { $gte: moment().subtract(3, 'days').toDate() }
+//     "date" : {$gte: new Date((new Date().getTime() - (15 * 24 * 60 * 60 * 1000)))}
+// },
+  try {  
+    // const userName = req.headers['authorization'];
+    const paidList = await Paid.aggregate([
+      {$match: {
+      $expr: {
+        $gte: ["$date",
+               { $dateSubtract: { startDate: "$$NOW", unit: "day", amount: 3 } }
+       ]
+      }
+    }},
+    {     
+      $project:
+      {   
+      _id:0,amount:1,customerId:1,date:{
+                   $dateToString:
+                      {
+                         format: "%d-%m-%Y %H:%M",
+                         date: "$date"
+                      }
+                }
+      }
+  }     
+]
+).sort({ "date": -1 });   
     res.send(paidList);
   } catch (error) {
     console.log("<><>< error"+error);
     res.status(500).send(error);
   }  
 }
+
 
 module.exports ={
   addCustomerInvoice,

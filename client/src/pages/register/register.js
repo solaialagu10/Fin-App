@@ -2,33 +2,26 @@ import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form";
 import '../login.css';
 import {Link} from 'react-router-dom';
+import axios from 'axios';
 function Register() {    
     const [error,setError]=useState('')
     const [message,setMessage]=useState('')
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors,isSubmitting },
     } = useForm();
  
     const onSubmit = async (data) => {
-        console.log("<><><><> "+JSON.stringify(data));
         setError("");
         setMessage("");
-        const settings = {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          };
           try {
-            const response =  await fetch("http://localhost:5000/register", settings)
-            const res = await response.json();
-            console.log("<<><>res"+JSON.stringify(res));
-           if(res.message?.length > 0)
-                setMessage(res.message);
-                else setError(res.error);
+            const response =  await axios.post("register", data)
+            console.log("<<><>res"+JSON.stringify(response.data));
+           if(response.data.message?.length > 0)
+                setMessage(response.data.message);
+                else setError(response.data.error);
             } catch (e) {        
               console.log("<><<>< error"+e);
               setError("Error in regsitering user, please try again later");
@@ -53,7 +46,13 @@ function Register() {
                          <input type="text"
                          className="form-control"
                          name="userName"
-                         {...register("userName", { required: 'Username is mandatory' })} />
+                         {...register("userName", { required: 'Username is mandatory',
+                                validate: {
+                                minLength: (v) => v.length >= 3 || "Username must be at least 3 characters",
+                                maxLength: (v) => v.length <75 || "Username cannot exceed more than 75 characters",
+                                matchPattern: (v) => /^[a-zA-Z0-9- ]+$/.test(v) || "Username must contain only letters, numbers and -",
+                                }
+                            })} />
                           <small className="invalid-feedback">
                                 {errors.userName?.message}
                            </small>
@@ -63,21 +62,40 @@ function Register() {
                         <input type="text" 
                         name="email"
                         className="form-control" 
-                        {...register("email")} />                        
+                        {...register("email", { required: 'Email is mandatory',
+                            validate: {
+                            maxLength: (v) =>
+                            v.length <= 50 || "The email should have at most 50 characters",
+                            matchPattern: (v) =>
+                            /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || "Email must be a valid address", }
+                           }) }  />   
+                         <small className="invalid-feedback">
+                                {errors.email?.message}
+                           </small>                     
                     </div>
                     <div className="form-group">
                        <label htmlFor="password">Password</label>                       
                         <input type="password" 
                         name="password"
                         className="form-control" 
-                        {...register("password")} />                        
+                        {...register("password", { required: 'Password is mandatory' })} />  
+                           <small className="invalid-feedback">
+                                {errors.password?.message}
+                           </small>                        
                     </div>
                     <div className="form-group">
                        <label htmlFor="confirmPassword">Confirm Password</label>                       
                         <input type="password" 
                         name="confirmPassword"
                         className="form-control" 
-                        {...register("confirmPassword")} />                        
+                        {...register("confirmPassword", { required: 'Re-enter the Password',
+                            validate: (val) => {
+                                 if (watch('password') != val) {
+                                    return "Your passwords do no match";
+                             }} })} />   
+                            <small className="invalid-feedback">
+                                {errors.confirmPassword?.message}
+                           </small>                        
                     </div>
                     <div className="form-group">
                             <input type="submit" value="Signup" className="btn btn-primary btn-block" disabled={isSubmitting} /> 

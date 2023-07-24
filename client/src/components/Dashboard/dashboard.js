@@ -2,31 +2,19 @@ import React, { useState, useEffect } from "react";
 import '../styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Accordion from 'react-bootstrap/Accordion';
-
+import axios from 'axios';
 export default function Dashboard() { 
   const [customers, setCustomers] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [sales, setSales] = useState([]);
   useEffect(() => {
     async function getCustomers() {
-      const response = await fetch(`http://localhost:5000/customers/`);
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`;
-        window.alert(message);
-        return;
-      }
-      const customers = await response.json();    
-      setCustomers(customers);
+      const response = await axios.get(`customers`);   
+      setCustomers(response.data);
     }
     async function getInvoices() {
-      const response = await fetch(`http://localhost:5000/get_invoices/`);
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`;
-        window.alert(message);
-        return;
-      }
-      const invoices = await response.json();    
-      setInvoices(invoices);
+      const response = await axios.get(`get_invoices`);
+      setInvoices(response.data);
     }
     getCustomers();
     getInvoices();
@@ -36,18 +24,9 @@ export default function Dashboard() {
   async function getList(e){
     console.log("<><><><"+e.target.value);
     const inputJson = {"input":e.target.value};
-    const settings = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(inputJson) ,
-    };
     try {
-      const response =  await fetch("http://localhost:5000/day_sales_report", settings);
-      const salesReport = await response.json();   
-      setSales(salesReport);
-      
+      const response =  await axios.post("day_sales_report", inputJson);
+      setSales(response.data);      
       } catch (e) {        
         console.log("<><<>< error"+e);
     }

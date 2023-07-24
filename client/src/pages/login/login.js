@@ -1,9 +1,10 @@
-import React, { useState,useEffect}  from "react";
-import { Navigate, useNavigate  } from 'react-router-dom';
+import React, { useState}  from "react";
+import {  useNavigate  } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import '../login.css'
 import {Link} from 'react-router-dom';
 import { useSignIn } from "react-auth-kit";
+import axios, { AxiosError } from "axios";
 function Login() {
     let navigate = useNavigate();
     const signIn = useSignIn();
@@ -15,27 +16,25 @@ function Login() {
     } = useForm();
  
     const onSubmit =  async (data) => { 
-        console.log("<><><><> "+JSON.stringify(data));
         const settings = {
-            method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
           };
           try {
-            const response =  await fetch("http://localhost:5000/login", settings)
-            const res = await response.json();
+            const response =  await axios.post("login", data)
                 signIn({
-                    token: res.token,
+                    token: response.data.token,
                     expiresIn: 3600,
                     tokenType: "Bearer",
-                    authState: {userName : data.userName}
+                    authState: {id : data.userName}
                 });    
+                axios.defaults.headers.common['Authorization']=`bearer ${response.data.token}`
                 navigate('/dashboard');    
             } catch (e) {        
               console.log("<><<>< error"+e);
-              setError(e.response?.data.message)
+              setError("Error in login, please try again later")
           } 
     };
     return (
@@ -49,11 +48,11 @@ function Login() {
                 <h3 className="message">Welcome Back</h3>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-group">
-                         <label htmlFor="userName">Email or Username</label>
+                         <label htmlFor="userName">Username</label>
                          <input type="text"
                          className="form-control"
                          name="userName"
-                         {...register("userName", { required: 'Email or username is mandatory' })} />
+                         {...register("userName", { required: 'Username is mandatory' })} />
                          
                     </div>
                     <small className="invalid-feedback">
@@ -82,6 +81,11 @@ function Login() {
                     Signup here
                     </Link>
                 </p>
+                {error && 
+                        <div className="text-danger">
+                            {error}
+                        </div>
+                     }
             </div>
         </div>
     );

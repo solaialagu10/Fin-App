@@ -6,7 +6,7 @@ import DatalistInput from 'react-datalist-input';
 import 'react-datalist-input/dist/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Accordion from 'react-bootstrap/Accordion';
- 
+ import axios from 'axios';
 export default function Invoices() {
   const [item, setItem] = useState(); 
   const [customers, setCustomers] = useState([]);
@@ -25,35 +25,16 @@ export default function Invoices() {
   // This method fetches the records from the database.
  useEffect(() => {
   async function getCustomers() {
-    const response = await fetch(`http://localhost:5000/customers/`);
-    if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
-      window.alert(message);
-      return;
-    }
-    const customers = await response.json();   
-    setCustomers(customers) 
-     // Make sure each option has an unique id and a value   
+    const response = await axios.get(`customers`);
+    setCustomers(response.data) 
   }
   async function getProducts() {    
-    const response = await fetch(`http://localhost:5000/products/`);
-    if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
-      window.alert(message);
-      return;
-    }
-    const products = await response.json();
-    setProducts(products);
+    const response = await axios.get(`products`);
+    setProducts(response.data);
   }
   async function getBilledInvoices() {    
-    const response = await fetch(`http://localhost:5000/billedInvoices/`);
-    if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
-      window.alert(message);
-      return;
-    }
-    const invoices = await response.json();
-    setBilledinvoices(invoices);
+    const response = await axios.get(`billedInvoices`);   
+    setBilledinvoices(response.data);
   }
   getProducts();
   getCustomers();
@@ -163,26 +144,17 @@ function recordList() {
   if(data){
            if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;    
           data["totalBalance"] = data["billTotal"] + data["totalBalance"];  
-          data["totalBalance"] = data["totalBalance"] - data["winningAmount"];
-          const settings = {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          };
+          data["totalBalance"] = data["totalBalance"] - data["winningAmount"];         
           try {
-            const fetchResponse =  await fetch("http://localhost:5000/add_invoice", settings)
-            if(fetchResponse.ok){ 
+            const response =  await axios.post("add_invoice", data)
+            console.log("<><><><"+JSON.stringify(response));
+            if(response?.data){ 
                 setIsSuccessfullySubmitted('Success');
-              }
-              else{
-                setIsSuccessfullySubmitted('Error');
-              }
-            } catch (e) {        
+              }             
+            } catch (e) {   
+              setIsSuccessfullySubmitted('Error');     
               console.log("<><<>< error"+e);
           }
-
   }
  }
  

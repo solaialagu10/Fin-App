@@ -29,8 +29,10 @@ import moment from "moment";
   }
 
   async function afterSaveCell(oldValue, newValue, row, column, done) {   
-    if(row.amountPaid > 0){
-      row.totalBalance = row.totalBalance - row.amountPaid;
+    if(newValue > 0){
+      console.log("<><><><"+newValue);
+      row.totalBalance = row.totalBalance - newValue;
+      row.amountPaid = newValue;
         const settings = {
           method: "POST",
           headers: {
@@ -127,11 +129,12 @@ import moment from "moment";
                 return (
                       <tr>
                         <td>{paidlist.amount}</td>
-                        <td>{moment(paidlist.date).format("lll")}</td>
+                        <td>{paidlist.date}</td>
                       </tr>
                 );
               })}            
             </tbody>
+            <div className="text-info info-class">* Last 3 day payments</div>
         </table> 
         ),
         onlyOneExpanding: true,

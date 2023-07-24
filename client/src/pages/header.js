@@ -15,7 +15,7 @@ const Header = () => {
          <div className="app-header">
             <div className="header-text">Billing App</div>
             <div className="signout" >
-              <div>Hi, {auth().userName}</div>
+              <div>Hi, {auth()?.id}</div>
               <div onClick={logout}>Sign out</div>
               </div>
         </div>

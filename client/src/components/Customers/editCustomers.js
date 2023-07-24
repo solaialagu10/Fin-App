@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form"; 
 import '../styles.css';
- 
+import axios from "axios";
 export default function EditCustomers(props) {
    
   const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset } = useForm()
@@ -19,25 +19,12 @@ export default function EditCustomers(props) {
       setForm(props.row[0]);
     }
     async function getCustomers() {
-      const response = await fetch(`http://localhost:5000/customers/`);
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`;
-        window.alert(message);
-        return;
-      }
-      const customers = await response.json();
-      setCustomers(customers);
+      const response = await axios.get("customers");
+      setCustomers(response.data);
     }
     async function getProducts() {    
-      const response = await fetch(`http://localhost:5000/products/`);
-      console.log(response);
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`;
-        window.alert(message);
-        return;
-      }
-      const products = await response.json();
-      setProducts(products);
+      const response = await axios.get("products");   
+      setProducts(response.data);
     }
     setData();
     getCustomers();
@@ -80,13 +67,7 @@ export default function EditCustomers(props) {
  async function handleRegistration(data) {
   const valid = formValidation(data);
   if(valid){
-   await fetch("http://localhost:5000/edit_customer", {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-     },
-     body: JSON.stringify(data),
-   })
+   await axios.post("edit_customer", data)
    .catch(error => {
     console.log("<><<>< error"+error);
      window.alert(error);

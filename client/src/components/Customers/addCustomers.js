@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form"; 
 import '../styles.css';
- 
+ import axios from 'axios';
 export default function AddCustomers(props) {
   
   const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus,setValue} = useForm()
@@ -22,25 +22,12 @@ export default function AddCustomers(props) {
 
   useEffect(() => {
     async function getProducts() {    
-      const response = await fetch(`http://localhost:5000/products/`);
-      console.log(response);
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`;
-        window.alert(message);
-        return;
-      }
-      const products = await response.json();
-      setProducts(products);
+      const response = await axios.get("products");
+      setProducts(response.data);
     }
     async function getCustomers() {
-    const response = await fetch(`http://localhost:5000/customers/`);
-    if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
-      window.alert(message);
-      return;
-    }
-    const customers = await response.json();
-    setCustomers(customers);
+    const response = await axios.get("customers");
+    setCustomers(response.data);
   }
     getCustomers();
     getProducts();
@@ -84,18 +71,10 @@ export default function AddCustomers(props) {
  const handleRegistration=  async (data) => { 
    // When a post request is sent to the create url, we'll add a new record to the database.
   //  const newPerson = { ...form };
-  console.log("<><><><> "+JSON.stringify(data));
   const valid = formValidation(data);
   if(valid){
-    const settings = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    };
     try {
-      const fetchResponse =  await fetch("http://localhost:5000/add_customer", settings)
+      const fetchResponse =  await axios.post("add_customer", data)
       if(fetchResponse.ok){ 
           setIsSuccessfullySubmitted('Success');
         }

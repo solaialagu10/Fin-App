@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactBSTables from '../tableBootstrap';
 import moment from "moment";
+import axios, { AxiosError } from "axios";
 
 export default function CustomerList(props){
   
@@ -34,10 +35,6 @@ export default function CustomerList(props){
   "dataField": "amountPaid",
   "text": "Amount Paid",
   "sort": true,
-  editCellClasses:'edit-class',
-  editCellStyle: {
-    fontSize: '10px'
-  },
   validator: (newValue, row, column) => {
     if (isNaN(newValue) || newValue < 0) {
       return {
@@ -66,14 +63,8 @@ export default function CustomerList(props){
  // This method fetches the records from the database.
  useEffect(() => {
   async function getCustomers() {
-    const response = await fetch(`http://localhost:5000/customers/`);
-    if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
-      window.alert(message);
-      return;
-    }
-    const customers = await response.json();    
-    setCustomers(customers);
+    const response = await axios.get("customers");    
+    setCustomers(response.data);
   }  
   getCustomers();
   return;
@@ -81,14 +72,15 @@ export default function CustomerList(props){
 
 useEffect(() => {
   async function getPaidList() {
-    const response = await fetch(`http://localhost:5000/paidList/`);
-    if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
-      window.alert(message);
-      return;
-    }
-    const paidList = await response.json();    
-    setPaidlist(paidList);
+    try{
+      // const obj = JSON.parse(Cookies.get("_auth_state"));        
+      const response = await axios.get("paidList");
+      setPaidlist(response.data);
+     }
+      catch (err) {
+        if(err && err instanceof AxiosError)
+          console.log("error"+err);
+      }
   }  
   getPaidList();
   return;
@@ -97,11 +89,7 @@ useEffect(() => {
 // This method will delete a record
 async function deleteRecord(selected) {
   setDeletemessage(false);
-  await fetch(`http://localhost:5000/deleteCustomer`, {
-    headers: {'Content-Type': 'application/json'},
-    method: "POST",
-    body: JSON.stringify({selected})
-  }); 
+  await axios.post("deleteCustomer", selected); 
   setDeleteFlag(deleteFlag => !deleteFlag); 
   setDeletemessage(true);
 }
