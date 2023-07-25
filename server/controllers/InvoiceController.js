@@ -66,7 +66,6 @@ const updateFun = async(Sales,req,key) =>{
 
 const customerInvoices = async (req, res) => {      
   
-  console.log("<><><<>"+req.user);
   //"modifiedDate":{ $gte: moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}
       try {
         const invoices = await Invoice.aggregate([
@@ -99,7 +98,6 @@ const customerInvoices = async (req, res) => {
               }
           }           
       ]);   
-        console.log("<><><< invoices"+invoices);
         res.send(invoices);
       } catch (error) {
         console.log("<><>< error"+error);
@@ -108,7 +106,6 @@ const customerInvoices = async (req, res) => {
 };
 
 const daySaleReport = async (req, res) =>{
-  console.log("<><><"+req.user);
   try {
     const salesReport = await Sales.aggregate([
       {

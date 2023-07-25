@@ -78,7 +78,7 @@ export default function Dashboard() {
               <th>Total Bill</th>
               <th>Total Cost</th>              
               <th>Total Balance</th>
-              <th>Winning Amount</th>
+              <th>W Amount</th>
               <th>Profit</th>
             </tr>
           </thead>

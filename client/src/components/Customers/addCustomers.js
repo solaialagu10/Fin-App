@@ -57,7 +57,7 @@ export default function AddCustomers(props) {
      return false;
      }
      const emailCount = customers.filter(x => x.email === data.email).length;   
-    if(emailCount != 0) {
+    if(emailCount != 0 && data.email.length >0) {
       setError("email", {
         type: "manual",
         message: "Email id is already existing",
@@ -92,16 +92,20 @@ export default function AddCustomers(props) {
     <td>{props.product.productId}</td>
     <td style={{ padding:"0.1rem"}}>
     <input
-           type="number"
+           type="text"
            className={`form-control table-input-control ${errors.retailPrices?.[props.product.productId] ? 'is-invalid' : ''}`}
            name={`retailPrices.${props.product.productId}`}      
            disabled={isSubmitting} 
-           onWheel={(e) => e.target.blur()}
-           pattern="[0-9]+" title="please enter number only"    
+           onWheel={(e) => e.target.blur()}   
            {...register(`retailPrices.${props.product.productId}`,{
             required: "Please enter price",
+            onBlur: (e) => {
+              var num = parseFloat(e.target.value);
+              var cleanNum = num.toFixed(2);
+              if(!isNaN(cleanNum)) setValue(`retailPrices.${props.product.productId}`,cleanNum);
+            },
             validate: {
-              matchPattern: (v) => /^[0-9]\d*/.test(v) || "Only positive values are allowed"
+              matchPattern: (v) => /^[0-9]*(\.[0-9]{0,2})?$/.test(v) || "Invalid price value"
             }
           })}               
          />
@@ -195,10 +199,9 @@ export default function AddCustomers(props) {
            onWheel={(e) => e.target.blur()}
            disabled={isSubmitting}        
            {...register('mobileNo',{
-           required : "Please enter mobile no",
            validate: {
             maxLength: (v) => v.length <= 11 || "Mobile no should not exceed 11 digits",
-            matchPattern: (v) => /[0789][0-9]{9}/.test(v) || "Invalid mobile no" }
+            matchPattern: (v) => ( /[0789][0-9]{9}|^$/.test(v)) || "Invalid mobile no" }
             })}               
          />
           <small className="invalid-feedback">
@@ -214,12 +217,11 @@ export default function AddCustomers(props) {
            placeholder="Enter customer's email id"   
            disabled={isSubmitting}        
            {...register('email',{
-            required : "Please enter email id",
             validate: {
               maxLength: (v) =>
               v.length <= 50 || "The email should have at most 50 characters",
               matchPattern: (v) =>
-              /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || "Email must be a valid address", }
+              /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$|^$/.test(v) || "Email must be a valid address", }
              }) }               
          />
           <small className="invalid-feedback">

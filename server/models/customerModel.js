@@ -11,11 +11,11 @@ const CustomerSchema = new mongoose.Schema({
   },
   mobileNo: {
     type: Number,
-    required: true
+    required: false
   },
   email:{
     type: String,
-    required: true
+    required: false
   },
   retailPrices:{
     type: Object,

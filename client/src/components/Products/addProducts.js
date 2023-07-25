@@ -19,8 +19,7 @@ export default function AddProducts(props) {
         .max(75,"Location cannot exceed more than 75 characters")
         .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
     price:  Yup.string()
-        .required('Please enter product price')
-        .max(4, "Price cannot be more than 9999")    
+        .required('Please enter product price') 
 });
 
 const formOptions = { resolver: yupResolver(validationSchema) };
@@ -126,7 +125,7 @@ useEffect(() => {
        <div className="form-group col-md-12">
          <label htmlFor="price">Price</label>
          <input
-           type="number"
+           type="text"
            className={`form-control ${errors.price ? 'is-invalid' : ''}`}
            name="price"
            onWheel={(e) => e.target.blur()}

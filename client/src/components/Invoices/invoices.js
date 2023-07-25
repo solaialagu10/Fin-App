@@ -299,7 +299,7 @@ function recordList() {
                       <th>{product.productName}</th>
               );
             })}
-             <th>Winning Amount</th>
+             <th>W Amount</th>
              <th>Bill Total</th>
             </tr>
           </thead>

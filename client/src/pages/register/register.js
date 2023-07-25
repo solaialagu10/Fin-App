@@ -108,7 +108,7 @@ function Register() {
                 </div>}
 
                 {error && 
-                        <div className="text-danger">
+                        <div className="text-danger error-text">
                             {error}
                         </div>
                      }

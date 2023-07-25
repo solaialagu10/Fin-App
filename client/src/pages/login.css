@@ -65,7 +65,7 @@
     display: block !important;
   }
 
-  .text-danger,.success-msg,.message{
+  .error-text,.success-msg,.message{
     text-align: center;
     margin-top: 10px;
     > p{
