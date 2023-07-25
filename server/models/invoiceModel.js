@@ -53,6 +53,10 @@ const InvoiceSchema = new mongoose.Schema({
   },  
   winningAmount:{
     type: Number
+  },
+  userId:{
+    type:String,
+    required:true
   }
 });
 function loadModel(modelName, modelSchema) {

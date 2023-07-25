@@ -37,6 +37,10 @@ const CustomerSchema = new mongoose.Schema({
   },
   modifiedDate: {
     type: Date
+  },
+  userId:{
+    type:String,
+    required:true
   }
 });
 function loadModel(modelName, modelSchema) {

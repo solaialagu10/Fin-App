@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import ReactBSTables from '../tableBootstrap';
 
 import moment from "moment";
+import axios from "axios";
 
 export default function ProductList(props){
    const columns=[{
@@ -39,14 +40,8 @@ export default function ProductList(props){
   // This method fetches the records from the database.
   useEffect(() => {
   async function getRecords() {
-    const response = await fetch(`http://localhost:5000/products/`);
-    if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
-      window.alert(message);
-      return;
-    }
-    const records = await response.json();
-    setRecords(records);
+    const response = await axios.get("products");
+    setRecords(response.data);
   }
   getRecords();
   return;
@@ -55,11 +50,7 @@ export default function ProductList(props){
 // This method will delete a record
 async function deleteRecord(selected) {
   setDeletemessage(false);
-  await fetch(`http://localhost:5000/delete`, {
-    headers: {'Content-Type': 'application/json'},
-    method: "POST",
-    body: JSON.stringify({selected})
-  }); 
+  await axios.post("delete", selected); 
   setDeleteFlag(deleteFlag => !deleteFlag); 
   setDeletemessage(true);
 }

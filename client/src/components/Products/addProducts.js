@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import '../styles.css';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-
+import axios from 'axios';
 export default function AddProducts(props) {
 
   // form validation rules 
@@ -38,14 +38,8 @@ const [form, setForm] = useState({
 
  useEffect(() => {
   async function getRecords() {    
-    const response = await fetch(`http://localhost:5000/products/`);
-    if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
-      window.alert(message);
-      return;
-    }
-    const records = await response.json();
-    setRecords(records);
+    const response = await axios.get("products");
+    setRecords(response.data);
   }
   getRecords();
   setFocus("productName")
@@ -80,22 +74,12 @@ useEffect(() => {
  async function handleRegistration(data) {
    const valid = formValidation(data);
    if(valid){
-    const settings = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    };
     try {
-      const fetchResponse =  await fetch("http://localhost:5000/add_product", settings)
-      if(fetchResponse.ok){ 
+      const response =  await axios.post("add_product", data)
+      if(response.data)
           setIsSuccessfullySubmitted('Success');
-        }
-        else{
-          setIsSuccessfullySubmitted('Error');
-        }
       } catch (e) {        
+        setIsSuccessfullySubmitted('Error');
         console.log("<><<>< error"+e);
     } 
       reset({ productName: "", productId: "", price: "" });

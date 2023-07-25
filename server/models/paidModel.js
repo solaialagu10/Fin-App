@@ -11,6 +11,9 @@ const PaidSchema = new mongoose.Schema({
   }, 
   date: {
     type: Date
+  },
+  userId: {
+    type: String
   }
 });
 function loadModel(modelName, modelSchema) {

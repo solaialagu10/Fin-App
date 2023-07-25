@@ -12,11 +12,11 @@ passport.use(
             secretOrKey: process.env.JWT_SECRET
         },
         function (jwt_payload, done) {
-            return User.findOne({userName: jwt_payload.id})
+            User.findOne({userName: jwt_payload.userName})
             .then((user) => {
-                 return done(null,user);
+                 return done(null,user._id);
             }).catch((err)=>{
-                console.log("<><><>> error art passport "+err);
+                console.log("<><><>> error at passport "+err);
                 return done(err);
             });
         }

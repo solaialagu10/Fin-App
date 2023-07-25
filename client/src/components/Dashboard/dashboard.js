@@ -9,11 +9,12 @@ export default function Dashboard() {
   const [sales, setSales] = useState([]);
   useEffect(() => {
     async function getCustomers() {
-      const response = await axios.get(`customers`);   
+      const response = await axios.get("customers");   
       setCustomers(response.data);
     }
     async function getInvoices() {
-      const response = await axios.get(`get_invoices`);
+      const response = await axios.get("get_invoices");
+      console.log("<><><>"+JSON.stringify(response.data));
       setInvoices(response.data);
     }
     getCustomers();

@@ -16,13 +16,13 @@ router.post("/login", async(req,res) =>{
   {
     return res.status(400).json({message:"Email or password does not match!"});
   }
-  console.log("<><>< compare password "+bcrypt.compareSync(password, userWithEmail[0]?.password));
   if(!bcrypt.compareSync(password, userWithEmail[0]?.password)) 
   {
     return res.status(400).json({message:"Incorrect password !"});
   }
+
   const jwtToken = jwt.sign(
-    {id:userWithEmail[0].userName,email: userWithEmail[0].email},
+    {userName:userWithEmail[0].userName,id: userWithEmail[0]._id},
     process.env.JWT_SECRET,
   )
  

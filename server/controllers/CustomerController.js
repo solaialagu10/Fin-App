@@ -13,7 +13,7 @@ const getUserById = async (req, res) => {
 };
 
 const getCustomers = async (req, res) => {    
-  const customers = await Customer.find({});      
+  const customers = await Customer.find({userId:req.user});      
   try {
     res.send(customers);
   } catch (error) {
@@ -26,7 +26,8 @@ const addCustomer = async (req, res) => {
     const user = new Customer({
         ... req.body,
         createdDate: new Date(),
-        modifiedDate: new Date()
+        modifiedDate: new Date(),
+        userId: req.user
       });
       try {
         await user.save();
@@ -69,7 +70,8 @@ const updateCustomerAmount = async (req, res) => {
   const paid = new Paid({
     customerId: req.body._id,
     amount:req.body.amountPaid,
-    date: new Date()
+    date: new Date(),
+    userId: req.user
   });
   await paid.save();
   res.send(customer);

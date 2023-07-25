@@ -74,14 +74,12 @@ export default function AddCustomers(props) {
   const valid = formValidation(data);
   if(valid){
     try {
-      const fetchResponse =  await axios.post("add_customer", data)
-      if(fetchResponse.ok){ 
+      const response =  await axios.post("add_customer", data)
+      if(response.data){ 
           setIsSuccessfullySubmitted('Success');
-        }
-        else{
-          setIsSuccessfullySubmitted('Error');
-        }
+        }        
       } catch (e) {        
+        setIsSuccessfullySubmitted('Error');
         console.log("<><<>< error"+e);
     } 
     setForm({ customerName: "", location: "", mobileNo: "",email:"" });

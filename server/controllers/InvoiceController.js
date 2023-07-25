@@ -16,7 +16,8 @@ const addCustomerInvoice = async (req, res) => {
         ... req.body,
         customerId: myquery._id,
         createdDate: new Date(),
-        modifiedDate: new Date()
+        modifiedDate: new Date(),
+        userId: req.user
       });      
       let newvalues = {    
             totalBalance: req.body.totalBalance,
@@ -29,7 +30,7 @@ const addCustomerInvoice = async (req, res) => {
         await Customer.findOneAndUpdate(myquery,newvalues,{
           returnOriginal: false
         });
-        const value = await Sales.find({ $and:[{timeline : req.body.timeline}, {modifiedDate : {$gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}}]});
+        const value = await Sales.find({ $and:[{userId:req.user},{timeline : req.body.timeline}, {modifiedDate : {$gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}}]});
         if(value.length == 0){
           Object.keys(req.body.qtys).forEach(function (key,index) { 
             const sales = new Sales({
@@ -37,7 +38,8 @@ const addCustomerInvoice = async (req, res) => {
               timeline: req.body.timeline,
               qty: req.body.qtys[key],
               createdDate: new Date(),
-              modifiedDate: new Date()});
+              modifiedDate: new Date(),
+              userId:req.user});
               sales.save();
         })}
         else{
@@ -56,13 +58,15 @@ const addCustomerInvoice = async (req, res) => {
 const updateFun = async(Sales,req,key) =>{
   await Sales.findOneAndUpdate({timeline : req.body.timeline, productName:key, modifiedDate : {
     $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
-    }},
+    },userId:req.user},
     {$inc:{qty : req.body.qtys[key]}},{$set:{modifiedDate : new Date()}},{
       returnOriginal: false
     });
 }
 
 const customerInvoices = async (req, res) => {      
+  
+  console.log("<><><<>"+req.user);
   //"modifiedDate":{ $gte: moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}
       try {
         const invoices = await Invoice.aggregate([
@@ -70,7 +74,8 @@ const customerInvoices = async (req, res) => {
               $match : {
                   "modifiedDate" : {
                       $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
-                  }
+                  },
+                  "userId": (req.user).toString()
               }
           },
           {
@@ -94,7 +99,7 @@ const customerInvoices = async (req, res) => {
               }
           }           
       ]);   
-      
+        console.log("<><><< invoices"+invoices);
         res.send(invoices);
       } catch (error) {
         console.log("<><>< error"+error);
@@ -103,6 +108,7 @@ const customerInvoices = async (req, res) => {
 };
 
 const daySaleReport = async (req, res) =>{
+  console.log("<><><"+req.user);
   try {
     const salesReport = await Sales.aggregate([
       {
@@ -110,7 +116,8 @@ const daySaleReport = async (req, res) =>{
               "modifiedDate" : {
                   $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
               },
-              "timeline" : req.body.input
+              "timeline" : req.body.input,
+              "userId":(req.user).toString()
           }
       },
       {
@@ -146,7 +153,8 @@ const getBIlledInvoices = async(req,res) =>{
       {
         "modifiedDate" : {
             $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
-        }
+        },
+        "userId":req.user
     },
     {        
         customerId:1,timeline:1,totalBalance:1,billTotal:1,qtys:1,retailPrices:1,winningAmount:1
@@ -168,12 +176,14 @@ const getPaidList = async (req,res,next) =>{
     // const userName = req.headers['authorization'];
     const paidList = await Paid.aggregate([
       {$match: {
+        $and:[
+        {
       $expr: {
         $gte: ["$date",
                { $dateSubtract: { startDate: "$$NOW", unit: "day", amount: 3 } }
        ]
       }
-    }},
+    },{"userId":(req.user).toString()}]}},
     {     
       $project:
       {   

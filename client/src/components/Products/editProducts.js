@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import '../styles.css';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
+import axios from "axios";
  
 export default function EditProducts(props) {
 
@@ -33,14 +34,8 @@ const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset
  const [records, setRecords] = useState([]);
  useEffect(() => {
   async function getRecords() {    
-    const response = await fetch(`http://localhost:5000/products/`);
-    if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
-      window.alert(message);
-      return;
-    }
-    const records = await response.json();
-    setRecords(records);
+    const response = await axios.get("products");
+    setRecords(response.data);
   }
   
   async function setData() {
@@ -80,17 +75,7 @@ useEffect(() => {
  async function handleRegistration(data) {
   const valid = formValidation(data); 
    if(valid){
-   await fetch("http://localhost:5000/update", {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-     },
-     body: JSON.stringify(data),
-   })
-   .catch(error => {
-     window.alert(error);
-     return;
-   }); 
+   await axios.post("update", data)
    props.changeTab('Add','Success');
   }  
  }

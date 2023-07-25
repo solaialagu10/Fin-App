@@ -6,8 +6,8 @@ import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit/dist/rea
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import moment from "moment";
-  
+import axios from "axios";
+
   function ReactBSTables (props){
 
     const [selected, setSelected] = useState([]);
@@ -33,21 +33,8 @@ import moment from "moment";
       console.log("<><><><"+newValue);
       row.totalBalance = row.totalBalance - newValue;
       row.amountPaid = newValue;
-        const settings = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(row),
-        };
       try {        
-        const fetchResponse =  await fetch("http://localhost:5000/update_amount", settings)
-        if(fetchResponse.ok){ 
-            // setIsSuccessfullySubmitted('Success');
-          }
-          else{
-            // setIsSuccessfullySubmitted('Error');
-          }
+        const fetchResponse =  await axios.post("update_amount", row)        
         } catch (e) {        
           console.log("<><<>< error"+e);
       }

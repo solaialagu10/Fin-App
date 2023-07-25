@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const {Product} = require("../models/productModel");
 
 const getProducts = async (req, res) => {    
-        const products = await Product.find({});      
+        const products = await Product.find({userId:req.user});      
         try {
           res.send(products);
         } catch (error) {
@@ -11,11 +11,12 @@ const getProducts = async (req, res) => {
         }      
 };
 
-const addProduct = async (req, res) => {    
+const addProduct = async (req, res) => {  
   const product = new Product({    
       ...req.body,
       createdDate: new Date(),
-      modifiedDate: new Date()
+      modifiedDate: new Date(),
+      userId: req.user
     });
     try {
       await product.save();
