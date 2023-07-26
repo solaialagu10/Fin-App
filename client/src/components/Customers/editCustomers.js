@@ -121,7 +121,13 @@ export default function EditCustomers(props) {
  return (
    <div>    
      {/* <h3>Add New Customers</h3> */}
-     <form onSubmit={handleSubmit(handleRegistration)}> 
+     {isSubmitting && (<div class="overlay">
+                  <div class="overlay__wrapper">
+                    <div class="spinner-grow text-primary overlay__spinner" 
+              id="spinner"role="status">
+            <span class="sr-only"></span>
+        </div></div></div>)}
+     <form onSubmit={handleSubmit(handleRegistration)}>      
      <div className="product-group col-md-12">
        <div className="form-group col-md-12">
          <label htmlFor="name">Name</label>         

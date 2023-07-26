@@ -71,8 +71,9 @@ export default function AddCustomers(props) {
  const handleRegistration=  async (data) => { 
    // When a post request is sent to the create url, we'll add a new record to the database.
   //  const newPerson = { ...form };
-  const valid = formValidation(data);
+  const valid = formValidation(data);    
   if(valid){
+    if(data['mobileNo'].length ===0) {  data['mobileNo'] = 0;}
     try {
       const response =  await axios.post("add_customer", data)
       if(response.data){ 
@@ -146,6 +147,12 @@ export default function AddCustomers(props) {
     <div className="text-success">{isSuccessfullySubmitted === 'Success' ? "Customer added successfully." : ""}</div>      
     <div className="text-danger">{isSuccessfullySubmitted === 'Error' ? "Error in adding customer" : ""}</div>
      {props.row === 'Success' && <div className="text-success">Customer edited successfully.</div>}
+     {isSubmitting && (<div class="overlay">
+                  <div class="overlay__wrapper">
+                    <div class="spinner-grow text-primary overlay__spinner" 
+              id="spinner"role="status">
+            <span class="sr-only"></span>
+        </div></div></div>)}
      <div className="product-group col-md-12">
        <div className="form-group col-md-12">
          <label htmlFor="name">Name</label>         

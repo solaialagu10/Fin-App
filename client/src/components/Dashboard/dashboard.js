@@ -14,7 +14,6 @@ export default function Dashboard() {
     }
     async function getInvoices() {
       const response = await axios.get("get_invoices");
-      console.log("<><><>"+JSON.stringify(response.data));
       setInvoices(response.data);
     }
     getCustomers();
@@ -23,7 +22,6 @@ export default function Dashboard() {
   }, []);
 
   async function getList(e){
-    console.log("<><><><"+e.target.value);
     const inputJson = {"input":e.target.value};
     try {
       const response =  await axios.post("day_sales_report", inputJson);

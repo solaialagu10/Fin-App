@@ -31,10 +31,11 @@ const addCustomerInvoice = async (req, res) => {
           returnOriginal: false
         });
         const value = await Sales.find({ $and:[{userId:req.user},{timeline : req.body.timeline}, {modifiedDate : {$gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}}]});
+        
         if(value.length == 0){
           Object.keys(req.body.qtys).forEach(function (key,index) { 
             const sales = new Sales({
-              productName: key,
+              productName: key.substring(3),
               timeline: req.body.timeline,
               qty: req.body.qtys[key],
               createdDate: new Date(),
@@ -56,7 +57,7 @@ const addCustomerInvoice = async (req, res) => {
 };
 
 const updateFun = async(Sales,req,key) =>{
-  await Sales.findOneAndUpdate({timeline : req.body.timeline, productName:key, modifiedDate : {
+  await Sales.findOneAndUpdate({timeline : req.body.timeline, productName:key.substring(3), modifiedDate : {
     $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
     },userId:req.user},
     {$inc:{qty : req.body.qtys[key]}},{$set:{modifiedDate : new Date()}},{

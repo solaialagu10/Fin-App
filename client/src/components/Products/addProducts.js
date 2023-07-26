@@ -91,6 +91,12 @@ useEffect(() => {
      <div className="text-success">{isSuccessfullySubmitted === 'Success' ? "Product added successfully." : ""}</div>      
      <div className="text-danger">{isSuccessfullySubmitted === 'Error' ? "Error in adding product" : ""}</div> 
      {props.row === 'Success' && <div className="text-success">Product edited successfully.</div>}
+     {isSubmitting && (<div class="overlay">
+                  <div class="overlay__wrapper">
+                    <div class="spinner-grow text-primary overlay__spinner" 
+              id="spinner"role="status">
+            <span class="sr-only"></span>
+        </div></div></div>)}
       <div className="product-group col-md-12">
        <div className="form-group col-md-12">
          <label htmlFor="productName">Name</label>

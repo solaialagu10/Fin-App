@@ -155,6 +155,8 @@ function recordList() {
             } catch (e) {   
               setIsSuccessfullySubmitted('Error');     
               console.log("<><<>< error"+e);
+          } finally{
+            console.log("<><<>< final statement");       
           }
   }
  }
@@ -165,6 +167,12 @@ function recordList() {
      <form onSubmit={handleSubmit(handleRegistration)}> 
      <div className="text-success">{isSuccessfullySubmitted === 'Success' ? "Invoice submitted successfully." : ""}</div>      
     <div className="text-danger">{isSuccessfullySubmitted === 'Error' ? "Error in submitting Invoice" : ""}</div>
+    {isSubmitting && (<div class="overlay">
+                  <div class="overlay__wrapper">
+                    <div class="spinner-grow text-primary overlay__spinner" 
+              id="spinner"role="status">
+            <span class="sr-only"></span>
+        </div></div></div>)}
     <div className="invoice-container-head">
       <div className="invoice-customers">
       <DatalistInput
@@ -183,7 +191,8 @@ function recordList() {
          <input
            type="text"
            className="form-control"
-           name="totalBalance"            
+           name="totalBalance"      
+           style={{background:"indianred"}}      
            disabled={true}        
            {...register('totalBalance')}             
          />
@@ -195,18 +204,20 @@ function recordList() {
          <input
            type="text"
            className="form-control"
-           name="billTotal"            
+           name="billTotal"         
+           style={{background:"lightpink"}}     
            disabled={true}        
            {...register('billTotal',{
             value:0})}             
          />
       </div>
       <div className="form-group col-md-12">
-         <label htmlFor="name">Cash prize</label>         
+         <label htmlFor="name">Excess</label>         
          <input
            className={`form-control  ${errors.winningAmount ? 'is-invalid' : ''}`}
            type="number"
            name="winningAmount"   
+           style={{background:"greenyellow"}}
            onWheel={(e) => e.target.blur()}    
            {...register('winningAmount',{   
             value: 0,    
@@ -234,6 +245,7 @@ function recordList() {
                   id="selectmethod"
                   defaultValue=""
                   name="timeline"
+                  style={{background:"lightgreen"}} 
                   disabled ={item?.length>0 ? false : true}
                   {...register("timeline", { required: 'Please select any timeline option' })}
                 >

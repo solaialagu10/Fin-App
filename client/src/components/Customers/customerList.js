@@ -22,11 +22,16 @@ export default function CustomerList(props){
   "dataField": "mobileNo",
   "text": "Mobile No",
   "sort": true,
-  "editable":false
+  "editable":false,
+  align: 'center',
+  formatter : (cell, row) =>{
+      if(cell === 0 || cell === null) {return '-';}
+  }
 },{
   "dataField": "totalBalance",
   "text": "Balance",
   "sort": true,
+  align: 'center',
   style: {
     width: '6em',
   },
@@ -35,6 +40,7 @@ export default function CustomerList(props){
   "dataField": "amountPaid",
   "text": "Amount Paid",
   "sort": true,
+  align: 'center',
   validator: (newValue, row, column) => {
     if (isNaN(newValue) || newValue < 0) {
       return {
