@@ -10,12 +10,10 @@ export default function AddProducts(props) {
   const validationSchema = Yup.object().shape({ 
     productName:  Yup.string()
         .required('Please enter product name')
-        .min(3,"Name must be at least 3 characters")
         .max(75,"Name cannot exceed more than 75 characters")
         .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
     productId:  Yup.string()
         .required('Please enter product id')
-        .min(3,"Location must be at least 3 characters")
         .max(75,"Location cannot exceed more than 75 characters")
         .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
     price:  Yup.string()

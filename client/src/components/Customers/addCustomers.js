@@ -158,7 +158,6 @@ export default function AddCustomers(props) {
            {...register('customerName',{
             required:'Please enter customer name',
             validate: {
-              minLength: (v) => v.length >= 3 || "Name must be at least 3 characters",
               maxLength: (v) => v.length <75 || "Name cannot exceed more than 75 characters",
               matchPattern: (v) => /^[a-zA-Z0-9- ]+$/.test(v) || "Name must contain only letters, numbers and -",
             }
@@ -179,7 +178,6 @@ export default function AddCustomers(props) {
            {...register('location',{
             required:'Please enter location',
             validate: {
-              minLength: (v) => v.length >= 3 || "Name must be at least 3 characters",
               maxLength: (v) => v.length <75 || "Name cannot exceed more than 75 characters",
               matchPattern: (v) => /^[a-zA-Z0-9- ]+$/.test(v) || "Location must contain only letters, numbers and -",
             }
