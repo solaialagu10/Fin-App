@@ -61,11 +61,10 @@ const Record = (props) => (
     <td>{props.product.productId}</td>
     <td style={{padding:"0.1rem"}}>
     <input
-           type="number"
+           type="text"
            className="form-control table-input-control"
            name={`retailPrices.${props.product.productId}`}    
-           disabled={true}
-           pattern="[0-9]+" title="please enter number only"    
+           disabled={true}  
            {...register(`retailPrices.${props.product.productId}`)}               
          />         
     </td>    
@@ -121,7 +120,6 @@ const Record = (props) => (
            className="form-control"
            name={`wholeSalePrices.${props.product.productId}`}      
            hidden={true}
-           value={props.product.price}
            {...register(`wholeSalePrices.${props.product.productId}`)}               
     />    
   </tr>

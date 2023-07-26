@@ -40,16 +40,12 @@ const editProduct = async (req, res) => {
 
 
 const deleteProduct = async (req, res) => {  
-    const toDelete = req.body.selected ;
-    // let myquery = { _id: req.params.id }
-    // var usersDelete = [];
-    // var ObjectID = req.mongo.ObjectID;   //req is request from express
-    // req.body.forEach(function(item){     //req.body => [{'_id' : ".." , "name" : "john"}]
-    //   console.log("<>>>> item"+item._id);
-    //   usersDelete.push(ObjectID(item));
-    // });
-    await Product.deleteMany({_id:{$in:toDelete}});
-    res.send();     
+    var toDelete = [];  
+    req.body.forEach(function(item){  
+      toDelete.push(item);
+    });
+    const response = await Product.deleteMany({_id:{$in:toDelete}});
+    res.send(response);     
 };
 
 module.exports ={

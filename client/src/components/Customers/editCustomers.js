@@ -4,7 +4,7 @@ import '../styles.css';
 import axios from "axios";
 export default function EditCustomers(props) {
    
-  const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset } = useForm()
+  const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue } = useForm()
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState({
@@ -82,15 +82,19 @@ export default function EditCustomers(props) {
     <td>{props.product.productId}</td>
     <td style={{display:"flex"}}>
     <input
-           type="number"
+           type="text"
            className="form-control"
            name={`retailPrices.${props.product.productId}`}         
            placeholder="Enter Price"   
            disabled={isSubmitting}
            style={{width:"100%"}}    
-           pattern="[0-9]+" title="please enter number only"    
            {...register(`retailPrices.${props.product.productId}`,{
             required: "Please enter price",
+            onBlur: (e) => {
+              var num = parseFloat(e.target.value);
+              var cleanNum = num.toFixed(2);
+              if(!isNaN(cleanNum)) setValue(`retailPrices.${props.product.productId}`,cleanNum);
+            },
             validate: {
               matchPattern: (v) => /^[0-9]\d*/.test(v) || "Only positive values are allowed"
             }
@@ -170,9 +174,8 @@ export default function EditCustomers(props) {
            placeholder="Enter customer's mobile no"   
            disabled={isSubmitting}        
            {...register('mobileNo',{
-            required : "Please enter mobile no",
             validate: {
-             matchPattern: (v) => /[0789][0-9]{9}/.test(v) || "Invalid mobile no" }
+             matchPattern: (v) => /[0789][0-9]{9}|^$/.test(v) || "Invalid mobile no" }
              })}                
          />
           <small className="text-danger">
@@ -188,12 +191,11 @@ export default function EditCustomers(props) {
            placeholder="Enter customer's email id"   
            disabled={isSubmitting}        
            {...register('email',{
-            required : "Please enter email id",
             validate: {
               maxLength: (v) =>
               v.length <= 50 || "The email should have at most 50 characters",
               matchPattern: (v) =>
-              /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || "Email must be a valid address", }
+              /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$|^$/.test(v) || "Email must be a valid address", }
              }) }               
          />
           <small className="text-danger">

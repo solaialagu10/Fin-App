@@ -23,6 +23,7 @@ const getCustomers = async (req, res) => {
 
 
 const addCustomer = async (req, res) => {  
+  console.log("<><><< customer "+JSON.stringify(req.body));
     const user = new Customer({
         ... req.body,
         createdDate: new Date(),
@@ -39,8 +40,12 @@ const addCustomer = async (req, res) => {
 };
 
 
-const deleteCustomer = async (req, res) => {  
-  const toDelete = req.body.selected ;
+const deleteCustomer = async (req, res) => {
+
+  var toDelete = [];  
+  req.body.forEach(function(item){  
+    toDelete.push(item);
+  });
   await Customer.deleteMany({_id:{$in:toDelete}});
   res.send();     
 };

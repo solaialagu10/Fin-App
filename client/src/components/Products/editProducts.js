@@ -20,8 +20,7 @@ export default function EditProducts(props) {
         .max(75,"Location cannot exceed more than 75 characters")
         .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
     price:  Yup.string()
-        .required('Please enter product price')
-        .max(4, "Price cannot be more than 9999")    
+        .required('Please enter product price')  
 });
 const formOptions = { resolver: yupResolver(validationSchema) };
 const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setValue } = useForm(formOptions)
@@ -73,11 +72,11 @@ useEffect(() => {
  
  // This function will handle the submission.
  async function handleRegistration(data) {
-  const valid = formValidation(data); 
-   if(valid){
+  // const valid = formValidation(data); 
+ 
    await axios.post("update", data)
    props.changeTab('Add','Success');
-  }  
+  
  }
  
  // This following section will display the form that takes the input from the user.
@@ -124,14 +123,13 @@ useEffect(() => {
        <div className="form-group col-md-12">
          <label htmlFor="price">Price</label>
          <input
-           type="number"
+           type="text"
            className="form-control"
            id="price"
            placeholder="Enter Product Price"
            disabled={isSubmitting}        
            {...register('price', { 
-            required: "Please enter price",
-            maxLength: { value: 4, message: "Price cannot be more than 9999" } }) }
+            required: "Please enter price" }) }
          />
           <small className="text-danger">
           {errors?.price && errors.price.message}
