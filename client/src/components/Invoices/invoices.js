@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useForm } from "react-hook-form"; 
+import { useForm, useWatch } from "react-hook-form"; 
 import '../styles.css';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import DatalistInput from 'react-datalist-input';
@@ -21,8 +21,9 @@ export default function Invoices() {
     isSuccessfullySubmitted,
     setIsSuccessfullySubmitted,
   ] = useState('');
-  const { register, handleSubmit,watch,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue,getValues } = useForm({mode : "all",defaultValues:{winningAmount:0}})
+  const { register, handleSubmit,watch,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue,getValues } = useForm()
   // This method fetches the records from the database.
+ 
  useEffect(() => {
   async function getCustomers() {
     const response = await axios.get(`customers`);
@@ -52,7 +53,10 @@ useEffect(() => {
 }, [form]);
 
 function getSum(prev, cur) {
-  return prev + cur;  
+  if(cur.length > 0){
+  return parseInt(prev) + parseInt(cur);
+  }
+  return prev;
 }
 
 const Record = (props) => (
@@ -63,31 +67,31 @@ const Record = (props) => (
     <input
            type="text"
            className="form-control table-input-control"
-           name={`retailPrices.${props.product.productId}`}    
+           name={`retailPrices.PId${props.product.productId}`}    
            disabled={true}  
-           {...register(`retailPrices.${props.product.productId}`)}               
+           {...register(`retailPrices.PId${props.product.productId}`)}               
          />         
     </td>    
     <td style={{padding:"0.1rem"}}>
     <input
            type="number"
            className={`form-control table-input-control ${errors.qtys?.[props.product.productId] ? 'is-invalid' : ''}`}
-           name={`qtys.${props.product.productId}`}  
+           name={`qtys.PId${props.product.productId}`}  
            disabled={isSubmitting}   
            onWheel={(e) => e.target.blur()}
-           {...register(`qtys.${props.product.productId}`,{
+           {...register(`qtys.PId${props.product.productId}`,{
             required: true,
             onChange: (e) => {
-              setValue(`totals.${props.product.productId}`, (e.target.value * getValues(`retailPrices.${props.product.productId}`)))
-              setValue(`costTotals.${props.product.productId}`, (e.target.value * getValues(`wholeSalePrices.${props.product.productId}`)))
-              var obj = JSON.parse(JSON.stringify(getValues("totals")));
-              var values = Object.keys(obj).map(function (key) { return obj[key]; });
-              const SumValue = values.reduce(getSum,0); 
-              setValue("billTotal",SumValue);
-              var obj = JSON.parse(JSON.stringify(getValues("costTotals")));
-              var values = Object.keys(obj).map(function (key) { return obj[key]; });
-              const SumValue1 = values.reduce(getSum,0); 
-              setValue("totalCost",SumValue1);
+              setValue(`totals.PId${props.product.productId}`, (e.target.value * getValues(`retailPrices.PId${props.product.productId}`)))
+              setValue(`costTotals.PId${props.product.productId}`, (e.target.value * getValues(`wholeSalePrices.PId${props.product.productId}`)))            
+              const vals = document.getElementsByClassName('totalClass');
+              let  values = [...vals].map(input => input.value)
+              const billTotal = values.reduce(getSum,0);
+              setValue("billTotal",billTotal);
+              const vals2 = document.getElementsByClassName('costTotalClass');
+              let  values2 = [...vals2].map(input => input.value)
+              const costTotal = values2.reduce(getSum,0);
+              setValue("totalCost",costTotal);
             },
             validate: {
               matchPattern: (v) => /^[0-9]\d*/.test(v) || "Only positive values are allowed"
@@ -100,27 +104,28 @@ const Record = (props) => (
     </td>  
     <td style={{padding:"0.1rem"}}>
     <input
-           type="number"
-           className="form-control table-input-control"
+           type="text"
+           className="form-control table-input-control totalClass"
            disabled={true}
-           name={`totals.${props.product.productId}`}       
-           {...register(`totals.${props.product.productId}`)}         
+           name={`totals.PId${props.product.productId}`}       
+           {...register(`totals.PId${props.product.productId}`)}         
          />
          <input
-           type="number"
-           className="form-control"
+           type="text"
+           className="costTotalClass"
            hidden={true}
-           name={`costTotals.${props.product.productId}`} 
-           style={{width:"100%"}}      
-           {...register(`costTotals.${props.product.productId}`)}         
+           style={{display:"none"}}   
+           name={`costTotals.PId${props.product.productId}`}       
+           {...register(`costTotals.PId${props.product.productId}`,{
+            required: false})}                 
          />
     </td>  
     <input
-           type="number"
-           className="form-control"
-           name={`wholeSalePrices.${props.product.productId}`}      
+           type="text"     
            hidden={true}
-           {...register(`wholeSalePrices.${props.product.productId}`)}               
+           style={{display:"none"}}
+           {...register(`wholeSalePrices.PId${props.product.productId}`,{
+            required: false})}                       
     />    
   </tr>
  );
@@ -138,14 +143,12 @@ function recordList() {
  }
 
  async function handleRegistration(data) {
- 
   if(data){
            if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;    
           data["totalBalance"] = data["billTotal"] + data["totalBalance"];  
           data["totalBalance"] = data["totalBalance"] - data["winningAmount"];         
           try {
             const response =  await axios.post("add_invoice", data)
-            console.log("<><><><"+JSON.stringify(response));
             if(response?.data){ 
                 setIsSuccessfullySubmitted('Success');
               }             
@@ -194,7 +197,8 @@ function recordList() {
            className="form-control"
            name="billTotal"            
            disabled={true}        
-           {...register('billTotal')}             
+           {...register('billTotal',{
+            value:0})}             
          />
       </div>
       <div className="form-group col-md-12">

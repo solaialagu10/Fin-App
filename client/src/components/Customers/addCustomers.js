@@ -94,15 +94,15 @@ export default function AddCustomers(props) {
     <input
            type="text"
            className={`form-control table-input-control ${errors.retailPrices?.[props.product.productId] ? 'is-invalid' : ''}`}
-           name={`retailPrices.${props.product.productId}`}      
+           name={`retailPrices.PId${props.product.productId}`}      
            disabled={isSubmitting} 
            onWheel={(e) => e.target.blur()}   
-           {...register(`retailPrices.${props.product.productId}`,{
+           {...register(`retailPrices.PId${props.product.productId}`,{
             required: "Please enter price",
             onBlur: (e) => {
               var num = parseFloat(e.target.value);
               var cleanNum = num.toFixed(2);
-              if(!isNaN(cleanNum)) setValue(`retailPrices.${props.product.productId}`,cleanNum);
+              if(!isNaN(cleanNum)) setValue(`retailPrices.PId${props.product.productId}`,cleanNum);
             },
             validate: {
               matchPattern: (v) => /^[0-9]*(\.[0-9]{0,2})?$/.test(v) || "Invalid price value"
@@ -110,16 +110,16 @@ export default function AddCustomers(props) {
           })}               
          />
          <div className="invalid-feedback" style={{display:"flex"}}>
-          {errors.retailPrices?.[props.product.productId]?.message}
+          {errors.retailPrices?.[props.product.productId]}
         </div>
     </td>   
     <input
            type="number"
            className="form-control"
-           name={`wholeSalePrices.${props.product.productId}`}      
+           name={`wholeSalePrices.PId${props.product.productId}`}      
            hidden={true}
            value={props.product.price}
-           {...register(`wholeSalePrices.${props.product.productId}`)}               
+           {...register(`wholeSalePrices.PId${props.product.productId}`)}               
     />    
   </tr>
  );
