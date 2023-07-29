@@ -2,11 +2,11 @@ import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form"; 
 import '../styles.css';
 import axios from "axios";
+import { useContextData } from "../../context/Mycontext";
 export default function EditCustomers(props) {
-   
+  const {customers,  updateCustomers} =useContextData();
+  const {products, setProducts} = useContextData();  
   const { register, handleSubmit,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue } = useForm()
-  const [customers, setCustomers] = useState([]);
-  const [products, setProducts] = useState([]);
   const [form, setForm] = useState({
     customerName: "",
     location: "",
@@ -16,24 +16,16 @@ export default function EditCustomers(props) {
   });
   useEffect(() => {
     async function setData() {
+      console.log(JSON.stringify(props.row[0]));
       setForm(props.row[0]);
     }
-    async function getCustomers() {
-      const response = await axios.get("customers");
-      setCustomers(response.data);
-    }
-    async function getProducts() {    
-      const response = await axios.get("products");   
-      setProducts(response.data);
-    }
     setData();
-    getCustomers();
-    getProducts();
     return;
   }, [props.row]);
-  useEffect(() => {
+
+  useEffect(()=>{
     reset(form);
-  }, [form]);
+  },[form])
 
   function formValidation(data){
     const custNameCount = customers.filter(x => (x.customerName === data.customerName && form.customerName !== data.customerName)).length;  
@@ -65,14 +57,17 @@ export default function EditCustomers(props) {
  
  // This function will handle the submission.
  async function handleRegistration(data) {
-  const valid = formValidation(data);
-  if(valid){
-   await axios.post("edit_customer", data)
-   .catch(error => {
+  // const valid = formValidation(data);
+  if(true){
+    try{
+      const response =  await axios.post("edit_customer", data);
+      updateCustomers(response.data);
+    }
+   catch(error) {
     console.log("<><<>< error"+error);
      window.alert(error);
      return;
-   });
+   };
    props.changeTab('Add','Success');
   }  
  }
@@ -84,16 +79,16 @@ export default function EditCustomers(props) {
     <input
            type="text"
            className="form-control"
-           name={`retailPrices.${props.product.productId}`}         
+           name={`retailPrices.PId${props.product.productId}`}         
            placeholder="Enter Price"   
            disabled={isSubmitting}
            style={{width:"100%"}}    
-           {...register(`retailPrices.${props.product.productId}`,{
+           {...register(`retailPrices.PId${props.product.productId}`,{
             required: "Please enter price",
             onBlur: (e) => {
               var num = parseFloat(e.target.value);
               var cleanNum = num.toFixed(2);
-              if(!isNaN(cleanNum)) setValue(`retailPrices.${props.product.productId}`,cleanNum);
+              if(!isNaN(cleanNum)) setValue(`retailPrices.PId${props.product.productId}`,cleanNum);
             },
             validate: {
               matchPattern: (v) => /^[0-9]\d*/.test(v) || "Only positive values are allowed"
@@ -180,8 +175,10 @@ export default function EditCustomers(props) {
            placeholder="Enter customer's mobile no"   
            disabled={isSubmitting}        
            {...register('mobileNo',{
+            setValueAs: (v) => v === null ? "" : v,
             validate: {
-             matchPattern: (v) => /[0789][0-9]{9}|^$/.test(v) || "Invalid mobile no" }
+              // maxLength: (v) => v?.length <= 11  || "Mobile no should not exceed 11 digits", --> Later add lenght validation 
+              matchPattern: (v) => (/[0789][0-9]{9}|^$/.test(v)) || "Invalid mobile no" }
              })}                
          />
           <small className="text-danger">

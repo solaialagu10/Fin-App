@@ -2,12 +2,15 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import Navbar from "../components/navbar";
 import '../App.css';
 import { useSignOut } from 'react-auth-kit';
-import {useAuthUser} from 'react-auth-kit'
+import {useAuthUser} from 'react-auth-kit';
+import { useContextData } from "../context/Mycontext";
 const Header = () => {
+  const {customers,updateCustomers} =useContextData();
   const signOut = useSignOut();
   const navigate = useNavigate();
   const auth = useAuthUser()
   const logout= () => {
+    updateCustomers([]);
     signOut();
     navigate("/login");
   }

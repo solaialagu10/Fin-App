@@ -2,11 +2,11 @@ import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form"; 
 import '../styles.css';
  import axios from 'axios';
+ import { useContextData } from "../../context/Mycontext";
 export default function AddCustomers(props) {
-  
+  const {customers, updateCustomers} =useContextData();
+  const {products, setProducts} = useContextData();
   const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus,setValue} = useForm()
-  const [products, setProducts] = useState([]);
-  const [customers, setCustomers] = useState([]);
   const [
     isSuccessfullySubmitted,
     setIsSuccessfullySubmitted,
@@ -17,27 +17,8 @@ export default function AddCustomers(props) {
     mobileNo: "",
     email:"",
     totalBalance:0,
-    amountPaid:0
+    amountPaid:null
   });
-
-  useEffect(() => {
-    async function getProducts() {    
-      const response = await axios.get("products");
-      setProducts(response.data);
-    }
-    async function getCustomers() {
-    const response = await axios.get("customers");
-    setCustomers(response.data);
-  }
-    getCustomers();
-    getProducts();
-    setFocus("customerName")
-    return;
-  }, [setFocus,form]); 
-
-  useEffect(() => {
-    reset(form);
-  }, [form])
 
   function formValidation(data){
     const custNameCount = customers.filter(x => x.customerName === data.customerName).length;  
@@ -73,10 +54,13 @@ export default function AddCustomers(props) {
   //  const newPerson = { ...form };
   const valid = formValidation(data);    
   if(valid){
-    if(data['mobileNo'].length ===0) {  data['mobileNo'] = 0;}
+    // if(data['mobileNo'].length ===0) {  data['mobileNo'] = 0;}
+    data['totalBalance'] = 0;
+    data['amountPaid'] = '';
     try {
       const response =  await axios.post("add_customer", data)
       if(response.data){ 
+          updateCustomers(response.data);
           setIsSuccessfullySubmitted('Success');
         }        
       } catch (e) {        
@@ -261,12 +245,7 @@ export default function AddCustomers(props) {
             disabled={isSubmitting}
             className="btn btn-primary" 
             onClick={() =>
-              setForm({
-                customerName: '',
-                location: '',
-                mobileNo: '',
-                email:''
-              })
+              reset()
             }          
           ></input>
         </div>

@@ -20,7 +20,7 @@ const addProduct = async (req, res) => {
     });
     try {
       await product.save();
-      res.send(product);
+      getProducts(req,res);
     } catch (error) {
       res.status(500).send(error);
     }  
@@ -35,7 +35,7 @@ const editProduct = async (req, res) => {
     const user = await Product.findOneAndUpdate(myquery,newvalues,{
       returnOriginal: false
     });
-    res.send(user);
+    getProducts(req,res);
 };
 
 
@@ -45,7 +45,7 @@ const deleteProduct = async (req, res) => {
       toDelete.push(item);
     });
     const response = await Product.deleteMany({_id:{$in:toDelete}});
-    res.send(response);     
+    getProducts(req,res);   
 };
 
 module.exports ={

@@ -4,9 +4,9 @@ import '../styles.css';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import axios from "axios";
- 
+import { useContextData } from "../../context/Mycontext";
 export default function EditProducts(props) {
-
+  const {products, updateProducts} = useContextData();  
   // form validation rules 
   const validationSchema = Yup.object().shape({ 
     productName:  Yup.string()
@@ -30,28 +30,20 @@ const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset
    price: ""
 
  });
- const [records, setRecords] = useState([]);
  useEffect(() => {
-  async function getRecords() {    
-    const response = await axios.get("products");
-    setRecords(response.data);
-  }
-  
   async function setData() {
-    console.log("<><< Edit page "+JSON.stringify(props.row[0]));
     setForm(props.row[0]);
   }
   setData();
-  getRecords();
   return;
 }, [props.row]);
+
 useEffect(() => {
-  // reset form with product data
   reset(form);
 }, [form]);
  
  function formValidation(data){
-  const pNameCount = records.filter(x => x.productName === data.productName).length;   
+  const pNameCount = products.filter(x => x.productName === data.productName).length;   
   if(pNameCount != 0) {
     setError("productName", {
       type: "manual",
@@ -59,7 +51,7 @@ useEffect(() => {
     })
    return false;
    } 
-   const pIdCount = records.filter(x => x.productId === data.productId).length;
+   const pIdCount = products.filter(x => x.productId === data.productId).length;
     if(pIdCount != 0) {
       setError("productId", {
         type: "manual",
@@ -72,11 +64,10 @@ useEffect(() => {
  
  // This function will handle the submission.
  async function handleRegistration(data) {
-  // const valid = formValidation(data); 
- 
-   await axios.post("update", data)
-   props.changeTab('Add','Success');
-  
+  // const valid = formValidation(data);  
+   const response = await axios.post("update", data);
+   updateProducts(response.data);
+   props.changeTab('Add','Success');  
  }
  
  // This following section will display the form that takes the input from the user.

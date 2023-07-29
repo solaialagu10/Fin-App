@@ -12,7 +12,7 @@ import Invoices from "./components/Invoices/invoices";
 import Dashboard from "./components/Dashboard/dashboard";
 import Login from "./pages/login/login";
 import Register from "./pages/register/register";
-import Layout from "./pages/layout"
+import Layout from "./pages/layout";
 const App = () => {
  return (
 

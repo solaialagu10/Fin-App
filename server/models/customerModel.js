@@ -25,12 +25,10 @@ const CustomerSchema = new mongoose.Schema({
     type: Object
   },
   totalBalance:{
-    type: Number,
-    required: true
+    type: Number
   },
   amountPaid:{
-    type: Number,
-    required: true
+    type: Number
   },
   createdDate: {
     type: Date

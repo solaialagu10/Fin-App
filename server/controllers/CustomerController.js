@@ -1,29 +1,15 @@
 const mongoose = require("mongoose");
-
 const {Customer} = require("../models/customerModel");
 const {Paid} = require("../models/paidModel");
-
-const getUserById = async (req, res) => {    
-    const user = await productModel.findById(req.params.id);
-    try {
-      res.send(user);  
-    } catch (error) {
-      res.status(500).send(error);
-    }
-};
-
 const getCustomers = async (req, res) => {    
-  const customers = await Customer.find({userId:req.user});      
+  const customers = await Customer.find({userId:req.user});     
   try {
     res.send(customers);
   } catch (error) {
     res.status(500).send(error);
   }      
 };
-
-
 const addCustomer = async (req, res) => {  
-  console.log("<><><< customer "+JSON.stringify(req.body));
     const user = new Customer({
         ... req.body,
         createdDate: new Date(),
@@ -32,25 +18,20 @@ const addCustomer = async (req, res) => {
       });
       try {
         await user.save();
-        res.send(user);
+        getCustomers(req,res);
       } catch (error) {
         console.log("<><>< error"+error);
         res.status(500).send(error);
       }  
 };
-
-
 const deleteCustomer = async (req, res) => {
-
   var toDelete = [];  
   req.body.forEach(function(item){  
     toDelete.push(item);
   });
-  await Customer.deleteMany({_id:{$in:toDelete}});
-  res.send();     
+  const response = await Customer.deleteMany({_id:{$in:toDelete}});
+  getCustomers(req,res);
 };
-
-
 const editCustomer = async (req, res) => {   
   let myquery = { _id: req.body._id }; 
   let newvalues = {    
@@ -60,30 +41,40 @@ const editCustomer = async (req, res) => {
   const customer = await Customer.findOneAndUpdate(myquery,newvalues,{
     returnOriginal: false
   });
-  res.send(customer);
+  getCustomers(req,res);
 };
-
-const updateCustomerAmount = async (req, res) => {   
-  let myquery = { _id: req.body._id }; 
+const updateCustomerAmount = async (req, res) => {    
+  let customers = req.body;
+  var promises = customers.map(async (customer)=>{
+    if(customer['amountPaid']?.length>0){
+      customer['totalBalance'] = customer['totalBalance'] - customer['amountPaid'];
+     const response  = await updateCustomerdetailsFunc(customer,req.user);    
+     return new Promise((res, rej) => {res(response)});
+    }
+  })
+  Promise.all(promises)
+  .then((results)=>{
+    getCustomers(req,res); 
+  });
+};
+const updateCustomerdetailsFunc = async(customer,user) =>{
+  let myquery = { _id: customer._id }
   let newvalues = {    
-        totalBalance: req.body.totalBalance,
-        modifiedDate: new Date()
+    totalBalance: customer.totalBalance,
+    modifiedDate: new Date()
   };
-  const customer = await Customer.findOneAndUpdate(myquery,newvalues,{
-    returnOriginal: false
-  });
-  const paid = new Paid({
-    customerId: req.body._id,
-    amount:req.body.amountPaid,
-    date: new Date(),
-    userId: req.user
-  });
-  await paid.save();
-  res.send(customer);
-};
-
+ await Customer.findOneAndUpdate(myquery,newvalues,{
+  returnOriginal: false
+});
+const paid = new Paid({
+  customerId: customer._id ,
+  amount:customer.amountPaid,
+  date: new Date(),
+  userId: user
+});
+return await paid.save();
+}
 module.exports ={
-    getUserById,
     addCustomer,
     getCustomers,
     deleteCustomer,

@@ -4,19 +4,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Accordion from 'react-bootstrap/Accordion';
 import axios from 'axios';
 export default function Dashboard() { 
-  const [customers, setCustomers] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [sales, setSales] = useState([]);
   useEffect(() => {
-    async function getCustomers() {
-      const response = await axios.get("customers");   
-      setCustomers(response.data);
-    }
     async function getInvoices() {
       const response = await axios.get("get_invoices");
       setInvoices(response.data);
     }
-    getCustomers();
     getInvoices();
     return;
   }, []);

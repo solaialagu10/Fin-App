@@ -7,38 +7,31 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
-
+import { useContextData } from "../context/Mycontext";
   function ReactBSTables (props){
-
+    const {customers, updateCustomers} =useContextData();
     const [selected, setSelected] = useState([]);
     const [selectedRw, setSelectedRw] = useState([]);
-    const [columns1, setColumns1] = useState([]);
-    const dataTable = props.data;  
-    const columns = props.columns;
-    if(dataTable[0] && columns1?.length===0 && props.keyField === 'customerName')
-    {   
-    Object.keys(dataTable[0].retailPrices).map((key, index) => {
-      let header = {};
-      header = {
-        "dataField": key,
-        "text": key,  
-        "sort": true
+    const [issubmit,setIssubmit] = useState(false);
+    const datatable = props.data;
+    const columns = props.columns;    
+    const keyField  =props.keyField;
+
+ async function savePaidrows(){
+    try {        
+        setIssubmit(true);
+        const fetchResponse =  await axios.post("update_amount", datatable);
+        updateCustomers(fetchResponse.data);        
+        } catch (e) {        
+          console.log("<><<>< error"+e);
+      }finally{
+        setIssubmit(false);
       }
-      columns1.push(header);
-    })
   }
 
   async function afterSaveCell(oldValue, newValue, row, column, done) {   
     if(newValue > 0){
-      console.log("<><><><"+newValue);
-      row.totalBalance = row.totalBalance - newValue;
-      row.amountPaid = newValue;
-      try {        
-        const fetchResponse =  await axios.post("update_amount", row)        
-        } catch (e) {        
-          console.log("<><<>< error"+e);
-      }
-    
+      row['amountPaid'] = newValue;    
     return { async: true };
     }
   }
@@ -131,68 +124,87 @@ import axios from "axios";
       const rowStyle = { backgroundColor: '#c8e6c9', height: '40px', padding: '5px 0' }
       return (          
         <>
-        <div className="form-group delete-btn">
-          <button
-            value="Edit"
-            className="btn btn-primary"
-            disabled={selectedRw.length !== 1}
-            onClick={()=> props.editRecord(selectedRw)}
-          >Edit</button>
-        </div>
+         {issubmit && (<div class="overlay">
+                  <div class="overlay__wrapper">
+                    <div class="spinner-grow text-primary overlay__spinner" 
+              id="spinner"role="status">
+            <span class="sr-only"></span>
+        </div></div></div>)}
+        <div >
           <div className="form-group delete-btn">
-          <input
-            type="submit"
-            value="Delete"
-            className="btn btn-primary"
-            onClick={()=> props.deleteRecord(selected)}
-          />
-        </div>
-          <ToolkitProvider
-            data={dataTable}
-            keyField={props.keyField}
-            columns={columns}           
-            search
-          >
-            {props => (
-              <div className="py-2">
-                <div
-                  id="datatable-basic_filter"
-                  className="dataTables_filter  pb-2"
-                >
-                  <label>
-                    <SearchBar
-                      className="form-control-sm"
-                      placeholder=""
-                      srText=""
-                      {...props.searchProps}
-                    />
-                  </label>
-                </div>                
-                {columns1.length > 0 ?
-                <div className="table-responsive">
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={pagination}
-                  bordered={true}
-                  selectRow={ selectRow } 
-                  expandRow={expandRow}
-                  cellEdit={ cellEditFactory({ mode: 'dbclick',
-                  blurToSave: true, afterSaveCell }) }
-                  rowStyle={ rowStyle }
-                />
-                </div> :  <div className="table-responsive">
-                <div></div>
-                <BootstrapTable
-                  {...props.baseProps}
-                  pagination={pagination}
-                  bordered={true}
-                  selectRow={ selectRow }                   
-                  rowStyle={ rowStyle }
-                />
-                </div>}
-              </div>
-            )}
-          </ToolkitProvider>
+            <button
+              value="Edit"
+              className="btn btn-primary"
+              disabled={selectedRw.length !== 1}
+              onClick={()=> props.editRecord(selectedRw)}
+            >Edit</button>
+          </div>
+            <div className="form-group delete-btn">
+            <input
+              type="submit"
+              value="Delete"
+              className="btn btn-primary"
+              onClick={()=> props.deleteRecord(selected)}
+            />
+          </div>
+          {keyField === "customerName" ? <div className="form-group delete-btn">
+              <input
+                type="submit"
+                value="Save"
+                className="btn btn-primary"
+                onClick={()=> savePaidrows()}
+              />
+            </div> : ""}
+          </div>
+          <div >
+            <ToolkitProvider
+              data={customers}
+              keyField={props.keyField}
+              columns={columns}           
+              search
+            >
+              {props => (
+                <div className="py-2">
+                  <div
+                    id="datatable-basic_filter"
+                    className="dataTables_filter  pb-3"
+                  >
+                    <label>
+                      <SearchBar
+                        className="form-control-sm"
+                        placeholder=""
+                        srText=""
+                        {...props.searchProps}
+                      />
+                    </label>
+                  </div>                
+                  {keyField === "customerName" ?
+                 <> <div className="table-responsive">
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={pagination}
+                    bordered={true}
+                    selectRow={ selectRow } 
+                    expandRow={expandRow}
+                    cellEdit={ cellEditFactory({ mode: 'dbclick' ,style:{content: '0'},
+                    blurToSave: true, afterSaveCell }) }
+                    rowStyle={ rowStyle }
+                  />
+                  </div></> :  <div className="table-responsive">
+                  <div></div>
+                  <BootstrapTable
+                    {...props.baseProps}
+                    pagination={pagination}
+                    bordered={true}
+                    selectRow={ selectRow }                   
+                    rowStyle={ rowStyle }
+                  />
+                  </div>}
+                </div>
+              )}              
+            </ToolkitProvider>
+            {keyField === "customerName" ? <div className="text-info info-class">* Double click on amount paid column to enter the value</div> :""}
+          </div>
         </>
       );    
   }

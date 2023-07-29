@@ -5,7 +5,9 @@ import '../login.css'
 import {Link} from 'react-router-dom';
 import { useSignIn } from "react-auth-kit";
 import axios, { AxiosError } from "axios";
+import { useContextData } from "../../context/Mycontext";
 function Login() {
+    const {setToken} =useContextData();
     let navigate = useNavigate();
     const signIn = useSignIn();
     const [error,setError]=useState('')
@@ -24,6 +26,7 @@ function Login() {
           };
           try {
             const response =  await axios.post("login", data)
+                setToken(response.data.token);
                 signIn({
                     token: response.data.token,
                     expiresIn: 3600,

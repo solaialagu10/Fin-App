@@ -47,8 +47,7 @@ const addCustomerInvoice = async (req, res) => {
           Object.keys(req.body.qtys).forEach(function (key,index) {                 
             updateFun(Sales,req,key);
         })
-        }
-      
+        }      
         res.send(invoice);
       } catch (error) {
         console.log("<><>< error"+error);

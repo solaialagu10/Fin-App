@@ -2,17 +2,16 @@ import React, { useState, useEffect } from "react";
 import ReactBSTables from '../tableBootstrap';
 import moment from "moment";
 import axios, { AxiosError } from "axios";
+import { useContextData } from "../../context/Mycontext";
 
 export default function CustomerList(props){
-  
+  const {customers,updateCustomers} =useContextData();
    function dateFormatter(cell, row) {
     return (
     <span>{moment(cell).format("LLL")}</span>
   );  
   }
-  const [customers, setCustomers] = useState([]);
   const [paidlist, setPaidlist] = useState([]);
-  const [deleteFlag, setDeleteFlag] = useState(false);
   const [deletemessage, setDeletemessage] = useState(false);
   let [columns,setColumns]=useState([{
     "dataField": "customerName",
@@ -26,6 +25,7 @@ export default function CustomerList(props){
   align: 'center',
   formatter : (cell, row) =>{
       if(cell === 0 || cell === null) {return '-';}
+      return cell;
   }
 },{
   "dataField": "totalBalance",
@@ -40,9 +40,12 @@ export default function CustomerList(props){
   "dataField": "amountPaid",
   "text": "Amount Paid",
   "sort": true,
-  align: 'center',
+  classes: 'place-holder-class',
+  editorStyle: {
+    backgroundColor: '#20B2AA'
+  },
   validator: (newValue, row, column) => {
-    if (isNaN(newValue) || newValue < 0) {
+    if (isNaN(newValue)) {
       return {
         valid: false,
         message: 'Invalid no'
@@ -66,16 +69,6 @@ export default function CustomerList(props){
   formatter: dateFormatter
 }])
 
- // This method fetches the records from the database.
- useEffect(() => {
-  async function getCustomers() {
-    const response = await axios.get("customers");    
-    setCustomers(response.data);
-  }  
-  getCustomers();
-  return;
-}, [deleteFlag]);
-
 useEffect(() => {
   async function getPaidList() {
     try{
@@ -95,9 +88,9 @@ useEffect(() => {
 // This method will delete a record
 async function deleteRecord(selected) {
   setDeletemessage(false);
-  await axios.post("deleteCustomer", selected); 
-  setDeleteFlag(deleteFlag => !deleteFlag); 
+  const response = await axios.post("deleteCustomer", selected); 
   setDeletemessage(true);
+  updateCustomers(response.data);
 }
 
 function editRecord(selectedRow){
@@ -108,8 +101,7 @@ function editRecord(selectedRow){
   return (
     <div>
       {deletemessage === true && <div className="text-success">Customer(s) deleted successfully.</div>}     
-      <ReactBSTables data={customers} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord} paidList={paidlist} keyField="customerName"/>
-      <div className="text-info info-class">* Double click on amount paid column to enter the value</div>
+      <ReactBSTables data={customers} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord} paidList={paidlist} keyField="customerName"/>      
     </div>
   );
 }

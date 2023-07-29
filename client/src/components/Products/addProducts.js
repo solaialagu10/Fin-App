@@ -4,8 +4,10 @@ import '../styles.css';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { useContextData } from "../../context/Mycontext";
 export default function AddProducts(props) {
 
+  const {products, updateProducts} = useContextData();  
   // form validation rules 
   const validationSchema = Yup.object().shape({ 
     productName:  Yup.string()
@@ -22,7 +24,7 @@ export default function AddProducts(props) {
 
 const formOptions = { resolver: yupResolver(validationSchema) };
 const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus } = useForm(formOptions)
-const [records, setRecords] = useState([]);
+
 const [
   isSuccessfullySubmitted,
   setIsSuccessfullySubmitted,
@@ -32,23 +34,9 @@ const [form, setForm] = useState({
   productId: "",
   price: ""
 });
-
- useEffect(() => {
-  async function getRecords() {    
-    const response = await axios.get("products");
-    setRecords(response.data);
-  }
-  getRecords();
-  setFocus("productName")
-  return;
-}, [setFocus,form]);
-
-useEffect(() => {
-  reset(form);
-}, [form])
  
  function formValidation(data){
-  const pNameCount = records.filter(x => x.productName === data.productName).length;   
+  const pNameCount = products.filter(x => x.productName === data.productName).length;   
   if(pNameCount != 0) {
     setError("productName", {
       type: "manual",
@@ -56,7 +44,7 @@ useEffect(() => {
     })
    return false;
    } 
-   const pIdCount = records.filter(x => x.productId === data.productId).length;
+   const pIdCount = products.filter(x => x.productId === data.productId).length;
     if(pIdCount != 0) {
       setError("productId", {
         type: "manual",
@@ -75,6 +63,7 @@ useEffect(() => {
       const response =  await axios.post("add_product", data)
       if(response.data)
           setIsSuccessfullySubmitted('Success');
+          updateProducts(response.data);
       } catch (e) {        
         setIsSuccessfullySubmitted('Error');
         console.log("<><<>< error"+e);

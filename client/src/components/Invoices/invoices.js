@@ -6,11 +6,12 @@ import DatalistInput from 'react-datalist-input';
 import 'react-datalist-input/dist/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Accordion from 'react-bootstrap/Accordion';
- import axios from 'axios';
-export default function Invoices() {
+import axios from 'axios'; 
+import { useContextData } from "../../context/Mycontext";
+export default function Invoices() {  
+  const {products, setProducts} = useContextData();  
+  const {customers, setCustomers} =useContextData();  
   const [item, setItem] = useState(); 
-  const [customers, setCustomers] = useState([]);
-  const [products, setProducts] = useState([]);
   const [billedinvoices, setBilledinvoices] = useState([]);
   const [form, setForm] = useState({
     customer:"",
@@ -25,20 +26,10 @@ export default function Invoices() {
   // This method fetches the records from the database.
  
  useEffect(() => {
-  async function getCustomers() {
-    const response = await axios.get(`customers`);
-    setCustomers(response.data) 
-  }
-  async function getProducts() {    
-    const response = await axios.get(`products`);
-    setProducts(response.data);
-  }
   async function getBilledInvoices() {    
     const response = await axios.get(`billedInvoices`);   
     setBilledinvoices(response.data);
   }
-  getProducts();
-  getCustomers();
   getBilledInvoices();
   return;
 }, []);
@@ -141,9 +132,9 @@ function recordList() {
    });
  }
  }
-
  async function handleRegistration(data) {
   if(data){
+          
            if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;    
           data["totalBalance"] = data["billTotal"] + data["totalBalance"];  
           data["totalBalance"] = data["totalBalance"] - data["winningAmount"];         
@@ -217,13 +208,13 @@ function recordList() {
            className={`form-control  ${errors.winningAmount ? 'is-invalid' : ''}`}
            type="number"
            name="winningAmount"   
+           placeholder="0"
            style={{background:"greenyellow"}}
            onWheel={(e) => e.target.blur()}    
-           {...register('winningAmount',{   
-            value: 0,    
+           {...register('winningAmount',{    
             valueAsNumber:true,
             validate: {
-              positive: v => parseInt(v) >= 0 || "Incorrect value"
+              positive: v => (parseInt(v) >= 0 || isNaN(parseInt(v))) || "Incorrect value"
             }
             })}             
          />
@@ -290,6 +281,7 @@ function recordList() {
             className="btn btn-primary" 
             onClick={() =>
               {
+                reset();
                 setItem('');
                 setForm({                
                 customer:''
