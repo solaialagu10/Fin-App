@@ -8,11 +8,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Accordion from 'react-bootstrap/Accordion';
 import axios from 'axios'; 
 import { useContextData } from "../../context/Mycontext";
+import AccordionCollapse from "react-bootstrap/esm/AccordionCollapse";
 export default function Invoices() {  
-  const {products, setProducts} = useContextData();  
-  const {customers, setCustomers} =useContextData();  
+  const {products, updateCustomers} = useContextData();  
+  const {customers, setCustomers} =useContextData(); 
+  const [active, setActive]  = React.useState([]);
   const [item, setItem] = useState(); 
   const [billedinvoices, setBilledinvoices] = useState([]);
+  const [balance, setBalance] = useState(0); 
   const [form, setForm] = useState({
     customer:"",
     customerName: "",
@@ -70,6 +73,7 @@ const Record = (props) => (
            name={`qtys.PId${props.product.productId}`}  
            disabled={isSubmitting}   
            onWheel={(e) => e.target.blur()}
+           onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
            {...register(`qtys.PId${props.product.productId}`,{
             required: true,
             onChange: (e) => {
@@ -84,6 +88,21 @@ const Record = (props) => (
               const costTotal = values2.reduce(getSum,0);
               setValue("totalCost",costTotal);
             },
+              onBlur:(e)=>{
+                let balance = getValues("totalBalance");
+                let productTotal =getValues(`totals.PId${props.product.productId}`);
+                let currValue = e.target.value;
+                let prevValue = isNaN(parseInt(e.target.dataset.prevValue)) ? 0 : parseInt(e.target.dataset.prevValue)
+                let direction = currValue > prevValue ? 'up' : 'down'
+                e.target.dataset.prevValue = currValue;
+                  if(direction === 'up'){
+                        setValue("totalBalance",balance + productTotal);
+                        }
+                  else{
+                    let subTotal = (prevValue-currValue) * getValues(`retailPrices.PId${props.product.productId}`);
+                    setValue("totalBalance",balance - subTotal);
+                  }
+                },
             validate: {
               matchPattern: (v) => /^[0-9]\d*/.test(v) || "Only positive values are allowed"
             }
@@ -133,29 +152,29 @@ function recordList() {
  }
  }
  async function handleRegistration(data) {
-  if(data){
-          
-           if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;    
-          data["totalBalance"] = data["billTotal"] + data["totalBalance"];  
-          data["totalBalance"] = data["totalBalance"] - data["winningAmount"];         
+  if(data){          
+           if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;         
           try {
-            const response =  await axios.post("add_invoice", data)
+            setBalance(data['totalBalance'])
+            const response =  await axios.post("add_invoice", data);        
             if(response?.data){ 
+                updateCustomers(response.data);
+                const response1 = await axios.get(`billedInvoices`);   
+                setBilledinvoices(response1.data);
+                setActive("0");
                 setIsSuccessfullySubmitted('Success');
               }             
             } catch (e) {   
               setIsSuccessfullySubmitted('Error');     
               console.log("<><<>< error"+e);
-          } finally{
-            console.log("<><<>< final statement");       
-          }
+          } 
   }
  }
  
  // This following section will display the form that takes the input from the user.
  return (
    <div>  
-     <form onSubmit={handleSubmit(handleRegistration)}> 
+     <form onSubmit={handleSubmit((e)=>handleRegistration(e))}> 
      <div className="text-success">{isSuccessfullySubmitted === 'Success' ? "Invoice submitted successfully." : ""}</div>      
     <div className="text-danger">{isSuccessfullySubmitted === 'Error' ? "Error in submitting Invoice" : ""}</div>
     {isSubmitting && (<div class="overlay">
@@ -211,11 +230,25 @@ function recordList() {
            placeholder="0"
            style={{background:"greenyellow"}}
            onWheel={(e) => e.target.blur()}    
+           onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
            {...register('winningAmount',{    
             valueAsNumber:true,
             validate: {
               positive: v => (parseInt(v) >= 0 || isNaN(parseInt(v))) || "Incorrect value"
-            }
+            },
+              onBlur:(e)=>{
+                let balance = getValues("totalBalance");
+                let currValue =  isNaN(parseInt(e.target.value)) ? 0 : parseInt(e.target.value);
+                let prevValue = isNaN(parseInt(e.target.dataset.prevValue)) ? 0 : parseInt(e.target.dataset.prevValue)
+                let direction = currValue > prevValue ? 'up' : 'down'
+                e.target.dataset.prevValue = currValue;
+                  if(direction === 'up'){
+                        setValue("totalBalance",balance - currValue);
+                        }
+                  else{                  
+                    setValue("totalBalance",(balance + prevValue));
+                  }
+                }
             })}             
          />
          <small className="invalid-feedback">
@@ -238,7 +271,11 @@ function recordList() {
                   name="timeline"
                   style={{background:"lightgreen"}} 
                   disabled ={item?.length>0 ? false : true}
-                  {...register("timeline", { required: 'Please select any timeline option' })}
+                  {...register("timeline", { 
+                    onChange:(e)=>{ if(isSuccessfullySubmitted === 'Success')
+                     { let val = e.target.value; reset(); setValue('totalBalance',balance); 
+                     setValue('timeline',val); setIsSuccessfullySubmitted(''); }},
+                    required: 'Please select any timeline option' })}
                 >
                   <option value="" disabled>Select Timeline</option>
                   <option value="2 PM" disabled ={true ? billedinvoices.filter(x => x.timeline === "2 PM" && x.customerId === item).length > 0: false}>2 PM</option>
@@ -292,10 +329,10 @@ function recordList() {
         </div>
        </div>       
     
-    <Accordion style={{width:"100%",float:"left",marginTop:"6px"}}>
-      <Accordion.Item eventKey="0">
-        <Accordion.Header>Billed invoices</Accordion.Header>
-        <Accordion.Body>
+    <Accordion style={{width:"100%",float:"left",marginTop:"6px"}}  activeKey={active} onSelect={(e) => {setActive(e)}}>
+      <Accordion.Item eventKey="0"  >
+        <Accordion.Header >Billed invoices</Accordion.Header>       
+        <Accordion.Body activeKey={active}>
         {item?.length > 0 ?<table className="table table-striped table-bordered custom-table table-fit" >
           <thead>
             <tr>

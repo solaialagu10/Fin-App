@@ -24,8 +24,7 @@ const addCustomerInvoice = async (req, res) => {
             modifiedDate: new Date()
       };    
         
-      try {
-        
+      try {        
         await invoice.save();
         await Customer.findOneAndUpdate(myquery,newvalues,{
           returnOriginal: false
@@ -48,12 +47,19 @@ const addCustomerInvoice = async (req, res) => {
             updateFun(Sales,req,key);
         })
         }      
-        res.send(invoice);
+        let customers = await Customer.find({userId:req.user});  
+        res.send(customers);
       } catch (error) {
         console.log("<><>< error"+error);
         res.status(500).send(error);
       }  
 };
+
+function delay(t, v) {
+  return new Promise(resolve => {
+      setTimeout(resolve, t, v);
+  });
+}
 
 const updateFun = async(Sales,req,key) =>{
   await Sales.findOneAndUpdate({timeline : req.body.timeline, productName:key.substring(3), modifiedDate : {

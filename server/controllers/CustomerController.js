@@ -38,7 +38,7 @@ const editCustomer = async (req, res) => {
         ...req.body,
         modifiedDate: new Date()
   };
-  const customer = await Customer.findOneAndUpdate(myquery,newvalues,{
+  await Customer.findOneAndUpdate(myquery,newvalues,{
     returnOriginal: false
   });
   getCustomers(req,res);

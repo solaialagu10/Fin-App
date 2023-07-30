@@ -82,6 +82,7 @@ export default function AddCustomers(props) {
            name={`retailPrices.PId${props.product.productId}`}      
            disabled={isSubmitting} 
            onWheel={(e) => e.target.blur()}   
+           onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
            {...register(`retailPrices.PId${props.product.productId}`,{
             required: "Please enter price",
             onBlur: (e) => {
@@ -186,6 +187,7 @@ export default function AddCustomers(props) {
            name="mobileNo"            
            placeholder="Enter customer's mobile no"   
            onWheel={(e) => e.target.blur()}
+           onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
            disabled={isSubmitting}        
            {...register('mobileNo',{
            validate: {

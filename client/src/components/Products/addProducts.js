@@ -20,6 +20,7 @@ export default function AddProducts(props) {
         .matches(/^[a-zA-Z0-9 -]+$/, "Only characters are allowed"),
     price:  Yup.string()
         .required('Please enter product price') 
+        ///have to add price value validation for less than 4 digits
 });
 
 const formOptions = { resolver: yupResolver(validationSchema) };
@@ -122,6 +123,7 @@ const [form, setForm] = useState({
            className={`form-control ${errors.price ? 'is-invalid' : ''}`}
            name="price"
            onWheel={(e) => e.target.blur()}
+           onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
            placeholder="Enter Product Price"
            disabled={isSubmitting}
            {...register('price') }
