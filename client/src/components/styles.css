@@ -166,7 +166,7 @@ thead {
 
       .invoice-container-head{
         display: grid;
-        margin-top: 20px;
+        /* margin-top: 10px; */
         margin-bottom: 10px;
         width:100%;
         grid-template-columns: 1fr 1fr;

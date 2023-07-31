@@ -25,15 +25,16 @@ const addCustomerInvoice = async (req, res) => {
       };    
         
       try {        
-        await invoice.save();
+        const resp = await invoice.save();
         await Customer.findOneAndUpdate(myquery,newvalues,{
           returnOriginal: false
         });
         const value = await Sales.find({ $and:[{userId:req.user},{timeline : req.body.timeline}, {modifiedDate : {$gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}}]});
-        
+
         if(value.length == 0){
           Object.keys(req.body.qtys).forEach(function (key,index) { 
             const sales = new Sales({
+              invoiceId:resp._id,
               productName: key.substring(3),
               timeline: req.body.timeline,
               qty: req.body.qtys[key],
@@ -55,11 +56,7 @@ const addCustomerInvoice = async (req, res) => {
       }  
 };
 
-function delay(t, v) {
-  return new Promise(resolve => {
-      setTimeout(resolve, t, v);
-  });
-}
+
 
 const updateFun = async(Sales,req,key) =>{
   await Sales.findOneAndUpdate({timeline : req.body.timeline, productName:key.substring(3), modifiedDate : {
@@ -150,6 +147,32 @@ const daySaleReport = async (req, res) =>{
   }  
 }
 
+const getWinningAmount = async(req,res) =>{
+  try {
+    const amount = await Invoice.aggregate([
+      {
+        $match : {
+          "modifiedDate" : {
+              $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
+          },
+          "timeline" : req.body.input,
+          "userId":(req.user).toString()
+        }
+    },
+      {
+        $group : {
+          "_id" :{product:"$userId"},
+          qty : {$sum: "$winningAmount"},    
+        }
+    }         
+  ]);   
+    res.send(amount);
+  } catch (error) {
+    console.log("<><>< error"+error);
+    res.status(500).send(error);
+  }  
+}
+
 const getBIlledInvoices = async(req,res) =>{
   try {
     const billedInvoices = await Invoice.find(
@@ -214,5 +237,6 @@ module.exports ={
   customerInvoices,
   daySaleReport,
   getBIlledInvoices,
-  getPaidList
+  getPaidList,
+  getWinningAmount
 }

@@ -6,10 +6,17 @@ import axios from 'axios';
 export default function Dashboard() { 
   const [invoices, setInvoices] = useState([]);
   const [sales, setSales] = useState([]);
+  const [error,setError] = useState(false);
+  const [amount, setAmount] = useState(0);
   useEffect(() => {
     async function getInvoices() {
+      try {
       const response = await axios.get("get_invoices");
       setInvoices(response.data);
+      } catch (e) {  
+        setError(true);
+        console.log("<><<>< error"+e);
+      }
     }
     getInvoices();
     return;
@@ -20,7 +27,10 @@ export default function Dashboard() {
     try {
       const response =  await axios.post("day_sales_report", inputJson);
       setSales(response.data);      
+      const response1 =  await axios.post("winning_amount", inputJson);
+      setAmount(response1.data[0]?.qty);
       } catch (e) {        
+        setError(true);
         console.log("<><<>< error"+e);
     }
   }
@@ -59,6 +69,8 @@ export default function Dashboard() {
    <div>
       <div style={{ display: 'block', 
                   width: 1000, padding: 30 }}>
+        <div className="text-danger">{error ? "Service is down, please try again later" : ""}
+        </div>              
       <Accordion>
       <Accordion.Item eventKey="0">
         <Accordion.Header>Customer Report</Accordion.Header>
@@ -96,13 +108,19 @@ export default function Dashboard() {
             </select>
         
         </div>
+        <div>
+        Winning total : {parseInt(amount)} 
+        &nbsp;&nbsp;&nbsp;Final amount  : {(Object.values(sales).map((item) => 
+                      item.qty * item.price).reduce((a, b) => a + b, 0)
+            ) -amount}
+        </div>
         {sales.length > 0 ? <table className="table table-striped table-bordered " >
           <thead>
             <tr>
               <th>Product Name</th>
               <th>Quanity</th>
               <th>Price</th>              
-              <th>Total Amount</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>{recordList1()}</tbody>

@@ -1,7 +1,7 @@
 const express = require("express");
 const {getProducts, editProduct, deleteProduct,addProduct} = require("../controllers/ProductController"); 
 const {addCustomer, getCustomers,deleteCustomer,editCustomer,updateCustomerAmount} = require("../controllers/CustomerController"); 
-const {addCustomerInvoice, customerInvoices, daySaleReport,getBIlledInvoices,getPaidList} = require("../controllers/InvoiceController"); 
+const {addCustomerInvoice, customerInvoices, daySaleReport,getBIlledInvoices,getPaidList,getWinningAmount} = require("../controllers/InvoiceController"); 
 const  registerApi = require("../controllers/register"); 
 const  loginApi = require("../controllers/login"); 
 // router is an instance of the express router.
@@ -38,6 +38,9 @@ router.post("/day_sales_report",passport.authenticate('jwt', { session: false })
 router.get("/billedInvoices",passport.authenticate('jwt', { session: false }),getBIlledInvoices);
 
 router.get("/paidList",passport.authenticate('jwt', { session: false }),getPaidList);
+
+router.post("/winning_amount",passport.authenticate('jwt', { session: false }),getWinningAmount);
+
 
 router.use(loginApi);
 

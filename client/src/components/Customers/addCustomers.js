@@ -1,11 +1,11 @@
-import React, { useState,useEffect } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form"; 
 import '../styles.css';
  import axios from 'axios';
  import { useContextData } from "../../context/Mycontext";
 export default function AddCustomers(props) {
   const {customers, updateCustomers} =useContextData();
-  const {products, setProducts} = useContextData();
+  const {products} = useContextData();
   const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus,setValue} = useForm()
   const [
     isSuccessfullySubmitted,

@@ -12,11 +12,9 @@ function MyContextProvider({ children }) {
     const [products, setProducts] = useState([]);
     const [token, setToken] = useState('');
     const updateCustomers = (customers) => {
-      console.log("<><><>< customers "+JSON.stringify(customers));
       setCustomers(customers);
       };
       const updateProducts = (products) => {
-        console.log("<><><>< products "+JSON.stringify(products));
         setProducts(products);
         };
     

@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { useForm, useWatch } from "react-hook-form"; 
+import React, { useState,  useEffect } from "react";
+import { useForm } from "react-hook-form"; 
 import '../styles.css';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import DatalistInput from 'react-datalist-input';
@@ -16,6 +16,7 @@ export default function Invoices() {
   const [item, setItem] = useState(); 
   const [billedinvoices, setBilledinvoices] = useState([]);
   const [balance, setBalance] = useState(0); 
+  let arr = [];
   const [form, setForm] = useState({
     customer:"",
     customerName: "",
@@ -30,8 +31,13 @@ export default function Invoices() {
  
  useEffect(() => {
   async function getBilledInvoices() {    
-    const response = await axios.get(`billedInvoices`);   
-    setBilledinvoices(response.data);
+    try{
+      const response = await axios.get(`billedInvoices`);
+      setBilledinvoices(response.data);
+    }
+    catch(e){
+      setIsSuccessfullySubmitted('Error');  
+    }
   }
   getBilledInvoices();
   return;
@@ -72,10 +78,10 @@ const Record = (props) => (
            className={`form-control table-input-control ${errors.qtys?.[props.product.productId] ? 'is-invalid' : ''}`}
            name={`qtys.PId${props.product.productId}`}  
            disabled={isSubmitting}   
+           placeholder="0"
            onWheel={(e) => e.target.blur()}
            onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
            {...register(`qtys.PId${props.product.productId}`,{
-            required: true,
             onChange: (e) => {
               setValue(`totals.PId${props.product.productId}`, (e.target.value * getValues(`retailPrices.PId${props.product.productId}`)))
               setValue(`costTotals.PId${props.product.productId}`, (e.target.value * getValues(`wholeSalePrices.PId${props.product.productId}`)))            
@@ -104,7 +110,7 @@ const Record = (props) => (
                   }
                 },
             validate: {
-              matchPattern: (v) => /^[0-9]\d*/.test(v) || "Only positive values are allowed"
+              matchPattern: (v) => /^[0-9]\d*|^$/.test(v) || "Only positive values are allowed"
             }
           })}
          />
@@ -118,7 +124,8 @@ const Record = (props) => (
            className="form-control table-input-control totalClass"
            disabled={true}
            name={`totals.PId${props.product.productId}`}       
-           {...register(`totals.PId${props.product.productId}`)}         
+           {...register(`totals.PId${props.product.productId}`,{
+           defaultValue : 0})}         
          />
          <input
            type="text"
@@ -151,9 +158,13 @@ function recordList() {
    });
  }
  }
- async function handleRegistration(data) {
+const handleRegistration = async (data) => {
   if(data){          
-           if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;         
+           if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;     
+           Object.keys(data.qtys).forEach(function (key,index) { 
+            console.log(data.qtys[key]);
+            if(data.qtys[key] === '') {data.qtys[key]=0;}
+           });
           try {
             setBalance(data['totalBalance'])
             const response =  await axios.post("add_invoice", data);        
@@ -174,9 +185,9 @@ function recordList() {
  // This following section will display the form that takes the input from the user.
  return (
    <div>  
-     <form onSubmit={handleSubmit((e)=>handleRegistration(e))}> 
+     <form onSubmit={handleSubmit(handleRegistration)}> 
      <div className="text-success">{isSuccessfullySubmitted === 'Success' ? "Invoice submitted successfully." : ""}</div>      
-    <div className="text-danger">{isSuccessfullySubmitted === 'Error' ? "Error in submitting Invoice" : ""}</div>
+    <div className="text-danger">{isSuccessfullySubmitted === 'Error' ? "Service is down, please try again later" : ""}</div>
     {isSubmitting && (<div class="overlay">
                   <div class="overlay__wrapper">
                     <div class="spinner-grow text-primary overlay__spinner" 
@@ -342,8 +353,9 @@ function recordList() {
                       <th>{product.productName}</th>
               );
             })}
-             <th>W Amount</th>
+             <th>Excess</th>
              <th>Bill Total</th>
+             <th>Balance</th>
             </tr>
           </thead>
           <tbody>
@@ -356,10 +368,25 @@ function recordList() {
                       })}
                       <td>{billedInvoice.winningAmount}</td>
                       <td>{billedInvoice.billTotal}</td>
+                      <td>{billedInvoice.billTotal - billedInvoice.winningAmount}</td>                      
                 </tr>
               );
             })}
-          </tbody>
+            <tr>
+              <td></td>
+              {(billedinvoices.filter(x => x.customerId === item)).map((billedInvoice,index) => {
+                return(
+                  index === 0 ? Object.keys(billedInvoice.qtys).map((key,index) =>{ 
+                    return <td></td>
+                     }) :"")
+                    })}              
+              <td></td>
+              <td style={{fontWeight:"bold"}}>Total</td>
+            <td>{(Object.values(billedinvoices.filter(x => x.customerId === item))).map((billedInvoice) => 
+                      billedInvoice.billTotal - billedInvoice.winningAmount).reduce((a, b) => a + b, 0)
+            }</td>
+            </tr>
+          </tbody>          
           </table> :""}
         </Accordion.Body>
       </Accordion.Item>

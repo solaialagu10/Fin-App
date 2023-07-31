@@ -22,6 +22,9 @@ const SalesSchema = new mongoose.Schema({
   userId:{
     type:String,
     required:true
+  },
+  invoiceId:{
+    type:String,
   }
 });
 function loadModel(modelName, modelSchema) {
