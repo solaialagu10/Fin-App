@@ -318,3 +318,25 @@ body, html {
     font-weight: 700;
     border-radius: 3px;
     }
+
+ 
+
+    .sales-report-table td:nth-of-type(1) {
+        background: #B8DAFF;
+      }
+      .sales-report-table td:nth-of-type(2) {
+        background: #F5C6CB;
+      }
+      .sales-report-table td:nth-of-type(3) {
+        background: #FFEEBA;
+      }
+      .sales-report-table td:nth-of-type(4) {
+        background: #BEE5EB;
+      }
+      .sales-report-table td:nth-of-type(5) {
+        background: #DADADA;
+      }
+      .sales-report-table td:nth-of-type(6) {
+        background: #C3E6CB;
+      }
+      

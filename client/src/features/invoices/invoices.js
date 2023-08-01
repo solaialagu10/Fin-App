@@ -318,7 +318,7 @@ const handleRegistration = async (data) => {
          <input
            type="submit"
            value="Submit"
-           disabled={isSubmitting}
+           disabled={isSubmitting || isSuccessfullySubmitted === 'Success'}
            className="btn btn-primary"
          />
          </div>
@@ -326,7 +326,7 @@ const handleRegistration = async (data) => {
           <input
             type="reset"
             value="Reset"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isSuccessfullySubmitted === 'Success'}
             className="btn btn-primary" 
             onClick={() =>
               {

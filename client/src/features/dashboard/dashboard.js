@@ -75,7 +75,12 @@ export default function Dashboard() {
       <Accordion.Item eventKey="0">
         <Accordion.Header>Customer Report</Accordion.Header>
         <Accordion.Body>
-        <table className="table table-striped table-bordered " >
+        <table className="table table-bordered sales-report-table" >
+        <colgroup>
+          <col class="grey" style={{backgroundColor: "#D6EEEE"}}/>
+          <col class="red"  />
+          <col class="blue" />
+        </colgroup>
           <thead>
             <tr>
               <th>Customer Name</th>
