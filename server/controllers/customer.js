@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const {Customer} = require("../models/customerModel");
-const {Paid} = require("../models/paidModel");
+const {Customer} = require("../models/customer");
+const {Paid} = require("../models/paid");
 const getCustomers = async (req, res) => {    
   const customers = await Customer.find({userId:req.user});     
   try {

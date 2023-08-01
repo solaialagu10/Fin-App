@@ -1,7 +1,7 @@
 const express = require("express");
-const {getProducts, editProduct, deleteProduct,addProduct} = require("../controllers/ProductController"); 
-const {addCustomer, getCustomers,deleteCustomer,editCustomer,updateCustomerAmount} = require("../controllers/CustomerController"); 
-const {addCustomerInvoice, customerInvoices, daySaleReport,getBIlledInvoices,getPaidList,getWinningAmount} = require("../controllers/InvoiceController"); 
+const {getProducts, editProduct, deleteProduct,addProduct} = require("../controllers/product"); 
+const {addCustomer, getCustomers,deleteCustomer,editCustomer,updateCustomerAmount} = require("../controllers/customer"); 
+const {addCustomerInvoice, customerInvoices, daySaleReport,getBIlledInvoices,getPaidList,getWinningAmount} = require("../controllers/invoice"); 
 const  registerApi = require("../controllers/register"); 
 const  loginApi = require("../controllers/login"); 
 // router is an instance of the express router.

@@ -4,12 +4,12 @@ import './App.css';
 import { Route, Routes } from "react-router-dom";
 import { RequireAuth } from "react-auth-kit";
 // We import all the components we need in our app
-import Customers from "./components/Customers/customers";
-import AddCustomers from "./components/Customers/addCustomers";
-import CustomerList from "./components/Customers/customerList";
-import Products from "./components/Products/products";
-import Invoices from "./components/Invoices/invoices";
-import Dashboard from "./components/Dashboard/dashboard";
+import Customers from "./features/customers/customers";
+import AddCustomers from "./features/customers/addCustomers";
+import CustomerList from "./features/customers/customerList";
+import Products from "./features/products/products";
+import Invoices from "./features/invoices/invoices";
+import Dashboard from "./features/dashboard/dashboard";
 import Login from "./pages/login/login";
 import Register from "./pages/register/register";
 import Layout from "./pages/layout";

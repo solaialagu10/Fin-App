@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 import AddCustomers from "./addCustomers";
 import CustomerList from "./customerList";
 import EditCustomers from "./editCustomers";
-import '../styles.css';
+import '../../common/styles.css';
  
 export default function Customers() {
  

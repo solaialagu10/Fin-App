@@ -306,3 +306,15 @@ body, html {
     color: #bbb;
     font-style: italic;
   }
+
+  .green-class{   background: lightgreen;
+  padding: 2px 20px;
+  font-weight: 700;
+  border-radius: 3px;
+  }
+
+  .red-class{   background: lightcoral;
+    padding: 2px 20px;
+    font-weight: 700;
+    border-radius: 3px;
+    }

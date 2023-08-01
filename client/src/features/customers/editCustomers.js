@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form"; 
-import '../styles.css';
+import '../../common/styles.css';
 import axios from "axios";
 import { useContextData } from "../../context/Mycontext";
 export default function EditCustomers(props) {
@@ -16,7 +16,6 @@ export default function EditCustomers(props) {
   });
   useEffect(() => {
     async function setData() {
-      console.log(JSON.stringify(props.row[0]));
       setForm(props.row[0]);
     }
     setData();

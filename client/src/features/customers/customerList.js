@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ReactBSTables from '../tableBootstrap';
+import ReactBSTables from '../../common/tableBootstrap';
 import moment from "moment";
 import axios, { AxiosError } from "axios";
 import { useContextData } from "../../context/Mycontext";
@@ -11,6 +11,7 @@ export default function CustomerList(props){
     <span>{moment(cell).format("LLL")}</span>
   );  
   }
+  const [error,setError] = useState(false);
   const [paidlist, setPaidlist] = useState([]);
   const [deletemessage, setDeletemessage] = useState(false);
   let [columns,setColumns]=useState([{
@@ -79,6 +80,7 @@ useEffect(() => {
       catch (err) {
         if(err && err instanceof AxiosError)
           console.log("error"+err);
+          setError(true); 
       }
   }  
   getPaidList();
@@ -88,9 +90,14 @@ useEffect(() => {
 // This method will delete a record
 async function deleteRecord(selected) {
   setDeletemessage(false);
-  const response = await axios.post("deleteCustomer", selected); 
-  setDeletemessage(true);
-  updateCustomers(response.data);
+    try{
+        const response = await axios.post("deleteCustomer", selected); 
+        setDeletemessage(true);
+        updateCustomers(response.data);
+    }
+    catch(e){
+      setError(true); 
+    }
 }
 
 function editRecord(selectedRow){
@@ -100,6 +107,7 @@ function editRecord(selectedRow){
 
   return (
     <div>
+      <div className="text-danger">{error ? "Service is down, please try again later" : ""}</div>
       {deletemessage === true && <div className="text-success">Customer(s) deleted successfully.</div>}     
       <ReactBSTables data={customers} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord} paidList={paidlist} keyField="customerName"/>      
     </div>

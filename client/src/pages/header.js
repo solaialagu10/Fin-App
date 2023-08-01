@@ -1,5 +1,4 @@
-import { Outlet, useNavigate } from 'react-router-dom';
-import Navbar from "../components/navbar";
+import {  useNavigate } from 'react-router-dom';
 import '../App.css';
 import { useSignOut } from 'react-auth-kit';
 import {useAuthUser} from 'react-auth-kit';

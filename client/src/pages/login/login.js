@@ -17,6 +17,8 @@ function Login() {
         formState: { errors,isSubmitting },
     } = useForm();
  
+ 
+
     const onSubmit =  async (data) => { 
         const settings = {
             headers: {
@@ -25,6 +27,7 @@ function Login() {
             body: JSON.stringify(data),
           };
           try {
+            
             const response =  await axios.post("login", data)
                 setToken(response.data.token);
                 signIn({
@@ -37,11 +40,14 @@ function Login() {
                 navigate('/dashboard');    
             } catch (e) {        
               console.log("<><<>< error"+e);
-              setError("Error in login, please try again later")
+              setTimeout(() => {
+                setError("Error in login, please try again later")
+              }, 10000);
           } 
     };
     return (
         <div className="col-md-12">
+            
             <div className="login-card card-container">
                 <img
                 src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
@@ -50,6 +56,9 @@ function Login() {
                 />
                 <h3 className="message">Welcome Back</h3>
                 <form onSubmit={handleSubmit(onSubmit)}>
+                {isSubmitting && (
+                                <span className="spinner-border spinner-border-sm spinner-class"></span>
+                            )}
                     <div className="form-group">
                          <label htmlFor="userName">Username</label>
                          <input type="text"
@@ -61,6 +70,7 @@ function Login() {
                     <small className="invalid-feedback">
                                 {errors.userName?.message}
                            </small>
+                          
                     <div className="form-group">
                        <label htmlFor="password">Password</label>                       
                         <input type="password" 
@@ -73,9 +83,7 @@ function Login() {
                            </small>    
                     <div className="form-group">
                             <input type="submit" value="Login" className="btn btn-primary btn-block" disabled={isSubmitting} /> 
-                            {isSubmitting && (
-                                <span className="spinner-border spinner-border-sm"></span>
-                            )}
+                            
                            
                     </div>
                 </form>

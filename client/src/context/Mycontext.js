@@ -15,6 +15,7 @@ function MyContextProvider({ children }) {
       setCustomers(customers);
       };
       const updateProducts = (products) => {
+        
         setProducts(products);
         };
     
@@ -22,11 +23,13 @@ function MyContextProvider({ children }) {
     useEffect(() => {
       axios.get("customers")  
         .then(function (response) {
+          console.log("<><<< "+JSON.stringify(response.data));
           setCustomers(response.data);
         })
         .catch((error) => console.log(error));
         axios.get("products")  
         .then(function (response) {
+          console.log("<><<< "+JSON.stringify(response.data));
           setProducts(response.data);
         })
         .catch((error) => console.log(error));

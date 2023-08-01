@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form"; 
-import '../styles.css';
+import '../../common/styles.css';
  import axios from 'axios';
  import { useContextData } from "../../context/Mycontext";
 export default function AddCustomers(props) {

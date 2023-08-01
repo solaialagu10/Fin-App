@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const {Product} = require("../models/productModel");
+const {Product} = require("../models/product");
 
 const getProducts = async (req, res) => {    
         const products = await Product.find({userId:req.user});      

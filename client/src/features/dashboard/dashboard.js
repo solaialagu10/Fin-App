@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import '../styles.css';
+import '../../common/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Accordion from 'react-bootstrap/Accordion';
 import axios from 'axios';
@@ -109,10 +109,10 @@ export default function Dashboard() {
         
         </div>
         <div>
-        Winning total : {parseInt(amount)} 
-        &nbsp;&nbsp;&nbsp;Final amount  : {(Object.values(sales).map((item) => 
+        Winning total : <span className="green-class"> {amount} </span>
+        &nbsp;&nbsp;&nbsp;Final amount  : <span className="red-class"> {(Object.values(sales).map((item) => 
                       item.qty * item.price).reduce((a, b) => a + b, 0)
-            ) -amount}
+            ) -amount}</span>
         </div>
         {sales.length > 0 ? <table className="table table-striped table-bordered " >
           <thead>

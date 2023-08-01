@@ -1,12 +1,13 @@
 import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form";
-import '../styles.css';
+import '../../common/styles.css';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import axios from "axios";
 import { useContextData } from "../../context/Mycontext";
 export default function EditProducts(props) {
-  const {products, updateProducts} = useContextData();  
+  const {products, updateProducts} = useContextData(); 
+  const [apierror,setApierror] = useState(false); 
   // form validation rules 
   const validationSchema = Yup.object().shape({ 
     productName:  Yup.string()
@@ -65,15 +66,20 @@ useEffect(() => {
  // This function will handle the submission.
  async function handleRegistration(data) {
   // const valid = formValidation(data);  
-   const response = await axios.post("update", data);
-   updateProducts(response.data);
-   props.changeTab('Add','Success');  
+    try{
+    const response = await axios.post("update", data);
+    updateProducts(response.data);
+    props.changeTab('Add','Success');  
+    }
+    catch(e){
+      setApierror(true); 
+    }
  }
  
  // This following section will display the form that takes the input from the user.
  return (
    <div>
-     {/* <h3>Add Products</h3> */}
+     <div className="text-danger">{apierror ? "Service is down, please try again later" : ""}</div>
      {isSubmitting && (<div class="overlay">
                   <div class="overlay__wrapper">
                     <div class="spinner-grow text-primary overlay__spinner" 

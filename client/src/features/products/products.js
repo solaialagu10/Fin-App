@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import '../styles.css';
+import '../../common/styles.css';
 import ProductList from "./productList";
 import AddProducts from "./addProducts";
 import EditProducts from "./editProducts";

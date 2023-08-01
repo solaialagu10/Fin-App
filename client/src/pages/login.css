@@ -72,3 +72,9 @@
       margin-top: 10px;
     }
   }
+
+  .spinner-class{
+    text-align:center;   
+    left: 50%; 
+    position: absolute;
+  }

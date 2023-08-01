@@ -1,6 +1,6 @@
 import React, { useState,  useEffect } from "react";
 import { useForm } from "react-hook-form"; 
-import '../styles.css';
+import '../../common/styles.css';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import DatalistInput from 'react-datalist-input';
 import 'react-datalist-input/dist/styles.css';
@@ -77,7 +77,7 @@ const Record = (props) => (
            type="number"
            className={`form-control table-input-control ${errors.qtys?.[props.product.productId] ? 'is-invalid' : ''}`}
            name={`qtys.PId${props.product.productId}`}  
-           disabled={isSubmitting}   
+           disabled={isSuccessfullySubmitted === 'Success' || isSubmitting }   
            placeholder="0"
            onWheel={(e) => e.target.blur()}
            onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
@@ -201,7 +201,7 @@ const handleRegistration = async (data) => {
       label="Select Customers"
       className="invoice-datalist"
       name="customer"
-      onSelect={(item) => { setItem(item.id); setValue('timeline','')}}
+      onSelect={(item) => { setItem(item.id); setValue('timeline',''); setIsSuccessfullySubmitted('');}}
       items= {Object.keys(customers).map(function(key) {
         return {id :customers[key]._id,value: customers[key].customerName};
       })}
@@ -240,6 +240,7 @@ const handleRegistration = async (data) => {
            name="winningAmount"   
            placeholder="0"
            style={{background:"greenyellow"}}
+           disabled = {isSuccessfullySubmitted === 'Success' || isSubmitting}
            onWheel={(e) => e.target.blur()}    
            onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
            {...register('winningAmount',{    

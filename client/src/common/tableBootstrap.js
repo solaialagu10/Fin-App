@@ -13,6 +13,7 @@ import { useContextData } from "../context/Mycontext";
     const [selected, setSelected] = useState([]);
     const [selectedRw, setSelectedRw] = useState([]);
     const [issubmit,setIssubmit] = useState(false);
+    const [error,setError] = useState(false);
     const datatable = props.data;
     const columns = props.columns;    
     const keyField  =props.keyField;
@@ -22,7 +23,8 @@ import { useContextData } from "../context/Mycontext";
         setIssubmit(true);
         const fetchResponse =  await axios.post("update_amount", datatable);
         updateCustomers(fetchResponse.data);        
-        } catch (e) {        
+        } catch (e) {       
+          setError(true); 
           console.log("<><<>< error"+e);
       }finally{
         setIssubmit(false);
@@ -130,6 +132,7 @@ import { useContextData } from "../context/Mycontext";
               id="spinner"role="status">
             <span class="sr-only"></span>
         </div></div></div>)}
+        <div className="text-danger">{error ? "Service is down, please try again later" : ""}</div>
         <div >
           <div className="form-group delete-btn">
             <button
@@ -158,7 +161,7 @@ import { useContextData } from "../context/Mycontext";
           </div>
           <div >
             <ToolkitProvider
-              data={customers}
+              data={datatable}
               keyField={props.keyField}
               columns={columns}           
               search
