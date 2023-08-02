@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const express =  require("express");
 const router = express.Router();
 const passport = require('passport');
+const { getCustomers } = require("./customer");
 require('../auth/passport');
 
 const addCustomerInvoice = async (req, res) => {  
@@ -183,7 +184,7 @@ const getBIlledInvoices = async(req,res) =>{
         "userId":req.user
     },
     {        
-        customerId:1,timeline:1,totalBalance:1,billTotal:1,qtys:1,retailPrices:1,winningAmount:1
+        _id:1,customerId:1,timeline:1,totalBalance:1,billTotal:1,qtys:1,retailPrices:1,winningAmount:1
     }         
   );   
     res.send(billedInvoices);
@@ -231,12 +232,28 @@ const getPaidList = async (req,res,next) =>{
   }  
 }
 
-
+const deleteInvoice = async(req,res) =>{
+  const value = req.body.billTotal - req.body.winningAmount;
+  console.log("<><><value"+value);
+  try {
+    const deleted = await Invoice.deleteOne( {        
+        _id:req.body._id
+    });
+   const response = await Customer.findOneAndUpdate({_id:req.body.customerId,userId:req.user},{$inc:{totalBalance : -value}},{
+          returnOriginal: false
+        });             
+    getCustomers(req,res);
+  } catch (error) {
+    console.log("<><>< error"+error);
+    res.status(500).send(error);
+  }  
+}
 module.exports ={
   addCustomerInvoice,
   customerInvoices,
   daySaleReport,
   getBIlledInvoices,
   getPaidList,
-  getWinningAmount
+  getWinningAmount,
+  deleteInvoice
 }

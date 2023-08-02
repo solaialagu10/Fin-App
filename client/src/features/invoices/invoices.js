@@ -1,5 +1,6 @@
 import React, { useState,  useEffect } from "react";
 import { useForm } from "react-hook-form"; 
+import { MdDelete,MdEditSquare } from "react-icons/md"
 import '../../common/styles.css';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import DatalistInput from 'react-datalist-input';
@@ -8,27 +9,24 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Accordion from 'react-bootstrap/Accordion';
 import axios from 'axios'; 
 import { useContextData } from "../../context/Mycontext";
-import AccordionCollapse from "react-bootstrap/esm/AccordionCollapse";
 export default function Invoices() {  
   const {products, updateCustomers} = useContextData();  
-  const {customers, setCustomers} =useContextData(); 
+  const {customers} =useContextData(); 
   const [active, setActive]  = React.useState([]);
   const [item, setItem] = useState(); 
   const [billedinvoices, setBilledinvoices] = useState([]);
   const [balance, setBalance] = useState(0); 
-  let arr = [];
   const [form, setForm] = useState({
     customer:"",
     customerName: "",
     retailPrices:""
   });
-  const [
-    isSuccessfullySubmitted,
-    setIsSuccessfullySubmitted,
-  ] = useState('');
+  const [isSuccessfullySubmitted,setIsSuccessfullySubmitted] = useState('');
+  const [message,setMessage] = useState('');
+  const [loading,setLoading] = useState(false);
+  const [formError,setFormError] = useState(false);
   const { register, handleSubmit,watch,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue,getValues } = useForm()
-  // This method fetches the records from the database.
- 
+   
  useEffect(() => {
   async function getBilledInvoices() {    
     try{
@@ -36,11 +34,10 @@ export default function Invoices() {
       setBilledinvoices(response.data);
     }
     catch(e){
-      setIsSuccessfullySubmitted('Error');  
+      setFormError(true);
     }
   }
-  getBilledInvoices();
-  return;
+  getBilledInvoices();  
 }, []);
 
 useEffect(() => {
@@ -57,6 +54,30 @@ function getSum(prev, cur) {
   return parseInt(prev) + parseInt(cur);
   }
   return prev;
+}
+async function  deleteInvoice (invoice) {
+  try{
+      setIsSuccessfullySubmitted('');
+      setMessage('');
+      setError(false);
+      setLoading(true);
+      setBilledinvoices(billedinvoices.filter(x => x._id !== invoice._id));
+      const value = getValues('totalBalance');
+      setValue('totalBalance',value - (invoice.billTotal - invoice.winningAmount))
+      const response =  await axios.post("delete_invoice", invoice);  
+      updateCustomers(response.data);
+      setMessage('Invoice deleted successfully');
+      
+  }
+  catch(e){
+    setFormError(true);         
+  } finally{
+    setLoading(false);
+  }
+}
+
+function editInvoice(invoice) {
+  console.log("<><><>< edit invoice");
 }
 
 const Record = (props) => (
@@ -176,19 +197,18 @@ const handleRegistration = async (data) => {
                 setIsSuccessfullySubmitted('Success');
               }             
             } catch (e) {   
-              setIsSuccessfullySubmitted('Error');     
-              console.log("<><<>< error"+e);
+              setFormError(true);
           } 
   }
  }
  
- // This following section will display the form that takes the input from the user.
  return (
    <div>  
      <form onSubmit={handleSubmit(handleRegistration)}> 
-     <div className="text-success">{isSuccessfullySubmitted === 'Success' ? "Invoice submitted successfully." : ""}</div>      
-    <div className="text-danger">{isSuccessfullySubmitted === 'Error' ? "Service is down, please try again later" : ""}</div>
-    {isSubmitting && (<div class="overlay">
+     <div className="text-success" style={{fontWeight : "600"}}>{isSuccessfullySubmitted === 'Success' ? "Invoice submitted successfully." : ""}</div>      
+     <div className="text-success" style={{fontWeight : "600"}}>{message?.length > 0 ? message : ""}</div>           
+     <div className="text-danger" style={{fontWeight : "600"}}>{formError ? "Service is down, please try again later" : ""}</div>
+    {(isSubmitting || loading) && (<div class="overlay">
                   <div class="overlay__wrapper">
                     <div class="spinner-grow text-primary overlay__spinner" 
               id="spinner"role="status">
@@ -357,6 +377,7 @@ const handleRegistration = async (data) => {
              <th>Excess</th>
              <th>Bill Total</th>
              <th>Balance</th>
+             <th>Options</th>
             </tr>
           </thead>
           <tbody>
@@ -369,11 +390,14 @@ const handleRegistration = async (data) => {
                       })}
                       <td>{billedInvoice.winningAmount}</td>
                       <td>{billedInvoice.billTotal}</td>
-                      <td>{billedInvoice.billTotal - billedInvoice.winningAmount}</td>                      
+                      <td>{billedInvoice.billTotal - billedInvoice.winningAmount}</td> 
+                      <td> <MdDelete onClick={(e)=>deleteInvoice(billedInvoice)} style={{cursor:"pointer",fontSize: '16px'}}/>
+                           <MdEditSquare onClick={(e)=>editInvoice(billedInvoice)} style={{cursor:"pointer",fontSize: '16px'}}/>
+                      </td>                     
                 </tr>
               );
             })}
-            <tr>
+           {billedinvoices.filter(x => x.customerId === item).length >0 ? <tr>
               <td></td>
               {(billedinvoices.filter(x => x.customerId === item)).map((billedInvoice,index) => {
                 return(
@@ -386,7 +410,7 @@ const handleRegistration = async (data) => {
             <td>{(Object.values(billedinvoices.filter(x => x.customerId === item))).map((billedInvoice) => 
                       billedInvoice.billTotal - billedInvoice.winningAmount).reduce((a, b) => a + b, 0)
             }</td>
-            </tr>
+            </tr>:""}
           </tbody>          
           </table> :""}
         </Accordion.Body>
