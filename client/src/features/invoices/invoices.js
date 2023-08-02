@@ -180,10 +180,10 @@ function recordList() {
  }
  }
 const handleRegistration = async (data) => {
-  if(data){          
+  
+  if(data["billTotal"] !== 0){          
            if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;     
-           Object.keys(data.qtys).forEach(function (key,index) { 
-            console.log(data.qtys[key]);
+           Object.keys(data.qtys).forEach(function (key,index) {             
             if(data.qtys[key] === '') {data.qtys[key]=0;}
            });
           try {
