@@ -313,7 +313,8 @@ body, html {
   border-radius: 3px;
   }
 
-  .red-class{   background: lightcoral;
+  .red-class{  
+     background: lightcoral;
     padding: 2px 20px;
     font-weight: 700;
     border-radius: 3px;
@@ -340,3 +341,20 @@ body, html {
         background: #C3E6CB;
       }
       
+
+      .day-report-table th{ 
+        width:25%;
+      }
+  
+    .clear{
+        /* position: absolute; */
+        right: 0px;
+    }
+
+    .modal-dialog{
+        width:400px !important;
+    }
+    .modal-body{
+        text-align: center;
+        margin-top:25px;
+    }

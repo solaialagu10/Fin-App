@@ -1,6 +1,6 @@
 import React, { useState,  useEffect } from "react";
 import { useForm } from "react-hook-form"; 
-import { MdDelete,MdEditSquare } from "react-icons/md"
+import { MdDelete,MdEditSquare,MdClear } from "react-icons/md";
 import '../../common/styles.css';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import DatalistInput from 'react-datalist-input';
@@ -9,9 +9,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Accordion from 'react-bootstrap/Accordion';
 import axios from 'axios'; 
 import { useContextData } from "../../context/Mycontext";
+import ModalOutlet from "../../common/modal";
 export default function Invoices() {  
-  const {products, updateCustomers} = useContextData();  
-  const {customers} =useContextData(); 
+  const {products,customers, updateCustomers} = useContextData();  
+  const [modalShow, setModalShow] = React.useState(false);
+  const [body, setBody] = React.useState('');
+  const [title, setTitle] = React.useState('');
+  const [deletedInvoice, setDeletedInvoice] = React.useState('');
   const [active, setActive]  = React.useState([]);
   const [item, setItem] = useState(); 
   const [billedinvoices, setBilledinvoices] = useState([]);
@@ -55,18 +59,21 @@ function getSum(prev, cur) {
   }
   return prev;
 }
-async function  deleteInvoice (invoice) {
+async function  deleteInvoice () {
   try{
+      const invoice = deletedInvoice;
+      console.log("<><><< "+JSON.stringify(invoice));
       setIsSuccessfullySubmitted('');
       setMessage('');
       setError(false);
       setLoading(true);
       setBilledinvoices(billedinvoices.filter(x => x._id !== invoice._id));
       const value = getValues('totalBalance');
-      setValue('totalBalance',value - (invoice.billTotal - invoice.winningAmount))
       const response =  await axios.post("delete_invoice", invoice);  
       updateCustomers(response.data);
       setMessage('Invoice deleted successfully');
+      reset();
+      setValue('totalBalance',value - (invoice.billTotal - invoice.winningAmount))
       
   }
   catch(e){
@@ -180,7 +187,7 @@ function recordList() {
  }
  }
 const handleRegistration = async (data) => {
-  
+  setMessage('');
   if(data["billTotal"] !== 0){          
            if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;     
            Object.keys(data.qtys).forEach(function (key,index) {             
@@ -225,8 +232,9 @@ const handleRegistration = async (data) => {
       items= {Object.keys(customers).map(function(key) {
         return {id :customers[key]._id,value: customers[key].customerName};
       })}
-      {...register('customer')}             
-     />
+      {...register('customer')}         
+     ></DatalistInput>
+     
      <div className="form-group col-md-12">
          <label htmlFor="name">Balance</label>         
          <input
@@ -235,7 +243,8 @@ const handleRegistration = async (data) => {
            name="totalBalance"      
            style={{background:"indianred"}}      
            disabled={true}        
-           {...register('totalBalance')}             
+           {...register('totalBalance',{
+            value:0})}             
          />
        </div>
      </div>
@@ -391,7 +400,11 @@ const handleRegistration = async (data) => {
                       <td>{billedInvoice.winningAmount}</td>
                       <td>{billedInvoice.billTotal}</td>
                       <td>{billedInvoice.billTotal - billedInvoice.winningAmount}</td> 
-                      <td> <MdDelete onClick={(e)=>deleteInvoice(billedInvoice)} style={{cursor:"pointer",fontSize: '16px'}}/>
+                      <td> <MdDelete onClick={(e) => {setModalShow(true);
+                          setTitle('Delete Invoice');
+                          setBody('Do you want to delete invoice for '+billedInvoice.timeline);
+                        setDeletedInvoice(billedInvoice);}
+                      } style={{cursor:"pointer",fontSize: '16px'}}/>
                            <MdEditSquare onClick={(e)=>editInvoice(billedInvoice)} style={{cursor:"pointer",fontSize: '16px'}}/>
                       </td>                     
                 </tr>
@@ -416,6 +429,7 @@ const handleRegistration = async (data) => {
         </Accordion.Body>
       </Accordion.Item>
       </Accordion>
+        <ModalOutlet show={modalShow} onHide={() => setModalShow(false)} body={body} title ={title} function={() => deleteInvoice()}/>
       </form>
    </div>
  );

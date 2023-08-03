@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import '../../common/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Accordion from 'react-bootstrap/Accordion';
+import { MdOutlineArrowUpward ,MdArrowUpward,MdArrowDownward} from "react-icons/md";
 import axios from 'axios';
 export default function Dashboard() { 
   const [invoices, setInvoices] = useState([]);
@@ -28,7 +29,8 @@ export default function Dashboard() {
       const response =  await axios.post("day_sales_report", inputJson);
       setSales(response.data);      
       const response1 =  await axios.post("winning_amount", inputJson);
-      setAmount(response1.data[0]?.qty);
+      const amount = response1.data[0]?.winningAmount.length > 0 ? response1.data[0].winningAmount : 0;
+      setAmount(amount);
       } catch (e) {        
         setError(true);
         console.log("<><<>< error"+e);
@@ -45,7 +47,12 @@ export default function Dashboard() {
         <td>{invoice.totalCost}</td>         
         <td>{invoice.totalBalance}</td>
         <td>{invoice.winningAmount}</td>
-        <td>{invoice.billTotal - invoice.totalCost}</td>
+        <td>
+         {invoice.billTotal - invoice.totalCost > 0 ?
+        <MdArrowUpward style={{paddingBottom:'5px',color: "green",fontSize: '25px'}}/>
+         : <MdArrowDownward style={{paddingBottom:'5px',color: "red",fontSize: '25px'}}/>}
+         {invoice.billTotal - invoice.totalCost}
+        </td>
       </tr>
      );
    });
@@ -75,12 +82,7 @@ export default function Dashboard() {
       <Accordion.Item eventKey="0">
         <Accordion.Header>Customer Report</Accordion.Header>
         <Accordion.Body>
-        <table className="table table-bordered sales-report-table" >
-        <colgroup>
-          <col class="grey" style={{backgroundColor: "#D6EEEE"}}/>
-          <col class="red"  />
-          <col class="blue" />
-        </colgroup>
+        <table className="table table-bordered sales-report-table" >       
           <thead>
             <tr>
               <th>Customer Name</th>
@@ -115,11 +117,11 @@ export default function Dashboard() {
         </div>
         <div>
         Winning total : <span className="green-class"> {amount} </span>
-        &nbsp;&nbsp;&nbsp;Final amount  : <span className="red-class"> {(Object.values(sales).map((item) => 
+        &nbsp;&nbsp;&nbsp;Final amount  :  <span className="red-class"> {(Object.values(sales).map((item) => 
                       item.qty * item.price).reduce((a, b) => a + b, 0)
-            ) -amount}</span>
+            ) - amount}</span>
         </div>
-        {sales.length > 0 ? <table className="table table-striped table-bordered " >
+        {sales.length > 0 ? <table className="table table-striped table-bordered day-report-table" >
           <thead>
             <tr>
               <th>Product Name</th>

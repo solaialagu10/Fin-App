@@ -23,7 +23,7 @@ const SalesSchema = new mongoose.Schema({
     type:String,
     required:true
   },
-  invoiceId:{
+  customerId:{
     type:String,
   }
 });

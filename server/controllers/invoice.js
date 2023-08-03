@@ -26,8 +26,8 @@ const addCustomerInvoice = async (req, res) => {
       };    
         
       try {        
-        const resp = await invoice.save();
-        await Customer.findOneAndUpdate(myquery,newvalues,{
+         await invoice.save();
+         await Customer.findOneAndUpdate(myquery,newvalues,{
           returnOriginal: false
         });
         const value = await Sales.find({ $and:[{userId:req.user},{timeline : req.body.timeline}, {modifiedDate : {$gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}}]});
@@ -35,7 +35,7 @@ const addCustomerInvoice = async (req, res) => {
         if(value.length == 0){
           Object.keys(req.body.qtys).forEach(function (key,index) { 
             const sales = new Sales({
-              invoiceId:resp._id,
+              customerId:myquery._id,
               productName: key.substring(3),
               timeline: req.body.timeline,
               qty: req.body.qtys[key],
@@ -46,7 +46,7 @@ const addCustomerInvoice = async (req, res) => {
         })}
         else{
           Object.keys(req.body.qtys).forEach(function (key,index) {                 
-            updateFun(Sales,req,key);
+            updateFun(Sales,req,key,req.body.qtys[key]);
         })
         }      
         let customers = await Customer.find({userId:req.user});  
@@ -59,11 +59,11 @@ const addCustomerInvoice = async (req, res) => {
 
 
 
-const updateFun = async(Sales,req,key) =>{
+const updateFun = async(Sales,req,key,value) =>{
   await Sales.findOneAndUpdate({timeline : req.body.timeline, productName:key.substring(3), modifiedDate : {
     $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
     },userId:req.user},
-    {$inc:{qty : req.body.qtys[key]}},{$set:{modifiedDate : new Date()}},{
+    {$inc:{qty : value}},{$set:{modifiedDate : new Date()}},{
       returnOriginal: false
     });
 }
@@ -101,7 +101,7 @@ const customerInvoices = async (req, res) => {
                   
               }
           }           
-      ]);   
+      ]).sort({ "_id": 1 });   
         res.send(invoices);
       } catch (error) {
         console.log("<><>< error"+error);
@@ -140,7 +140,7 @@ const daySaleReport = async (req, res) =>{
             price: { "$first" : "$table.price"}              
           }
       }           
-  ]);   
+  ]).sort({ "productName": 1 });   
     res.send(salesReport);
   } catch (error) {
     console.log("<><>< error"+error);
@@ -163,7 +163,7 @@ const getWinningAmount = async(req,res) =>{
       {
         $group : {
           "_id" :{product:"$userId"},
-          qty : {$sum: "$winningAmount"},    
+          winningAmount : {$sum: "$winningAmount"},    
         }
     }         
   ]);   
@@ -173,8 +173,8 @@ const getWinningAmount = async(req,res) =>{
     res.status(500).send(error);
   }  
 }
-
 const getBIlledInvoices = async(req,res) =>{
+  
   try {
     const billedInvoices = await Invoice.find(
       {
@@ -234,12 +234,14 @@ const getPaidList = async (req,res,next) =>{
 
 const deleteInvoice = async(req,res) =>{
   const value = req.body.billTotal - req.body.winningAmount;
-  console.log("<><><value"+value);
   try {
-    const deleted = await Invoice.deleteOne( {        
+    Object.keys(req.body.qtys).forEach(function (key,index) {                 
+      updateFun(Sales,req,key,-req.body.qtys[key]);
+      })
+     await Invoice.deleteOne( {        
         _id:req.body._id
     });
-   const response = await Customer.findOneAndUpdate({_id:req.body.customerId,userId:req.user},{$inc:{totalBalance : -value}},{
+    await Customer.findOneAndUpdate({_id:req.body.customerId,userId:req.user},{$inc:{totalBalance : -value}},{
           returnOriginal: false
         });             
     getCustomers(req,res);

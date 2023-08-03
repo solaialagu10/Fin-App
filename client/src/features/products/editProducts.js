@@ -130,7 +130,7 @@ useEffect(() => {
            className="form-control"
            id="price"
            placeholder="Enter Product Price"
-           disabled={isSubmitting}        
+           disabled={true}        
            {...register('price', { 
             required: "Please enter price" }) }
          />
