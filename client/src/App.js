@@ -8,7 +8,7 @@ import Customers from "./features/customers/customers";
 import AddCustomers from "./features/customers/addCustomers";
 import CustomerList from "./features/customers/customerList";
 import Products from "./features/products/products";
-import Invoices from "./features/invoices/invoices";
+import Home from "./features/invoice/home";
 import Dashboard from "./features/dashboard/dashboard";
 import Login from "./pages/login/login";
 import Register from "./pages/register/register";
@@ -22,7 +22,7 @@ const App = () => {
             <Layout />
           </RequireAuth>}>
             <Route exact path="/dashboard" element={<Dashboard />} />
-            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/invoices" element={<Home />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/products" element={<Products />} />
             <Route path="/customerList" element={<CustomerList />} />

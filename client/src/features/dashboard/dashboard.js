@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [sales, setSales] = useState([]);
   const [error,setError] = useState(false);
   const [amount, setAmount] = useState(0);
+  const [loading,setLoading] = useState(false);
   useEffect(() => {
     async function getInvoices() {
       try {
@@ -26,14 +27,18 @@ export default function Dashboard() {
   async function getList(e){
     const inputJson = {"input":e.target.value};
     try {
-      const response =  await axios.post("day_sales_report", inputJson);
-      setSales(response.data);      
+      setLoading(true);
+      const response =  await axios.post("day_sales_report", inputJson);         
       const response1 =  await axios.post("winning_amount", inputJson);
-      const amount = response1.data[0]?.winningAmount.length > 0 ? response1.data[0].winningAmount : 0;
+      const amount = response1.data[0]?.winningAmount === undefined ?  0 : response1.data[0]?.winningAmount;
+      setSales(response.data);   
+      console.log(response1.data[0]?.winningAmount);
       setAmount(amount);
       } catch (e) {        
         setError(true);
         console.log("<><<>< error"+e);
+    }finally{
+      setLoading(false);
     }
   }
   
@@ -100,6 +105,12 @@ export default function Dashboard() {
       <Accordion.Item eventKey="1">
         <Accordion.Header>Total Sales Report</Accordion.Header>
         <Accordion.Body>
+        {loading && (<div class="overlay">
+                  <div class="overlay__wrapper">
+                    <div class="spinner-grow text-primary overlay__spinner" 
+              id="spinner"role="status">
+            <span class="sr-only"></span>
+        </div></div></div>)}
         <div className="dashboard-select">
           <select
                 className="form-select custom-select"

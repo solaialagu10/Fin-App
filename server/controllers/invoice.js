@@ -10,6 +10,7 @@ const passport = require('passport');
 const { getCustomers } = require("./customer");
 require('../auth/passport');
 
+
 const addCustomerInvoice = async (req, res) => {  
   let myquery = {_id: req.body._id}; 
   "_id email location mobileNo wholeSalePrices".split(" ").forEach(e => delete req.body[e]);  
@@ -27,10 +28,10 @@ const addCustomerInvoice = async (req, res) => {
         
       try {        
          await invoice.save();
-         await Customer.findOneAndUpdate(myquery,newvalues,{
+        const resp = await Customer.findOneAndUpdate(myquery,newvalues,{
           returnOriginal: false
         });
-        const value = await Sales.find({ $and:[{userId:req.user},{timeline : req.body.timeline}, {modifiedDate : {$gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}}]});
+        const value = await Sales.find({ $and:[{customerId:resp._id},{timeline : req.body.timeline}, {modifiedDate : {$gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}}]});
 
         if(value.length == 0){
           Object.keys(req.body.qtys).forEach(function (key,index) { 
@@ -58,7 +59,6 @@ const addCustomerInvoice = async (req, res) => {
 };
 
 
-
 const updateFun = async(Sales,req,key,value) =>{
   await Sales.findOneAndUpdate({timeline : req.body.timeline, productName:key.substring(3), modifiedDate : {
     $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
@@ -67,6 +67,16 @@ const updateFun = async(Sales,req,key,value) =>{
       returnOriginal: false
     });
 }
+
+const editUpdateFun = async(Sales,req,key,value,customerId) =>{
+  await Sales.findOneAndUpdate({timeline : req.body.timeline, productName:key.substring(3), modifiedDate : {
+    $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
+    },customerId:customerId},
+    {$set:{qty : value}},{$set:{modifiedDate : new Date()}},{
+      returnOriginal: false
+    });
+}
+
 
 const customerInvoices = async (req, res) => {      
   
@@ -184,9 +194,9 @@ const getBIlledInvoices = async(req,res) =>{
         "userId":req.user
     },
     {        
-        _id:1,customerId:1,timeline:1,totalBalance:1,billTotal:1,qtys:1,retailPrices:1,winningAmount:1
+        _id:1,customerId:1,timeline:1,billTotal:1,qtys:1,retailPrices:1,winningAmount:1,totals:1
     }         
-  );   
+  ).sort({ "timeline": 1 });   
     res.send(billedInvoices);
   } catch (error) {
     console.log("<><>< error"+error);
@@ -238,7 +248,8 @@ const deleteInvoice = async(req,res) =>{
     Object.keys(req.body.qtys).forEach(function (key,index) {                 
       updateFun(Sales,req,key,-req.body.qtys[key]);
       })
-     await Invoice.deleteOne( {        
+      await Sales.deleteMany({customerId:req.body.customerId,timeline:req.body.timeline})
+      await Invoice.deleteOne({        
         _id:req.body._id
     });
     await Customer.findOneAndUpdate({_id:req.body.customerId,userId:req.user},{$inc:{totalBalance : -value}},{
@@ -250,6 +261,40 @@ const deleteInvoice = async(req,res) =>{
     res.status(500).send(error);
   }  
 }
+
+
+
+const editInvoice = async (req, res) => {  
+  let myquery = {_id: req.body._id}; 
+      let newvalues = { 
+            billTotal:req.body.billTotal,
+            qtys  :req.body.qtys,
+            totals:req.body.totals,
+            totalCost: req.body.totalCost,
+            winningAmount:req.body.winningAmount,
+            totalBalance:req.body.totalBalance,
+            modifiedDate: new Date()
+      };           
+      let newvalues2 = {    
+            totalBalance: req.body.totalBalance,
+            modifiedDate: new Date()
+      };           
+      try {        
+        await Invoice.findOneAndUpdate(myquery,newvalues,{
+          returnOriginal: false
+        });
+         await Customer.findOneAndUpdate({_id :req.body.customerId},newvalues2,{
+          returnOriginal: false
+        }); 
+          Object.keys(req.body.qtys).forEach(function (key,index) {                 
+            editUpdateFun(Sales,req,key,req.body.qtys[key],req.body._id);
+        });            
+       getCustomers(req,res);
+      } catch (error) {
+        res.status(500).send(error);
+      }  
+};
+
 module.exports ={
   addCustomerInvoice,
   customerInvoices,
@@ -257,5 +302,6 @@ module.exports ={
   getBIlledInvoices,
   getPaidList,
   getWinningAmount,
-  deleteInvoice
+  deleteInvoice,
+  editInvoice
 }

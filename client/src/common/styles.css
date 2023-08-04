@@ -327,19 +327,24 @@ body, html {
       }
       .sales-report-table td:nth-of-type(2) {
         background: #F5C6CB;
+        font-weight: 800;
       }
       .sales-report-table td:nth-of-type(3) {
         background: #FFEEBA;
       }
       .sales-report-table td:nth-of-type(4) {
         background: #BEE5EB;
+        font-weight: 800;
       }
       .sales-report-table td:nth-of-type(5) {
         background: #DADADA;
       }
       .sales-report-table td:nth-of-type(6) {
         background: #C3E6CB;
+        font-weight: 800;
       }
+
+     
       
 
       .day-report-table th{ 
@@ -352,9 +357,10 @@ body, html {
     }
 
     .modal-dialog{
-        width:400px !important;
+        width:350px !important;
     }
     .modal-body{
         text-align: center;
         margin-top:25px;
+        font-weight:600;
     }

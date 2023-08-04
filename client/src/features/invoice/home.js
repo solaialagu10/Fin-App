@@ -1,35 +1,26 @@
 import React, { useState,  useEffect } from "react";
 import { useForm } from "react-hook-form"; 
-import { MdDelete,MdEditSquare,MdClear } from "react-icons/md";
 import '../../common/styles.css';
-// import 'bootstrap/dist/css/bootstrap.min.css';
 import DatalistInput from 'react-datalist-input';
 import 'react-datalist-input/dist/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Accordion from 'react-bootstrap/Accordion';
 import axios from 'axios'; 
+import  BilledInvoices  from "./billedInvoices";
 import { useContextData } from "../../context/Mycontext";
-import ModalOutlet from "../../common/modal";
-export default function Invoices() {  
+export default function Home() {  
   const {products,customers, updateCustomers} = useContextData();  
-  const [modalShow, setModalShow] = React.useState(false);
-  const [body, setBody] = React.useState('');
-  const [title, setTitle] = React.useState('');
-  const [deletedInvoice, setDeletedInvoice] = React.useState('');
   const [active, setActive]  = React.useState([]);
+  const [balance, setBalance] = useState(0);
   const [item, setItem] = useState(); 
   const [billedinvoices, setBilledinvoices] = useState([]);
-  const [balance, setBalance] = useState(0); 
-  const [form, setForm] = useState({
-    customer:"",
-    customerName: "",
-    retailPrices:""
-  });
+  const [form, setForm] = useState([]);
   const [isSuccessfullySubmitted,setIsSuccessfullySubmitted] = useState('');
   const [message,setMessage] = useState('');
   const [loading,setLoading] = useState(false);
   const [formError,setFormError] = useState(false);
-  const { register, handleSubmit,watch,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue,getValues } = useForm()
+  const [action, setAction] = React.useState('');
+  const [editBillAmount, setEditBillAmount] = React.useState('');
+  const { register, handleSubmit,watch,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue,getValues} = useForm()
    
  useEffect(() => {
   async function getBilledInvoices() {    
@@ -59,10 +50,8 @@ function getSum(prev, cur) {
   }
   return prev;
 }
-async function  deleteInvoice () {
-  try{
-      const invoice = deletedInvoice;
-      console.log("<><><< "+JSON.stringify(invoice));
+async function  deleteInvoice (invoice) {
+  try{      
       setIsSuccessfullySubmitted('');
       setMessage('');
       setError(false);
@@ -71,8 +60,8 @@ async function  deleteInvoice () {
       const value = getValues('totalBalance');
       const response =  await axios.post("delete_invoice", invoice);  
       updateCustomers(response.data);
-      setMessage('Invoice deleted successfully');
-      reset();
+      setMessage('Invoice deleted successfully');     
+      reset('');
       setValue('totalBalance',value - (invoice.billTotal - invoice.winningAmount))
       
   }
@@ -84,7 +73,21 @@ async function  deleteInvoice () {
 }
 
 function editInvoice(invoice) {
-  console.log("<><><>< edit invoice");
+  let value;
+  if(isSuccessfullySubmitted === 'Success'){
+    value = balance;
+  }else{
+    value = getValues('totalBalance');  
+  }
+  reset();  
+  setIsSuccessfullySubmitted('');
+  setMessage('');
+  setError(false);
+  const customer = customers.filter(x => x._id === item);
+  invoice['wholeSalePrices'] = customer[0].wholeSalePrices;
+  invoice['totalBalance'] = value;
+  setEditBillAmount(invoice['billTotal']);
+  setForm(invoice);  
 }
 
 const Record = (props) => (
@@ -122,21 +125,6 @@ const Record = (props) => (
               const costTotal = values2.reduce(getSum,0);
               setValue("totalCost",costTotal);
             },
-              onBlur:(e)=>{
-                let balance = getValues("totalBalance");
-                let productTotal =getValues(`totals.PId${props.product.productId}`);
-                let currValue = e.target.value;
-                let prevValue = isNaN(parseInt(e.target.dataset.prevValue)) ? 0 : parseInt(e.target.dataset.prevValue)
-                let direction = currValue > prevValue ? 'up' : 'down'
-                e.target.dataset.prevValue = currValue;
-                  if(direction === 'up'){
-                        setValue("totalBalance",balance + productTotal);
-                        }
-                  else{
-                    let subTotal = (prevValue-currValue) * getValues(`retailPrices.PId${props.product.productId}`);
-                    setValue("totalBalance",balance - subTotal);
-                  }
-                },
             validate: {
               matchPattern: (v) => /^[0-9]\d*|^$/.test(v) || "Only positive values are allowed"
             }
@@ -188,14 +176,29 @@ function recordList() {
  }
 const handleRegistration = async (data) => {
   setMessage('');
-  if(data["billTotal"] !== 0){          
+  if(data["billTotal"] !== 0){     
+        let Arr = [];
            if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;     
            Object.keys(data.qtys).forEach(function (key,index) {             
             if(data.qtys[key] === '') {data.qtys[key]=0;}
+            if(action === 'EDIT'){ Arr.push(data.qtys[key] * data.wholeSalePrices[key]);}
            });
           try {
-            setBalance(data['totalBalance'])
-            const response =  await axios.post("add_invoice", data);        
+            let response;            
+            if(action === 'EDIT'){              
+              data['totalBalance'] = (data['totalBalance'] - editBillAmount) + (data['billTotal'] - data['winningAmount']);
+              setValue('totalBalance',data['totalBalance']);
+              setBalance(data['totalBalance']);
+              const totalCost = Arr.reduce((a, b) => a + b, 0);
+              data["totalCost"] = totalCost;
+              response = await axios.post("edit_invoice", data);  
+              setAction('');
+            }else{
+              data['totalBalance'] = data['totalBalance'] + data['billTotal'] - data['winningAmount'];
+              setValue('totalBalance',data['totalBalance']);
+              setBalance(data['totalBalance']);
+              response = await axios.post("add_invoice", data);      
+            }  
             if(response?.data){ 
                 updateCustomers(response.data);
                 const response1 = await axios.get(`billedInvoices`);   
@@ -276,20 +279,7 @@ const handleRegistration = async (data) => {
             valueAsNumber:true,
             validate: {
               positive: v => (parseInt(v) >= 0 || isNaN(parseInt(v))) || "Incorrect value"
-            },
-              onBlur:(e)=>{
-                let balance = getValues("totalBalance");
-                let currValue =  isNaN(parseInt(e.target.value)) ? 0 : parseInt(e.target.value);
-                let prevValue = isNaN(parseInt(e.target.dataset.prevValue)) ? 0 : parseInt(e.target.dataset.prevValue)
-                let direction = currValue > prevValue ? 'up' : 'down'
-                e.target.dataset.prevValue = currValue;
-                  if(direction === 'up'){
-                        setValue("totalBalance",balance - currValue);
-                        }
-                  else{                  
-                    setValue("totalBalance",(balance + prevValue));
-                  }
-                }
+            }
             })}             
          />
          <small className="invalid-feedback">
@@ -311,11 +301,12 @@ const handleRegistration = async (data) => {
                   defaultValue=""
                   name="timeline"
                   style={{background:"lightgreen"}} 
-                  disabled ={item?.length>0 ? false : true}
+                  disabled ={(item?.length>0 && action !== 'EDIT')  ? false : true}
                   {...register("timeline", { 
-                    onChange:(e)=>{ if(isSuccessfullySubmitted === 'Success')
+                    onChange:(e)=>{ if(isSuccessfullySubmitted === 'Success' )
                      { let val = e.target.value; reset(); setValue('totalBalance',balance); 
-                     setValue('timeline',val); setIsSuccessfullySubmitted(''); }},
+                     setValue('timeline',val); setIsSuccessfullySubmitted(''); 
+                    }},
                     required: 'Please select any timeline option' })}
                 >
                   <option value="" disabled>Select Timeline</option>
@@ -369,67 +360,13 @@ const handleRegistration = async (data) => {
           ></input>
         </div>
        </div>       
-    
-    <Accordion style={{width:"100%",float:"left",marginTop:"6px"}}  activeKey={active} onSelect={(e) => {setActive(e)}}>
-      <Accordion.Item eventKey="0"  >
-        <Accordion.Header >Billed invoices</Accordion.Header>       
-        <Accordion.Body activeKey={active}>
-        {item?.length > 0 ?<table className="table table-striped table-bordered custom-table table-fit" >
-          <thead>
-            <tr>
-              <th>Timeline</th>
-           { products.map((product,index) => {
-              return (
-                      <th>{product.productName}</th>
-              );
-            })}
-             <th>Excess</th>
-             <th>Bill Total</th>
-             <th>Balance</th>
-             <th>Options</th>
-            </tr>
-          </thead>
-          <tbody>
-          {(billedinvoices.filter(x => x.customerId === item)).map((billedInvoice,index) => {
-              return (
-                <tr>
-                      <td>{billedInvoice.timeline}</td>
-                      {Object.keys(billedInvoice.qtys).map((key,index) =>{ 
-                     return (<td> {billedInvoice.qtys[key]} * {billedInvoice.retailPrices[key]}  </td>)
-                      })}
-                      <td>{billedInvoice.winningAmount}</td>
-                      <td>{billedInvoice.billTotal}</td>
-                      <td>{billedInvoice.billTotal - billedInvoice.winningAmount}</td> 
-                      <td> <MdDelete onClick={(e) => {setModalShow(true);
-                          setTitle('Delete Invoice');
-                          setBody('Do you want to delete invoice for '+billedInvoice.timeline);
-                        setDeletedInvoice(billedInvoice);}
-                      } style={{cursor:"pointer",fontSize: '16px'}}/>
-                           <MdEditSquare onClick={(e)=>editInvoice(billedInvoice)} style={{cursor:"pointer",fontSize: '16px'}}/>
-                      </td>                     
-                </tr>
-              );
-            })}
-           {billedinvoices.filter(x => x.customerId === item).length >0 ? <tr>
-              <td></td>
-              {(billedinvoices.filter(x => x.customerId === item)).map((billedInvoice,index) => {
-                return(
-                  index === 0 ? Object.keys(billedInvoice.qtys).map((key,index) =>{ 
-                    return <td></td>
-                     }) :"")
-                    })}              
-              <td></td>
-              <td style={{fontWeight:"bold"}}>Total</td>
-            <td>{(Object.values(billedinvoices.filter(x => x.customerId === item))).map((billedInvoice) => 
-                      billedInvoice.billTotal - billedInvoice.winningAmount).reduce((a, b) => a + b, 0)
-            }</td>
-            </tr>:""}
-          </tbody>          
-          </table> :""}
-        </Accordion.Body>
-      </Accordion.Item>
-      </Accordion>
-        <ModalOutlet show={modalShow} onHide={() => setModalShow(false)} body={body} title ={title} function={() => deleteInvoice()}/>
+    <BilledInvoices billedinvoices={billedinvoices} 
+        products={products} 
+        active={active}
+        setActive={(e)=>setActive(e)} 
+        item={item}
+        deleteInvoice={deleteInvoice} editInvoice={editInvoice}
+        action={action} setAction={(value)=>setAction(value)}/>    
       </form>
    </div>
  );
