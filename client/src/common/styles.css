@@ -117,7 +117,7 @@ thead {
     background-color: white;
   }
 
-  .table-responsive,.cust-table {
+  .table-responsive,.cust-table,.react-datalist-input__listbox {
     &::-webkit-scrollbar {
         width: 0.6rem;  
         height: 0.6rem;
@@ -225,6 +225,10 @@ thead {
 .react-datalist-input__textbox:focus-visible{
     outline: rgb(222, 226, 230) !important;
 }
+.react-datalist-input__listbox{
+  overflow-y: scroll;
+  height:410px;
+}
 thead{
     font-size:15px;
 }
@@ -265,9 +269,11 @@ body, html {
         font-size: 12px;
         text-align: center;
         font-style: italic;
+        background-color: lightpink;
+        font-weight:700;
     }
-    >tbody tr td:first-child, td:last-child{
-        font-weight:700;        
+    >tbody tr td{
+        background-color: lightpink;    
     }
 }
 
@@ -344,12 +350,21 @@ body, html {
         font-weight: 800;
       }
 
+      .sales-report-table tr:last-child td{
+        background-color: lightpink;
+      }
+
      
       
 
-      .day-report-table th{ 
-        width:25%;
+      .day-report-table {        
+        > th,td { 
+        width:25%;        
       }
+      > tbody {
+        font-weight:800;
+      }
+    }
   
     .clear{
         /* position: absolute; */

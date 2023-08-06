@@ -53,16 +53,17 @@ export default function Dashboard() {
         <td>{invoice.totalBalance}</td>
         <td>{invoice.winningAmount}</td>
         <td>
+         {invoice.billTotal - invoice.totalCost}
          {invoice.billTotal - invoice.totalCost > 0 ?
         <MdArrowUpward style={{paddingBottom:'5px',color: "green",fontSize: '25px'}}/>
-         : <MdArrowDownward style={{paddingBottom:'5px',color: "red",fontSize: '25px'}}/>}
-         {invoice.billTotal - invoice.totalCost}
+         : <MdArrowDownward style={{paddingBottom:'5px',color: "red",fontSize: '25px'}}/>}        
         </td>
       </tr>
      );
    });
- }
- }
+  }
+}
+ 
  function recordList1() {
   if(sales && sales.length > 0){
    return sales.map((sales,index) => {
@@ -98,7 +99,36 @@ export default function Dashboard() {
               <th>Profit</th>
             </tr>
           </thead>
-          <tbody>{recordList()}</tbody>
+          <tbody>{recordList()}
+          <tr >
+            <td style={{fontWeight:800}}>Totals</td>
+            <td>
+            {Object.values(invoices).map((item) =>         
+            (item.billTotal)).reduce((a, b) => a + b, 0)         
+              }
+            </td>
+            <td>
+            {Object.values(invoices).map((item) =>         
+            (item.totalCost)).reduce((a, b) => a + b, 0)         
+              }
+            </td>
+            <td>
+            {Object.values(invoices).map((item) =>         
+            (item.totalBalance)).reduce((a, b) => a + b, 0)         
+              }
+            </td>
+            <td>
+            {Object.values(invoices).map((item) =>         
+            (item.winningAmount)).reduce((a, b) => a + b, 0)         
+              }
+            </td>
+            <td >
+            {Object.values(invoices).map((item) =>         
+            (item.billTotal - item.totalCost)).reduce((a, b) => a + b, 0)         
+              }
+            </td>
+          </tr>
+          </tbody>
           </table> 
         </Accordion.Body>
       </Accordion.Item>

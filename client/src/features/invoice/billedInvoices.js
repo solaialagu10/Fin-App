@@ -22,7 +22,7 @@ const BilledInvoices = React.memo(function BilledInvoices(props) {
       <Accordion.Item eventKey="0"  >
         <Accordion.Header >Billed invoices</Accordion.Header>       
         <Accordion.Body activeKey={props.active}>
-        {props.item?.length > 0 ?<table className="table table-striped table-bordered custom-table table-fit" >
+        {props.item?.length > 0 ?<table className="table table-bordered custom-table table-fit" >
           <thead>
             <tr>
               <th>Timeline</th>

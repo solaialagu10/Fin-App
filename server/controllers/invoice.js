@@ -150,7 +150,7 @@ const daySaleReport = async (req, res) =>{
             price: { "$first" : "$table.price"}              
           }
       }           
-  ]).sort({ "productName": 1 });   
+  ]).sort({ "productName": -1 });   
     res.send(salesReport);
   } catch (error) {
     console.log("<><>< error"+error);
