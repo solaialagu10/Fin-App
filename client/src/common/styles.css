@@ -213,6 +213,8 @@ thead {
     .dashboard-select{ 
      float: right;
     margin-bottom: 10px;     
+    display:inline-flex;
+    gap:10px;
 }
 .form-select{
         outline: 0 !important;
@@ -227,7 +229,7 @@ thead {
 }
 .react-datalist-input__listbox{
   overflow-y: scroll;
-  height:410px;
+  max-height:410px;
 }
 thead{
     font-size:15px;
@@ -379,3 +381,24 @@ body, html {
         margin-top:25px;
         font-weight:600;
     }
+
+    .datepicker-wrapper{
+      padding:10px 0px;     
+      >label{
+        color:rgb(33, 37, 41);
+        font-weight:500;
+        padding-right:5px;
+      }      
+    }
+
+    .react-datepicker-wrapper input{
+      box-shadow: none !important;
+      border: 1px solid #c1c3c5 !important;
+      border-radius: 5px;
+      padding:5px      
+    }
+    .react-datepicker-wrapper input:focus{
+      outline:none;
+    }
+
+    

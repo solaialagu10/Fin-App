@@ -2,14 +2,18 @@ import React, { useState, useEffect } from "react";
 import '../../common/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Accordion from 'react-bootstrap/Accordion';
-import { MdOutlineArrowUpward ,MdArrowUpward,MdArrowDownward} from "react-icons/md";
+import { MdArrowUpward,MdArrowDownward} from "react-icons/md";
 import axios from 'axios';
+import DatePicker from "react-datepicker";
+import { subMonths } from 'date-fns';
+import "react-datepicker/dist/react-datepicker.css";
 export default function Dashboard() { 
   const [invoices, setInvoices] = useState([]);
   const [sales, setSales] = useState([]);
   const [error,setError] = useState(false);
   const [amount, setAmount] = useState(0);
   const [loading,setLoading] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
   useEffect(() => {
     async function getInvoices() {
       try {
@@ -23,6 +27,8 @@ export default function Dashboard() {
     getInvoices();
     return;
   }, []);
+
+  const handleDateChange= (date) => {setStartDate(date);}
 
   async function getList(e){
     const inputJson = {"input":e.target.value};
@@ -83,7 +89,12 @@ export default function Dashboard() {
       <div style={{ display: 'block', 
                   width: 1000, padding: 30 }}>
         <div className="text-danger">{error ? "Service is down, please try again later" : ""}
-        </div>              
+        </div>          
+        <div className="datepicker-wrapper">
+       <label> Select Date:</label> <DatePicker selected={startDate} 
+        minDate={subMonths(new Date(), 1)}
+        maxDate={new Date()}  onChange={handleDateChange} />  
+        </div>    
       <Accordion>
       <Accordion.Item eventKey="0">
         <Accordion.Header>Customer Report</Accordion.Header>
@@ -141,7 +152,9 @@ export default function Dashboard() {
               id="spinner"role="status">
             <span class="sr-only"></span>
         </div></div></div>)}
+       
         <div className="dashboard-select">
+       
           <select
                 className="form-select custom-select"
                   id="selectmethod"
