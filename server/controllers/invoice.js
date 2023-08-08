@@ -78,15 +78,19 @@ const editUpdateFun = async(Sales,req,key,value,customerId) =>{
 }
 
 
-const customerInvoices = async (req, res) => {      
-  
+const customerInvoices = async (req, res) => {    
+  var startDate = new Date(req.query.date);
+  var endDate = new Date(req.query.date);
+  startDate.setHours(0,0,0,0);
+  endDate.setHours(24,0,0,0); 
   //"modifiedDate":{ $gte: moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}
       try {
         const invoices = await Invoice.aggregate([
           {
               $match : {
                   "modifiedDate" : {
-                      $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
+                      $gte : startDate,
+                      $lte: endDate
                   },
                   "userId": (req.user).toString()
               }
@@ -120,15 +124,20 @@ const customerInvoices = async (req, res) => {
 };
 
 const daySaleReport = async (req, res) =>{
+  var startDate = new Date(req.body.date);
+  var endDate = new Date(req.body.date);
+  startDate.setHours(0,0,0,0);
+  endDate.setHours(24,0,0,0); 
   try {
     const salesReport = await Sales.aggregate([
       {
           $match : {
               "modifiedDate" : {
-                  $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
+                  $gte : startDate,
+                  $lte: endDate
               },
-              "timeline" : req.body.input,
-              "userId":(req.user).toString()
+              "timeline" : req.body.timeline,
+              "userId"   : (req.user).toString()
           }
       },
       {

@@ -14,31 +14,51 @@ export default function Dashboard() {
   const [amount, setAmount] = useState(0);
   const [loading,setLoading] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
+  const [timeline, setTimeline, getTimeline] = useState('');
   useEffect(() => {
     async function getInvoices() {
       try {
-      const response = await axios.get("get_invoices");
-      setInvoices(response.data);
+        if(timeline === '') { setLoading(true);}
+        const dateTimeInParts = startDate.toISOString().split( "T" ); 
+        const inputJson = {"date":dateTimeInParts[0]};
+        const response = await axios.get("get_invoices",{ params: inputJson });
+        setInvoices(response.data);
       } catch (e) {  
         setError(true);
         console.log("<><<>< error"+e);
+      }finally{
+        if(timeline === '') { setLoading(false);}
       }
     }
     getInvoices();
     return;
-  }, []);
+  }, [startDate]);
 
-  const handleDateChange= (date) => {setStartDate(date);}
+  const handleDateChange= (date) => {
+  //   console.log("<><><>date "+date.toLocaleDateString());
+    const dateTimeInParts = date.toISOString().split( "T" ); 
+    setStartDate(date);    
+    if(timeline != '')
+    {
+      getList(timeline,dateTimeInParts[0]);
+    }
+  }
 
-  async function getList(e){
-    const inputJson = {"input":e.target.value};
+  const handleTimelineChange= (e) => {
+    setTimeline(e.target.value);
+    const dateTimeInParts = startDate.toISOString().split( "T" ); 
+    getList(e.target.value,dateTimeInParts[0]);
+  }
+
+  async function getList(timeline,date){ 
+    const inputJson = {"timeline":timeline,"date":date};
+    
     try {
       setLoading(true);
       const response =  await axios.post("day_sales_report", inputJson);         
       const response1 =  await axios.post("winning_amount", inputJson);
       const amount = response1.data[0]?.winningAmount === undefined ?  0 : response1.data[0]?.winningAmount;
       setSales(response.data);   
-      console.log(response1.data[0]?.winningAmount);
       setAmount(amount);
       } catch (e) {        
         setError(true);
@@ -89,12 +109,19 @@ export default function Dashboard() {
       <div style={{ display: 'block', 
                   width: 1000, padding: 30 }}>
         <div className="text-danger">{error ? "Service is down, please try again later" : ""}
-        </div>          
+        </div>           
         <div className="datepicker-wrapper">
-       <label> Select Date:</label> <DatePicker selected={startDate} 
-        minDate={subMonths(new Date(), 1)}
-        maxDate={new Date()}  onChange={handleDateChange} />  
-        </div>    
+              <label> Select Date:</label> 
+              <DatePicker selected={startDate} 
+                minDate={subMonths(new Date(), 1)}
+                maxDate={new Date()}  onChange={handleDateChange} />  
+        </div>           
+        {loading && (<div className="overlay">
+                  <div className="overlay__wrapper">
+                    <div className="spinner-grow text-primary overlay__spinner" 
+              id="spinner"role="status">
+            <span className="sr-only"></span>
+        </div></div></div>)}
       <Accordion>
       <Accordion.Item eventKey="0">
         <Accordion.Header>Customer Report</Accordion.Header>
@@ -146,12 +173,7 @@ export default function Dashboard() {
       <Accordion.Item eventKey="1">
         <Accordion.Header>Total Sales Report</Accordion.Header>
         <Accordion.Body>
-        {loading && (<div class="overlay">
-                  <div class="overlay__wrapper">
-                    <div class="spinner-grow text-primary overlay__spinner" 
-              id="spinner"role="status">
-            <span class="sr-only"></span>
-        </div></div></div>)}
+       
        
         <div className="dashboard-select">
        
@@ -160,7 +182,7 @@ export default function Dashboard() {
                   id="selectmethod"
                   defaultValue=""
                   name="timeline"   
-                  onChange={(e)=>getList(e)}             
+                  onChange={(e)=>handleTimelineChange(e)}             
                 >
                   <option value="" disabled>Select Timeline</option>
                   <option value="2 PM">2 PM</option>

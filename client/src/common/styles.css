@@ -71,7 +71,7 @@
             border: #F2AE43;
             cursor: pointer;
         }
-        > input:active{
+        > input:active, input:focus{
             background-color: #ca9945 !important;
             border: #ca9945 !important;
         }
@@ -383,22 +383,31 @@ body, html {
     }
 
     .datepicker-wrapper{
-      padding:10px 0px;     
+      padding:0px 0px 10px 0px;     
+      float:none;
       >label{
         color:rgb(33, 37, 41);
         font-weight:500;
         padding-right:5px;
-      }      
+      }   
+      >input[type=submit] {
+        margin-bottom:6px;
+      }   
     }
 
     .react-datepicker-wrapper input{
       box-shadow: none !important;
       border: 1px solid #c1c3c5 !important;
       border-radius: 5px;
-      padding:5px      
+      padding:5px 10px;
+      width:85%;
     }
     .react-datepicker-wrapper input:focus{
       outline:none;
+    }
+
+    .text-danger{
+      padding-bottom:5px;
     }
 
     
