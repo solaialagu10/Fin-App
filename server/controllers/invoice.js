@@ -174,7 +174,7 @@ const getWinningAmount = async(req,res) =>{
           "modifiedDate" : {
               $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
           },
-          "timeline" : req.body.input,
+          "timeline" : req.body.timeline,
           "userId":(req.user).toString()
         }
     },
