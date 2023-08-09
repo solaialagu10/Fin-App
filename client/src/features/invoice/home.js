@@ -1,5 +1,5 @@
 import React, { useState,  useEffect } from "react";
-import { useForm } from "react-hook-form"; 
+import { useForm, useController} from "react-hook-form"; 
 import '../../common/styles.css';
 import DatalistInput from 'react-datalist-input';
 import 'react-datalist-input/dist/styles.css';
@@ -7,11 +7,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios'; 
 import  BilledInvoices  from "./billedInvoices";
 import { useContextData } from "../../context/Mycontext";
+import Select from 'react-select';
+
 export default function Home() {  
+  const [selectedOption, setSelectedOption] = useState("");
   const {products,customers, updateCustomers} = useContextData();  
   const [active, setActive]  = React.useState([]);
   const [balance, setBalance] = useState(0);
-  const [item, setItem] = useState(); 
   const [billedinvoices, setBilledinvoices] = useState([]);
   const [form, setForm] = useState([]);
   const [isSuccessfullySubmitted,setIsSuccessfullySubmitted] = useState('');
@@ -20,8 +22,11 @@ export default function Home() {
   const [formError,setFormError] = useState(false);
   const [action, setAction] = React.useState('');
   const [editBillAmount, setEditBillAmount] = React.useState('');
-  const { register, handleSubmit,watch,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue,getValues} = useForm()
-   
+  const { register, handleSubmit,watch,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue,getValues,control} = useForm()
+  const options = Object.keys(customers).map(function(key) {
+    return {value :customers[key]._id,label: customers[key].customerName};
+  });
+  const { field: { value: customerValue, onChange: customerOnChange, ...customer } } = useController({ name: 'customer', control });
  useEffect(() => {
   async function getBilledInvoices() {    
     try{
@@ -36,13 +41,18 @@ export default function Home() {
 }, []);
 
 useEffect(() => {
-  const customer = customers.filter(x => x._id === item);
+  const customer = customers.filter(x => x._id === selectedOption);
   setForm(...customer)
-}, [item]);
+}, [selectedOption]);
 
 useEffect(() => {
   reset(form);
 }, [form]);
+
+const handleTypeSelect = (e) => {
+  setSelectedOption(e.value);
+};
+
 
 function getSum(prev, cur) {
   if(cur.length > 0){
@@ -72,6 +82,8 @@ async function  deleteInvoice (invoice) {
   }
 }
 
+
+
 function editInvoice(invoice) {
   let value;
   if(isSuccessfullySubmitted === 'Success'){
@@ -83,7 +95,7 @@ function editInvoice(invoice) {
   setIsSuccessfullySubmitted('');
   setMessage('');
   setError(false);
-  const customer = customers.filter(x => x._id === item);
+  const customer = customers.filter(x => x._id === selectedOption);
   invoice['wholeSalePrices'] = customer[0].wholeSalePrices;
   invoice['totalBalance'] = value;
   setEditBillAmount(invoice['billTotal']);
@@ -176,6 +188,7 @@ function recordList() {
  }
 const handleRegistration = async (data) => {
   setMessage('');
+  console.log("<><>data"+JSON.stringify(data));
   if(data["billTotal"] !== 0){     
         let Arr = [];
            if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;     
@@ -211,6 +224,34 @@ const handleRegistration = async (data) => {
           } 
   }
  }
+
+ const customStyles = {
+  option: (defaultStyles, state) => ({
+    ...defaultStyles
+  }),
+  menuList: (base) => ({
+    ...base,
+
+    "::-webkit-scrollbar": {
+      width: "4px",
+      height: "0px",
+    },
+    "::-webkit-scrollbar-track": {
+      background: "#d1d5d7"
+    },
+    "::-webkit-scrollbar-thumb": {
+      background: "#31254c"
+    },
+    "::-webkit-scrollbar-thumb:hover": {
+      background: "#31254c"
+    }
+  }),
+  control: (defaultStyles) => ({
+    ...defaultStyles,
+    border: 0,
+    boxShadow: "none",
+  })
+};
  
  return (
    <div>  
@@ -218,32 +259,32 @@ const handleRegistration = async (data) => {
      <div className="text-success" style={{fontWeight : "600"}}>{isSuccessfullySubmitted === 'Success' ? "Invoice submitted successfully." : ""}</div>      
      <div className="text-success" style={{fontWeight : "600"}}>{message?.length > 0 ? message : ""}</div>           
      <div className="text-danger" style={{fontWeight : "600"}}>{formError ? "Service is down, please try again later" : ""}</div>
-    {(isSubmitting || loading) && (<div class="overlay">
-                  <div class="overlay__wrapper">
-                    <div class="spinner-grow text-primary overlay__spinner" 
+    {(isSubmitting || loading) && (<div className="overlay">
+                  <div className="overlay__wrapper">
+                    <div className="spinner-grow text-primary overlay__spinner" 
               id="spinner"role="status">
-            <span class="sr-only"></span>
+            <span className="sr-only"></span>
         </div></div></div>)}
     <div className="invoice-container-head">
       <div className="invoice-customers">
-      <DatalistInput
-      placeholder="Search..."
-      label="Select Customers"
-      className="invoice-datalist"
-      name="customer"
-      onSelect={(item) => { setItem(item.id); setValue('timeline',''); setIsSuccessfullySubmitted('');}}
-      items= {Object.keys(customers).map(function(key) {
-        return {id :customers[key]._id,value: customers[key].customerName};
-      })}
-      {...register('customer')}         
-     ></DatalistInput>
-     
+        <Select
+          className='select-input'
+          placeholder="Select Customers"
+          autoFocus={true}
+          name="customer"   
+          styles={customStyles} 
+          // onChange={option => customerOnChange(option ? option.value : option)}   
+          onChange={handleTypeSelect}       
+          value={options.find(x => x.value === selectedOption) }     
+          options= {options}                 
+        />
      <div className="form-group col-md-12">
          <label htmlFor="name">Balance</label>         
          <input
            type="text"
            className="form-control"
-           name="totalBalance"      
+           name="totalBalance"  
+           placeholder="0"
            style={{background:"indianred"}}      
            disabled={true}        
            {...register('totalBalance',{
@@ -257,7 +298,8 @@ const handleRegistration = async (data) => {
          <input
            type="text"
            className="form-control"
-           name="billTotal"         
+           name="billTotal"     
+           placeholder="0"    
            style={{background:"lightpink"}}     
            disabled={true}        
            {...register('billTotal',{
@@ -301,7 +343,7 @@ const handleRegistration = async (data) => {
                   defaultValue=""
                   name="timeline"
                   style={{background:"lightgreen"}} 
-                  disabled ={(item?.length>0 && action !== 'EDIT')  ? false : true}
+                  disabled ={(selectedOption?.length >0 && action !== 'EDIT')  ? false : true}
                   {...register("timeline", { 
                     onChange:(e)=>{ if(isSuccessfullySubmitted === 'Success' )
                      { let val = e.target.value; reset(); setValue('totalBalance',balance); 
@@ -310,9 +352,9 @@ const handleRegistration = async (data) => {
                     required: 'Please select any timeline option' })}
                 >
                   <option value="" disabled>Select Timeline</option>
-                  <option value="2 PM" disabled ={true ? billedinvoices.filter(x => x.timeline === "2 PM" && x.customerId === item).length > 0: false}>2 PM</option>
-                  <option value="3 PM" disabled ={true ? billedinvoices.filter(x => x.timeline === "3 PM" && x.customerId === item).length > 0: false}>3 PM</option>
-                  <option value="5 PM" disabled ={true ? billedinvoices.filter(x => x.timeline === "5 PM" && x.customerId === item).length > 0: false}>5 PM</option>
+                  <option value="2 PM" disabled ={true ? billedinvoices.filter(x => x.timeline === "2 PM" && x.customerId === selectedOption).length > 0: false}>2 PM</option>
+                  <option value="3 PM" disabled ={true ? billedinvoices.filter(x => x.timeline === "3 PM" && x.customerId === selectedOption).length > 0: false}>3 PM</option>
+                  <option value="5 PM" disabled ={true ? billedinvoices.filter(x => x.timeline === "5 PM" && x.customerId === selectedOption).length > 0: false}>5 PM</option>
                 </select>
         
         </div>
@@ -351,7 +393,6 @@ const handleRegistration = async (data) => {
             onClick={() =>
               {
                 reset();
-                setItem('');
                 setForm({                
                 customer:''
               });
@@ -364,7 +405,7 @@ const handleRegistration = async (data) => {
         products={products} 
         active={active}
         setActive={(e)=>setActive(e)} 
-        item={item}
+        item={selectedOption}
         deleteInvoice={deleteInvoice} editInvoice={editInvoice}
         action={action} setAction={(value)=>setAction(value)}/>    
       </form>

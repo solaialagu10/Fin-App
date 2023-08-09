@@ -50,8 +50,7 @@ const addCustomerInvoice = async (req, res) => {
             updateFun(Sales,req,key,req.body.qtys[key]);
         })
         }      
-        let customers = await Customer.find({userId:req.user});  
-        res.send(customers);
+        getCustomers(req,res);
       } catch (error) {
         console.log("<><>< error"+error);
         res.status(500).send(error);
