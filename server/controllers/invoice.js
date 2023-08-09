@@ -253,9 +253,6 @@ const getPaidList = async (req,res,next) =>{
 const deleteInvoice = async(req,res) =>{
   const value = req.body.billTotal - req.body.winningAmount;
   try {
-    Object.keys(req.body.qtys).forEach(function (key,index) {                 
-      updateFun(Sales,req,key,-req.body.qtys[key]);
-      })
       await Sales.deleteMany({customerId:req.body.customerId,timeline:req.body.timeline})
       await Invoice.deleteOne({        
         _id:req.body._id
