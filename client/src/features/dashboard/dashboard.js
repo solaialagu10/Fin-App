@@ -74,9 +74,10 @@ export default function Dashboard() {
      return (
       <tr>
         <td>{invoice._id}</td>
+        <td>{invoice.prevBalance}</td>
         <td>{invoice.billTotal}</td>  
         <td>{invoice.totalCost}</td>         
-        <td>{invoice.totalBalance}</td>
+        <td>{invoice.prevBalance + invoice.billTotal}</td>
         <td>{invoice.winningAmount}</td>
         <td>
          {invoice.billTotal - invoice.totalCost}
@@ -130,6 +131,7 @@ export default function Dashboard() {
           <thead>
             <tr>
               <th>Customer Name</th>
+              <th>Prev Balance</th>
               <th>Total Bill</th>
               <th>Total Cost</th>              
               <th>Total Balance</th>
@@ -142,6 +144,11 @@ export default function Dashboard() {
             <td style={{fontWeight:800}}>Totals</td>
             <td>
             {Object.values(invoices).map((item) =>         
+            (item.prevBalance)).reduce((a, b) => a + b, 0)         
+              }
+            </td>
+            <td>
+            {Object.values(invoices).map((item) =>         
             (item.billTotal)).reduce((a, b) => a + b, 0)         
               }
             </td>
@@ -152,7 +159,7 @@ export default function Dashboard() {
             </td>
             <td>
             {Object.values(invoices).map((item) =>         
-            (item.totalBalance)).reduce((a, b) => a + b, 0)         
+            (item.prevBalance + item.billTotal)).reduce((a, b) => a + b, 0)         
               }
             </td>
             <td>

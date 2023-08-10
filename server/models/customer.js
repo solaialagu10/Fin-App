@@ -27,6 +27,9 @@ const CustomerSchema = new mongoose.Schema({
   totalBalance:{
     type: Number
   },
+  outstandingBalance:{
+    type: Number
+  },
   amountPaid:{
     type: Number
   },

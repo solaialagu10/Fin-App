@@ -23,6 +23,7 @@ const addCustomerInvoice = async (req, res) => {
       });      
       let newvalues = {    
             totalBalance: req.body.totalBalance,
+            outstandingBalance: req.body.outstandingBalance,
             modifiedDate: new Date()
       };    
         
@@ -110,6 +111,7 @@ const customerInvoices = async (req, res) => {
                   billTotal : {$sum: "$billTotal"},
                   totalCost : {$sum: "$totalCost"},
                   winningAmount : {$sum: "$winningAmount"},
+                  prevBalance: { "$first" : "$outstandingBalance"},
                   totalBalance: { "$first" : "$table.totalBalance"},
                   
               }
@@ -202,7 +204,7 @@ const getBIlledInvoices = async(req,res) =>{
         "userId":req.user
     },
     {        
-        _id:1,customerId:1,timeline:1,billTotal:1,qtys:1,retailPrices:1,winningAmount:1,totals:1
+        _id:1,customerId:1,timeline:1,billTotal:1,qtys:1,retailPrices:1,winningAmount:1,totals:1,outstandingBalance:1
     }         
   ).sort({ "timeline": 1 });   
     res.send(billedInvoices);

@@ -7,7 +7,7 @@ const BilledInvoices = React.memo(function BilledInvoices(props) {
   const [modalShow, setModalShow] = React.useState(false);
   const [body, setBody] = React.useState('');
   const [title, setTitle] = React.useState('');
- 
+  const prevBalance = (props.billedinvoices.find(x => x.customerId === props.item))?.outstandingBalance;  
   function callbackHandler(){
     if(props.action ==='DELETE'){
            props.deleteInvoice(invoice);
@@ -21,7 +21,7 @@ const BilledInvoices = React.memo(function BilledInvoices(props) {
       <Accordion style={{width:"100%",float:"left",marginTop:"6px"}}  activeKey={props.active} onSelect={(e) => {props.setActive(e)}}>
       <Accordion.Item eventKey="0"  >
         <Accordion.Header >Billed invoices</Accordion.Header>       
-        <Accordion.Body activeKey={props.active}>
+        <Accordion.Body>
         {props.item?.length > 0 ?<table className="table table-bordered custom-table table-fit" >
           <thead>
             <tr>
@@ -41,9 +41,9 @@ const BilledInvoices = React.memo(function BilledInvoices(props) {
           {((props.billedinvoices).filter(x => x.customerId === props.item)).map((billedInvoice,index) => {
               return (
                 <tr>
-                      <td>{billedInvoice.timeline}</td>
+                      <td style={{background:"lightgreen"}}>{billedInvoice.timeline}</td>
                       {Object.keys(billedInvoice.qtys).map((key,index) =>{ 
-                     return (<td> {billedInvoice.qtys[key]} * {billedInvoice.retailPrices[key]}  </td>)
+                     return (<td> {billedInvoice.qtys[key]} </td>)
                       })}
                       <td>{billedInvoice.winningAmount}</td>
                       <td>{billedInvoice.billTotal}</td>
@@ -64,18 +64,30 @@ const BilledInvoices = React.memo(function BilledInvoices(props) {
                 </tr>
               );
             })}
-           {props.billedinvoices.filter(x => x.customerId === props.item).length >0 ? <tr>
-              <td></td>
+            {props.billedinvoices.filter(x => x.customerId === props.item).length >0 ? <tr>
+              <td style={{background:"white"}}></td>
               {(props.billedinvoices.filter(x => x.customerId === props.item)).map((billedInvoice,index) => {
                 return(
                   index === 0 ? Object.keys(billedInvoice.qtys).map((key,index) =>{ 
-                    return <td></td>
+                    return <td style={{background:"white"}}></td>
                      }) :"")
                     })}              
-              <td></td>
+              <td style={{background:"white"}}></td>
+              <td style={{fontWeight:"bold"}}>Prev Balance</td>
+            <td>{prevBalance}</td>
+            </tr>:""}
+           {props.billedinvoices.filter(x => x.customerId === props.item).length >0 ? <tr>
+              <td style={{background:"white"}}></td>
+              {(props.billedinvoices.filter(x => x.customerId === props.item)).map((billedInvoice,index) => {
+                return(
+                  index === 0 ? Object.keys(billedInvoice.qtys).map((key,index) =>{ 
+                    return <td style={{background:"white"}}></td>
+                     }) :"")
+                    })}              
+              <td style={{background:"white"}}></td>
               <td style={{fontWeight:"bold"}}>Total</td>
             <td>{(Object.values(props.billedinvoices.filter(x => x.customerId === props.item))).map((billedInvoice) => 
-                      billedInvoice.billTotal - billedInvoice.winningAmount).reduce((a, b) => a + b, 0)
+                      billedInvoice.billTotal - billedInvoice.winningAmount).reduce((a, b) => a + b, 0) + prevBalance
             }</td>
             </tr>:""}
           </tbody>          

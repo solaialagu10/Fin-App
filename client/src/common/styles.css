@@ -351,6 +351,10 @@ body, html {
         background: #C3E6CB;
         font-weight: 800;
       }
+      .sales-report-table td:nth-of-type(7) {
+        background: #F2AE43;
+        font-weight: 800;
+      }
 
       .sales-report-table tr:last-child td{
         background-color: lightpink;

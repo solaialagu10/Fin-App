@@ -188,7 +188,6 @@ function recordList() {
  }
 const handleRegistration = async (data) => {
   setMessage('');
-  console.log("<><>data"+JSON.stringify(data));
   if(data["billTotal"] !== 0){     
         let Arr = [];
            if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;     
@@ -207,6 +206,8 @@ const handleRegistration = async (data) => {
               response = await axios.post("edit_invoice", data);  
               setAction('');
             }else{
+              let count = billedinvoices.filter(x => x.customerId !== data.customerId).length;
+              if(count === 0){ data['outstandingBalance'] = data['totalBalance'];}
               data['totalBalance'] = data['totalBalance'] + data['billTotal'] - data['winningAmount'];
               setValue('totalBalance',data['totalBalance']);
               setBalance(data['totalBalance']);

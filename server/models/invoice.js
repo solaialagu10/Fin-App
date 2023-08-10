@@ -45,6 +45,9 @@ const InvoiceSchema = new mongoose.Schema({
   totalBalance:{
     type: Number
   },
+  outstandingBalance:{
+    type: Number
+  },
   createdDate: {
     type: Date
   },
