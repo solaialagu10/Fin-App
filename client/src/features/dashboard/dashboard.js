@@ -7,6 +7,9 @@ import axios from 'axios';
 import DatePicker from "react-datepicker";
 import { subMonths } from 'date-fns';
 import "react-datepicker/dist/react-datepicker.css";
+import { FaCalendarAlt } from 'react-icons/fa';
+import 'react-datepicker/dist/react-datepicker.css';
+
 export default function Dashboard() { 
   const [invoices, setInvoices] = useState([]);
   const [sales, setSales] = useState([]);
@@ -33,6 +36,26 @@ export default function Dashboard() {
     getInvoices();
     return;
   }, [startDate]);
+
+  function CustomInput(props) {
+  return (
+    <div className="input-group">
+      <input
+        type="text"
+        className="form-control"
+        onClick={props.onClick}
+        value={props.value}
+        onChange={props.onChange}
+        readOnly
+      />
+      <div className="input-group-append">
+        <span className="input-group-text" style={{height:"100%"}}  onClick={props.onClick}>
+          <FaCalendarAlt />
+        </span>
+      </div>
+    </div>
+  );
+}
 
   const handleDateChange= (date) => {
   //   console.log("<><><>date "+date.toLocaleDateString());
@@ -111,11 +134,15 @@ export default function Dashboard() {
                   width: 1000, padding: 30 }}>
         <div className="text-danger">{error ? "Service is down, please try again later" : ""}
         </div>           
+        
         <div className="datepicker-wrapper">
               <label> Select Date:</label> 
-              <DatePicker selected={startDate} 
-                minDate={subMonths(new Date(), 1)} dateFormat="dd/MM/yyyy"
-                maxDate={new Date()}  onChange={handleDateChange} />  
+                
+                <DatePicker selected={startDate} 
+                  minDate={subMonths(new Date(), 1)} dateFormat="dd/MM/yyyy"
+                  maxDate={new Date()}  onChange={handleDateChange} 
+                  todayButton="TODAY"
+                  customInput={<CustomInput />}/>  
         </div>           
         {loading && (<div className="overlay">
                   <div className="overlay__wrapper">

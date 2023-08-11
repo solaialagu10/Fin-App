@@ -391,6 +391,7 @@ body, html {
         color:rgb(33, 37, 41);
         font-weight:500;
         padding-right:5px;
+        margin-top: 5px;
       }   
       >input[type=submit] {
         margin-bottom:6px;
