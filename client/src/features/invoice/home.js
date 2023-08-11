@@ -22,7 +22,7 @@ export default function Home() {
   const [formError,setFormError] = useState(false);
   const [action, setAction] = React.useState('');
   const [editBillAmount, setEditBillAmount] = React.useState('');
-  const { register, handleSubmit,watch,formState: { errors,isSubmitting,isSubmitSuccessful },setError,reset,setValue,getValues,control} = useForm()
+  const { register, handleSubmit,watch,formState: { errors,isSubmitting,isDirty },setError,reset,setValue,getValues,control} = useForm()
   const options = Object.keys(customers).map(function(key) {
     return {value :customers[key]._id,label: customers[key].customerName};
   });
@@ -50,6 +50,9 @@ useEffect(() => {
 }, [form]);
 
 const handleTypeSelect = (e) => {
+  setIsSuccessfullySubmitted('');
+  setMessage('');
+  setValue('timeline','');
   setSelectedOption(e.value);
 };
 
@@ -394,6 +397,7 @@ const handleRegistration = async (data) => {
             onClick={() =>
               {
                 reset();
+                setSelectedOption('');
                 setForm({                
                 customer:''
               });

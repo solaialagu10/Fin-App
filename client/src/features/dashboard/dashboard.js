@@ -114,7 +114,7 @@ export default function Dashboard() {
         <div className="datepicker-wrapper">
               <label> Select Date:</label> 
               <DatePicker selected={startDate} 
-                minDate={subMonths(new Date(), 1)}
+                minDate={subMonths(new Date(), 1)} dateFormat="dd/MM/yyyy"
                 maxDate={new Date()}  onChange={handleDateChange} />  
         </div>           
         {loading && (<div className="overlay">
