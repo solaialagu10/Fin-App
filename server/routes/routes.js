@@ -1,6 +1,6 @@
 const express = require("express");
 const {getProducts, editProduct, deleteProduct,addProduct} = require("../controllers/product"); 
-const {addCustomer, getCustomers,deleteCustomer,editCustomer,updateCustomerAmount} = require("../controllers/customer"); 
+const {addCustomer, getCustomers,deleteCustomer,editCustomer,updateCustomerAmount,getPaidTotals} = require("../controllers/customer"); 
 const {addCustomerInvoice, customerInvoices, 
     daySaleReport,getBIlledInvoices,getPaidList,getWinningAmount,deleteInvoice,editInvoice} = require("../controllers/invoice"); 
 const  registerApi = require("../controllers/register"); 
@@ -45,6 +45,10 @@ router.get("/billedInvoices",passport.authenticate('jwt', { session: false }),ge
 router.get("/paidList",passport.authenticate('jwt', { session: false }),getPaidList);
 
 router.post("/winning_amount",passport.authenticate('jwt', { session: false }),getWinningAmount);
+
+router.get("/paidTotals",passport.authenticate('jwt', { session: false }),getPaidTotals);
+
+
 
 
 router.use(loginApi);

@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import '../../common/styles.css';
 import axios from "axios";
 import { useContextData } from "../../context/Mycontext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export default function EditCustomers(props) {
   const {customers,  updateCustomers} =useContextData();
   const {products, setProducts} = useContextData();  
@@ -56,16 +58,18 @@ export default function EditCustomers(props) {
  
  // This function will handle the submission.
  async function handleRegistration(data) {
-  // const valid = formValidation(data);
-  if(true){
+  const valid = formValidation(data);
+  if(valid){
     try{
-      const response =  await axios.post("edit_customer", data);
+      const response =  await toast.promise(axios.post("edit_customer", data), {
+        pending: "Editing customer",
+        success: "Customer edited successfully !",
+        error: "Error in editing customer, please try again later !"
+      });
       updateCustomers(response.data);
     }
    catch(error) {
     console.log("<><<>< error"+error);
-     window.alert(error);
-     return;
    };
    props.changeTab('Add','Success');
   }  
@@ -114,7 +118,7 @@ export default function EditCustomers(props) {
  // This following section will display the form that takes the input from the user.
  return (
    <div>    
-     {/* <h3>Add New Customers</h3> */}
+     <ToastContainer />
      {isSubmitting && (<div class="overlay">
                   <div class="overlay__wrapper">
                     <div class="spinner-grow text-primary overlay__spinner" 

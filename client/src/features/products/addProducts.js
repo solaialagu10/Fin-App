@@ -5,6 +5,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { useContextData } from "../../context/Mycontext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 export default function AddProducts(props) {
 
   const {products, updateProducts} = useContextData();  
@@ -22,14 +25,8 @@ export default function AddProducts(props) {
         .required('Please enter product price') 
         ///have to add price value validation for less than 4 digits
 });
-
 const formOptions = { resolver: yupResolver(validationSchema) };
 const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus } = useForm(formOptions)
-
-const [
-  isSuccessfullySubmitted,
-  setIsSuccessfullySubmitted,
-] = useState('');
 const [form, setForm] = useState({
   productName: "",
   productId: "",
@@ -60,27 +57,29 @@ const [form, setForm] = useState({
  async function handleRegistration(data) {
    const valid = formValidation(data);
    if(valid){
-    try {
-      const response =  await axios.post("add_product", data)
+    try{
+      const response =  await  toast.promise(axios.post("add_product", data), {
+        pending: "Adding product",
+        success: "Product added successfully !",
+        error: "Error in adding product, please try again later !"
+      })
       if(response.data)
-          setIsSuccessfullySubmitted('Success');
           updateProducts(response.data);
-      } catch (e) {        
-        setIsSuccessfullySubmitted('Error');
-        console.log("<><<>< error"+e);
-    } 
+    } catch(e){
+         console.log(e);
+    }
       reset({ productName: "", productId: "", price: "" });
    }   
  }
  
+
  // This following section will display the form that takes the input from the user.
  return (
-   <div>
-     {/* <h3>Add Products</h3> */}
-     <form onSubmit={handleSubmit(handleRegistration)}>
-     <div className="text-success">{isSuccessfullySubmitted === 'Success' ? "Product added successfully." : ""}</div>      
-     <div className="text-danger">{isSuccessfullySubmitted === 'Error' ? "Error in adding product" : ""}</div> 
+   <div>    
+     <ToastContainer />
      {props.row === 'Success' && <div className="text-success">Product edited successfully.</div>}
+     <form onSubmit={handleSubmit(handleRegistration)}>   
+     {props.row === 'Success' && toast("Product edited successfully !")}
      {isSubmitting && (<div class="overlay">
                   <div class="overlay__wrapper">
                     <div class="spinner-grow text-primary overlay__spinner" 

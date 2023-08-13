@@ -3,10 +3,12 @@ import ReactBSTables from '../../common/tableBootstrap';
 import { useContextData } from "../../context/Mycontext";
 import moment from "moment";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ProductList(props){
+  const [loading,setLoading] = useState(false);
   const {products, updateProducts} = useContextData(); 
-  const [error,setError] = useState(false);
    const columns=[{
     "dataField": "productName",
     "text": "Product Name",
@@ -30,7 +32,6 @@ export default function ProductList(props){
   "sort": true,
   formatter: dateFormatter
     }]
-  const [deletemessage, setDeletemessage] = useState(false);
   function dateFormatter(cell, row) {
     return (
     <span>{moment(cell).format("LLL")}</span>
@@ -41,14 +42,18 @@ export default function ProductList(props){
 // This method will delete a record
 async function deleteRecord(selected) {
     try{
-      setDeletemessage(false);
-      const response = await axios.post("delete", selected); 
+      setLoading(true);
+      const response = await toast.promise(axios.post("delete", selected), {
+        pending: "Deleting product(s)",
+        success: "Product(s) deleted successfully !",
+        error: "Error in deleting product(s), please try again later !"
+      }); 
       updateProducts(response.data);
-      setDeletemessage(true);
   }
     catch (err) {
         console.log("error"+err);
-        setError(true); 
+    }finally{
+      setLoading(false);
     }
 }
 
@@ -58,8 +63,13 @@ async function deleteRecord(selected) {
 
   return (
     <div>   
-      <div className="text-danger">{error ? "Service is down, please try again later" : ""}</div>
-      {deletemessage === true && <div className="text-success">Product deleted successfully.</div>}
+      {loading && (<div className="overlay">
+                  <div className="overlay__wrapper">
+                    <div className="spinner-grow text-primary overlay__spinner" 
+              id="spinner"role="status">
+            <span className="sr-only"></span>
+        </div></div></div>)}
+      <ToastContainer />
       <ReactBSTables data={products} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord} keyField="productName"/>
     </div>
   );

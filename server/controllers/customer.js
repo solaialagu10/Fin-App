@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const {Customer} = require("../models/customer");
 const {Paid} = require("../models/paid");
+var moment = require('moment');
 const getCustomers = async (req, res) => {    
   const customers = await Customer.find({userId:req.user}).sort({ "customerName": 1 });     
   try {
@@ -74,10 +75,37 @@ const paid = new Paid({
 });
 return await paid.save();
 }
+
+const getPaidTotals =async (req,res)=>{
+
+  try{
+    const paidTotal =  await Paid.aggregate([   
+            { $match : {
+                "date" : {
+                $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
+            },
+            "userId"   : (req.user).toString()}
+            },
+            {
+            $group : {
+                "_id" :"$customerId",
+                paidTotal : {$sum: "$amount"},
+            }
+            }            
+      ])
+      res.send(paidTotal);
+  }
+  catch(err){
+    console.log("<><>< error"+err);
+    res.status(500).send(err);
+  }
+}
+
 module.exports ={
     addCustomer,
     getCustomers,
     deleteCustomer,
     editCustomer,
-    updateCustomerAmount
+    updateCustomerAmount,
+    getPaidTotals
 }

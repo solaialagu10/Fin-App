@@ -5,9 +5,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import axios from "axios";
 import { useContextData } from "../../context/Mycontext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export default function EditProducts(props) {
   const {products, updateProducts} = useContextData(); 
-  const [apierror,setApierror] = useState(false); 
   // form validation rules 
   const validationSchema = Yup.object().shape({ 
     productName:  Yup.string()
@@ -67,19 +68,23 @@ useEffect(() => {
  async function handleRegistration(data) {
   // const valid = formValidation(data);  
     try{
-    const response = await axios.post("update", data);
+    const response = await  toast.promise(axios.post("update", data), {
+      pending: "Editing product",
+      success: "Product edited successfully !",
+      error: "Error in editing product, please try again later !"
+    });
     updateProducts(response.data);
     props.changeTab('Add','Success');  
     }
     catch(e){
-      setApierror(true); 
+      console.log(e)
     }
  }
  
  // This following section will display the form that takes the input from the user.
  return (
    <div>
-     <div className="text-danger">{apierror ? "Service is down, please try again later" : ""}</div>
+     <ToastContainer />
      {isSubmitting && (<div class="overlay">
                   <div class="overlay__wrapper">
                     <div class="spinner-grow text-primary overlay__spinner" 

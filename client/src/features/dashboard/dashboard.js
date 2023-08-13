@@ -8,12 +8,12 @@ import DatePicker from "react-datepicker";
 import { subMonths } from 'date-fns';
 import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt } from 'react-icons/fa';
-import 'react-datepicker/dist/react-datepicker.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Dashboard() { 
   const [invoices, setInvoices] = useState([]);
   const [sales, setSales] = useState([]);
-  const [error,setError] = useState(false);
   const [amount, setAmount] = useState(0);
   const [loading,setLoading] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
@@ -27,7 +27,7 @@ export default function Dashboard() {
         const response = await axios.get("get_invoices",{ params: inputJson });
         setInvoices(response.data);
       } catch (e) {  
-        setError(true);
+        toast.error('Service is down, please try again later !');
         console.log("<><<>< error"+e);
       }finally{
         if(timeline === '') { setLoading(false);}
@@ -84,7 +84,7 @@ export default function Dashboard() {
       setSales(response.data);   
       setAmount(amount);
       } catch (e) {        
-        setError(true);
+        toast.error('Service is down, please try again later !');
         console.log("<><<>< error"+e);
     }finally{
       setLoading(false);
@@ -130,11 +130,9 @@ export default function Dashboard() {
  }
  return (
    <div>
+      <ToastContainer />
       <div style={{ display: 'block', 
                   width: 1000, padding: 30 }}>
-        <div className="text-danger">{error ? "Service is down, please try again later" : ""}
-        </div>           
-        
         <div className="datepicker-wrapper">
               <label> Select Date:</label> 
                 

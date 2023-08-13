@@ -1,43 +1,45 @@
 import React, { useState,  useEffect } from "react";
 import { useForm, useController} from "react-hook-form"; 
 import '../../common/styles.css';
-import DatalistInput from 'react-datalist-input';
-import 'react-datalist-input/dist/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios'; 
 import  BilledInvoices  from "./billedInvoices";
 import { useContextData } from "../../context/Mycontext";
 import Select from 'react-select';
+import { ToastContainer, toast } from 'react-toastify';
+import { useNotificationCenter } from 'react-toastify/addons/use-notification-center';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {  
+  const { notifications,clear } = useNotificationCenter();
   const [selectedOption, setSelectedOption] = useState("");
+  const [paidTotals, setPaidTotals] = useState("");
   const {products,customers, updateCustomers} = useContextData();  
   const [active, setActive]  = React.useState([]);
   const [balance, setBalance] = useState(0);
   const [billedinvoices, setBilledinvoices] = useState([]);
   const [form, setForm] = useState([]);
-  const [isSuccessfullySubmitted,setIsSuccessfullySubmitted] = useState('');
-  const [message,setMessage] = useState('');
   const [loading,setLoading] = useState(false);
-  const [formError,setFormError] = useState(false);
   const [action, setAction] = React.useState('');
   const [editBillAmount, setEditBillAmount] = React.useState('');
-  const { register, handleSubmit,watch,formState: { errors,isSubmitting,isDirty },setError,reset,setValue,getValues,control} = useForm()
+  const { register, handleSubmit,watch,formState: { errors,isSubmitting },reset,setValue,getValues,control} = useForm()
   const options = Object.keys(customers).map(function(key) {
     return {value :customers[key]._id,label: customers[key].customerName};
   });
   const { field: { value: customerValue, onChange: customerOnChange, ...customer } } = useController({ name: 'customer', control });
  useEffect(() => {
-  async function getBilledInvoices() {    
+  async function getValues() {    
     try{
       const response = await axios.get(`billedInvoices`);
       setBilledinvoices(response.data);
+      const response2 = await axios.get(`paidTotals`);
+      setPaidTotals(response2.data);
     }
     catch(e){
-      setFormError(true);
+      toast.error('Service is down, please try again later !');
     }
   }
-  getBilledInvoices();  
+  getValues();  
 }, []);
 
 useEffect(() => {
@@ -50,8 +52,7 @@ useEffect(() => {
 }, [form]);
 
 const handleTypeSelect = (e) => {
-  setIsSuccessfullySubmitted('');
-  setMessage('');
+  clear();
   setValue('timeline','');
   setSelectedOption(e.value);
 };
@@ -65,21 +66,18 @@ function getSum(prev, cur) {
 }
 async function  deleteInvoice (invoice) {
   try{      
-      setIsSuccessfullySubmitted('');
-      setMessage('');
-      setError(false);
       setLoading(true);
       setBilledinvoices(billedinvoices.filter(x => x._id !== invoice._id));
       const value = getValues('totalBalance');
       const response =  await axios.post("delete_invoice", invoice);  
-      updateCustomers(response.data);
-      setMessage('Invoice deleted successfully');     
+      toast.success('Invoice deleted successfully !');
+      updateCustomers(response.data); 
       reset('');
       setValue('totalBalance',value - (invoice.billTotal - invoice.winningAmount))
       
   }
   catch(e){
-    setFormError(true);         
+    toast.error('Service is down, please try again later !');      
   } finally{
     setLoading(false);
   }
@@ -89,15 +87,12 @@ async function  deleteInvoice (invoice) {
 
 function editInvoice(invoice) {
   let value;
-  if(isSuccessfullySubmitted === 'Success'){
+  if(notifications[0]?.data.title === 'Success'){
     value = balance;
   }else{
     value = getValues('totalBalance');  
   }
   reset();  
-  setIsSuccessfullySubmitted('');
-  setMessage('');
-  setError(false);
   const customer = customers.filter(x => x._id === selectedOption);
   invoice['wholeSalePrices'] = customer[0].wholeSalePrices;
   invoice['totalBalance'] = value;
@@ -118,12 +113,12 @@ const Record = (props) => (
            {...register(`retailPrices.PId${props.product.productId}`)}               
          />         
     </td>    
-    <td style={{padding:"0.1rem"}}>
+    <td style={{padding:"0.1rem"}}> 
     <input
            type="number"
            className={`form-control table-input-control ${errors.qtys?.[props.product.productId] ? 'is-invalid' : ''}`}
            name={`qtys.PId${props.product.productId}`}  
-           disabled={isSuccessfullySubmitted === 'Success' || isSubmitting }   
+           disabled={notifications[0]?.data.title === 'Success' || isSubmitting || isNaN(getValues(`retailPrices.PId${props.product.productId}`))}   
            placeholder="0"
            onWheel={(e) => e.target.blur()}
            onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
@@ -139,9 +134,6 @@ const Record = (props) => (
               let  values2 = [...vals2].map(input => input.value)
               const costTotal = values2.reduce(getSum,0);
               setValue("totalCost",costTotal);
-            },
-            validate: {
-              matchPattern: (v) => /^[0-9]\d*|^$/.test(v) || "Only positive values are allowed"
             }
           })}
          />
@@ -190,7 +182,7 @@ function recordList() {
  }
  }
 const handleRegistration = async (data) => {
-  setMessage('');
+  console.log("<><><> data"+data["billTotal"]);
   if(data["billTotal"] !== 0){     
         let Arr = [];
            if(isNaN(data["winningAmount"])) data["winningAmount"] = 0;     
@@ -218,13 +210,18 @@ const handleRegistration = async (data) => {
             }  
             if(response?.data){ 
                 updateCustomers(response.data);
-                const response1 = await axios.get(`billedInvoices`);   
+                const response1 = await  axios.get(`billedInvoices`);   
                 setBilledinvoices(response1.data);
                 setActive("0");
-                setIsSuccessfullySubmitted('Success');
+                toast.success('Invoice submitted successfully !', {
+                  data: {
+                      title: 'Success',
+                      text: 'This is a success message'
+                  }
+              });
               }             
             } catch (e) {   
-              setFormError(true);
+              toast.error('Service is down, please try again later !');
           } 
   }
  }
@@ -259,10 +256,8 @@ const handleRegistration = async (data) => {
  
  return (
    <div>  
-     <form onSubmit={handleSubmit(handleRegistration)}> 
-     <div className="text-success" style={{fontWeight : "600"}}>{isSuccessfullySubmitted === 'Success' ? "Invoice submitted successfully." : ""}</div>      
-     <div className="text-success" style={{fontWeight : "600"}}>{message?.length > 0 ? message : ""}</div>           
-     <div className="text-danger" style={{fontWeight : "600"}}>{formError ? "Service is down, please try again later" : ""}</div>
+    <ToastContainer />
+     <form onSubmit={handleSubmit(handleRegistration)}>                       
     {(isSubmitting || loading) && (<div className="overlay">
                   <div className="overlay__wrapper">
                     <div className="spinner-grow text-primary overlay__spinner" 
@@ -318,7 +313,7 @@ const handleRegistration = async (data) => {
            name="winningAmount"   
            placeholder="0"
            style={{background:"greenyellow"}}
-           disabled = {isSuccessfullySubmitted === 'Success' || isSubmitting}
+           disabled = {notifications[0]?.data.title === 'Success' || isSubmitting}
            onWheel={(e) => e.target.blur()}    
            onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
            {...register('winningAmount',{    
@@ -349,9 +344,10 @@ const handleRegistration = async (data) => {
                   style={{background:"lightgreen"}} 
                   disabled ={(selectedOption?.length >0 && action !== 'EDIT')  ? false : true}
                   {...register("timeline", { 
-                    onChange:(e)=>{ if(isSuccessfullySubmitted === 'Success' )
+                    onChange:(e)=>{ if(notifications[0]?.data.title === 'Success')
                      { let val = e.target.value; reset(); setValue('totalBalance',balance); 
-                     setValue('timeline',val); setIsSuccessfullySubmitted(''); 
+                     setValue('timeline',val);  
+                     clear();
                     }},
                     required: 'Please select any timeline option' })}
                 >
@@ -384,7 +380,7 @@ const handleRegistration = async (data) => {
          <input
            type="submit"
            value="Submit"
-           disabled={isSubmitting || isSuccessfullySubmitted === 'Success'}
+           disabled={isSubmitting || notifications[0]?.data.title === 'Success'}
            className="btn btn-primary"
          />
          </div>
@@ -392,16 +388,17 @@ const handleRegistration = async (data) => {
           <input
             type="reset"
             value="Reset"
-            disabled={isSubmitting || isSuccessfullySubmitted === 'Success'}
+            disabled={isSubmitting || notifications[0]?.data.title === 'Success'}
             className="btn btn-primary" 
             onClick={() =>
               {
                 reset();
+                setAction('');
                 setSelectedOption('');
+                clear();
                 setForm({                
                 customer:''
-              });
-              
+              });              
             }}          
           ></input>
         </div>
@@ -412,7 +409,8 @@ const handleRegistration = async (data) => {
         setActive={(e)=>setActive(e)} 
         item={selectedOption}
         deleteInvoice={deleteInvoice} editInvoice={editInvoice}
-        action={action} setAction={(value)=>setAction(value)}/>    
+        action={action} setAction={(value)=>setAction(value)}
+        paidTotals={paidTotals}/>    
       </form>
    </div>
  );

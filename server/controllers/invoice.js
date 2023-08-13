@@ -33,7 +33,7 @@ const addCustomerInvoice = async (req, res) => {
           returnOriginal: false
         });
         const value = await Sales.find({ $and:[{customerId:resp._id},{timeline : req.body.timeline}, {modifiedDate : {$gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()}}]});
-
+        console.log("<><><<value"+value.length);
         if(value.length == 0){
           Object.keys(req.body.qtys).forEach(function (key,index) { 
             const sales = new Sales({

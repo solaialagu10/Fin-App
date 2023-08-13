@@ -1,16 +1,14 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form"; 
 import '../../common/styles.css';
  import axios from 'axios';
  import { useContextData } from "../../context/Mycontext";
+ import { ToastContainer, toast } from 'react-toastify';
+ import 'react-toastify/dist/ReactToastify.css';
 export default function AddCustomers(props) {
   const {customers, updateCustomers} =useContextData();
   const {products} = useContextData();
   const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus,setValue} = useForm()
-  const [
-    isSuccessfullySubmitted,
-    setIsSuccessfullySubmitted,
-  ] = useState('');
   const [form, setForm] = useState({
     customerName: "",
     location: "",
@@ -58,13 +56,15 @@ export default function AddCustomers(props) {
     data['totalBalance'] = 0;
     data['amountPaid'] = '';
     try {
-      const response =  await axios.post("add_customer", data)
+      const response =  await toast.promise(axios.post("add_customer", data), {
+        pending: "Adding customer",
+        success: "Customer added successfully !",
+        error: "Error in adding customer, please try again later !"
+      })
       if(response.data){ 
           updateCustomers(response.data);
-          setIsSuccessfullySubmitted('Success');
         }        
       } catch (e) {        
-        setIsSuccessfullySubmitted('Error');
         console.log("<><<>< error"+e);
     } 
     setForm({ customerName: "", location: "", mobileNo: "",email:"" });
@@ -127,11 +127,9 @@ export default function AddCustomers(props) {
  // This following section will display the form that takes the input from the user.
  return (
    <div>    
-     {/* <h3>Add New Customers</h3> */}
-     <form onSubmit={handleSubmit(handleRegistration)}>
-    <div className="text-success">{isSuccessfullySubmitted === 'Success' ? "Customer added successfully." : ""}</div>      
-    <div className="text-danger">{isSuccessfullySubmitted === 'Error' ? "Error in adding customer" : ""}</div>
+     <ToastContainer />
      {props.row === 'Success' && <div className="text-success">Customer edited successfully.</div>}
+     <form onSubmit={handleSubmit(handleRegistration)}>    
      {isSubmitting && (<div class="overlay">
                   <div class="overlay__wrapper">
                     <div class="spinner-grow text-primary overlay__spinner" 

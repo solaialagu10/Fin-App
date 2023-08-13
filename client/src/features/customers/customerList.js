@@ -3,17 +3,18 @@ import ReactBSTables from '../../common/tableBootstrap';
 import moment from "moment";
 import axios, { AxiosError } from "axios";
 import { useContextData } from "../../context/Mycontext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function CustomerList(props){
+  const [loading,setLoading] = useState(false);
   const {customers,updateCustomers} =useContextData();
    function dateFormatter(cell, row) {
     return (
     <span>{moment(cell).format("LLL")}</span>
   );  
   }
-  const [error,setError] = useState(false);
   const [paidlist, setPaidlist] = useState([]);
-  const [deletemessage, setDeletemessage] = useState(false);
   let [columns,setColumns]=useState([{
     "dataField": "customerName",
     "text": "Name",
@@ -41,6 +42,7 @@ export default function CustomerList(props){
   "dataField": "amountPaid",
   "text": "Amount Paid",
   "sort": true,
+  align: 'center',
   classes: 'place-holder-class',
   editorStyle: {
     backgroundColor: '#20B2AA'
@@ -73,6 +75,7 @@ export default function CustomerList(props){
 useEffect(() => {
   async function getPaidList() {
     try{
+      setLoading(true);
       // const obj = JSON.parse(Cookies.get("_auth_state"));        
       const response = await axios.get("paidList");
       setPaidlist(response.data);
@@ -80,7 +83,9 @@ useEffect(() => {
       catch (err) {
         if(err && err instanceof AxiosError)
           console.log("error"+err);
-          setError(true); 
+          toast.error('Service is down, please try again later !') 
+      } finally{
+        setLoading(false);
       }
   }  
   getPaidList();
@@ -89,14 +94,19 @@ useEffect(() => {
 
 // This method will delete a record
 async function deleteRecord(selected) {
-  setDeletemessage(false);
     try{
-        const response = await axios.post("deleteCustomer", selected); 
-        setDeletemessage(true);
+         setLoading(true);
+        const response = await toast.promise(axios.post("deleteCustomer", selected), {
+          pending: "Deleting customer(s)",
+          success: "Customer(s) deleted successfully !",
+          error: "Error in deleting customer(s), please try again later !"
+        }); 
         updateCustomers(response.data);
     }
     catch(e){
-      setError(true); 
+      console.log("error"+e);
+    } finally{
+      setLoading(false);
     }
 }
 
@@ -106,9 +116,14 @@ function editRecord(selectedRow){
 
 
   return (
-    <div>
-      <div className="text-danger">{error ? "Service is down, please try again later" : ""}</div>
-      {deletemessage === true && <div className="text-success">Customer(s) deleted successfully.</div>}     
+    <div>  
+      {loading && (<div className="overlay">
+                  <div className="overlay__wrapper">
+                    <div className="spinner-grow text-primary overlay__spinner" 
+              id="spinner"role="status">
+            <span className="sr-only"></span>
+        </div></div></div>)}
+      <ToastContainer />
       <ReactBSTables data={customers} columns={columns} deleteRecord={deleteRecord} editRecord={editRecord} paidList={paidlist} keyField="customerName"/>      
     </div>
   );
