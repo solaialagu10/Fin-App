@@ -26,40 +26,10 @@ export default function EditCustomers(props) {
 
   useEffect(()=>{
     reset(form);
-  },[form])
-
-  function formValidation(data){
-    const custNameCount = customers.filter(x => (x.customerName === data.customerName && form.customerName !== data.customerName)).length;  
-    if(custNameCount != 0) {
-      setError("customerName", {
-        type: "manual",
-        message: "Customer name is already existing",
-      })
-     return false;
-     }
-    const mobileNoCount = customers.filter(x => (parseInt(x.mobileNo,10) === parseInt(data.mobileNo,10) &&  parseInt(form.mobileNo,10) !== parseInt(data.mobileNo,10))).length;   
-    if(mobileNoCount != 0) {
-      setError("mobileNo", {
-        type: "manual",
-        message: "Mobile number is already existing",
-      })
-     return false;
-     }
-     const emailCount = customers.filter(x => (x.email === data.email && form.email !== data.email)).length;   
-    if(emailCount != 0) {
-      setError("email", {
-        type: "manual",
-        message: "Email id is already existing",
-      })
-     return false;
-     }
-     return true;
-    }
+  },[form])  
  
  // This function will handle the submission.
  async function handleRegistration(data) {
-  const valid = formValidation(data);
-  if(valid){
     try{
       const response =  await toast.promise(axios.post("edit_customer", data), {
         pending: "Editing customer",
@@ -71,8 +41,7 @@ export default function EditCustomers(props) {
    catch(error) {
     console.log("<><<>< error"+error);
    };
-   props.changeTab('Add','Success');
-  }  
+   props.changeTab('Add','Success');  
  }
  const Record = (props) => (
   <tr>

@@ -44,29 +44,8 @@ useEffect(() => {
   reset(form);
 }, [form]);
  
- function formValidation(data){
-  const pNameCount = products.filter(x => x.productName === data.productName).length;   
-  if(pNameCount != 0) {
-    setError("productName", {
-      type: "manual",
-      message: "Product Name is already existing",
-    })
-   return false;
-   } 
-   const pIdCount = products.filter(x => x.productId === data.productId).length;
-    if(pIdCount != 0) {
-      setError("productId", {
-        type: "manual",
-        message: "Product Id is already existing",
-      })
-   return false;
-   } 
-   return true;
- }
- 
  // This function will handle the submission.
  async function handleRegistration(data) {
-  // const valid = formValidation(data);  
     try{
     const response = await  toast.promise(axios.post("update", data), {
       pending: "Editing product",

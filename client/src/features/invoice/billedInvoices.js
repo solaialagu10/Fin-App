@@ -80,20 +80,8 @@ const BilledInvoices = React.memo(function BilledInvoices(props) {
                     })}              
               <td style={{background:"white",border:"none"}}></td>
               <td style={{fontWeight:"bold"}}>Old Balance</td>
-            <td>{prevBalance}</td>
-            </tr>:""}
-            {props.billedinvoices.filter(x => x.customerId === props.item).length >0 ?  <tr style={{borderTop:"none",borderBottom:"none"}}>
-              <td style={{background:"white",border:"none"}}></td>
-              {(props.billedinvoices.filter(x => x.customerId === props.item)).map((billedInvoice,index) => {
-                return(
-                  index === 0 ? Object.keys(billedInvoice.qtys).map((key,index) =>{ 
-                    return <td style={{background:"white",border:"none"}}></td>
-                     }) :"")
-                    })}              
-              <td style={{background:"white",border:"none"}}></td>
-              <td style={{fontWeight:"bold"}}>Amount Paid</td>
-            <td>{paidTotal}</td>
-            </tr>:""}
+            <td>{prevBalance - paidTotal}</td>
+            </tr>:""}          
            {props.billedinvoices.filter(x => x.customerId === props.item).length >0 ? <tr style={{borderTop:"none",borderBottom:"none"}}>
               <td style={{background:"white",border:"none"}}></td>
               {(props.billedinvoices.filter(x => x.customerId === props.item)).map((billedInvoice,index) => {
