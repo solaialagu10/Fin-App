@@ -99,25 +99,29 @@ import { useContextData } from "../context/Mycontext";
 
       const expandRow = {        
         renderer: row => (
-          <table className="table table-striped table-bordered custom-table">
-              <thead>
-              <tr>
-                <th>Amount paid</th>
-                <th>Date</th>                
-              </tr>
-            </thead>
-            <tbody>
-              {((props.paidList).filter(x => {return x.customerId === row._id;})).map((paidlist,index) => {
-                return (
-                      <tr>
-                        <td>{paidlist.amount}</td>
-                        <td>{paidlist.date}</td>
-                      </tr>
-                );
-              })}            
-            </tbody>
-            <div className="text-info info-class">* Last 3 day payments</div>
-        </table> 
+          <div>
+          <div className="expand-table">
+            <table className="table table-striped table-bordered custom-table">
+                <thead>
+                <tr>
+                  <th>Amount paid</th>
+                  <th>Date</th>                
+                </tr>
+              </thead>
+              <tbody>
+                {((props.paidList).filter(x => {return x.customerId === row._id;})).map((paidlist,index) => {
+                  return (
+                        <tr>
+                          <td>{paidlist.amount}</td>
+                          <td>{paidlist.date}</td>
+                        </tr>
+                  );
+                })}            
+              </tbody>              
+          </table> 
+        </div>
+        <div className="text-info info-class">* Last 3 day payments</div>
+        </div>
         ),
         onlyOneExpanding: true,
         showExpandColumn: true,

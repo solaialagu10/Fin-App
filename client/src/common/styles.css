@@ -106,9 +106,18 @@ input[type=number]::-webkit-outer-spin-button {
     max-height:300px;
     overflow-x: hidden !important;
 }
-.table-responsive{
+.table-responsive >.react-bootstrap-table{
     max-height:450px;
     overflow-x: hidden !important;
+    > table{
+      margin-bottom: 0px;
+    }
+    >thead{
+      z-index:10;
+    }
+}
+.table-responsive{
+  overflow-x: hidden !important;
 }
 
 thead {
@@ -117,7 +126,7 @@ thead {
     background-color: white;
   }
 
-  .table-responsive,.cust-table,.react-datalist-input__listbox,.select-input {
+  .table-responsive>.react-bootstrap-table,.cust-table,.react-datalist-input__listbox,.select-input,.expand-table {
     &::-webkit-scrollbar {
         width: 0.6rem;  
         height: 0.6rem;
@@ -129,6 +138,16 @@ thead {
         background-color: #31254c;
         border-radius: 2px;
     };
+  }
+
+  .expand-table{
+    max-height:200px ;
+    overflow-y: auto;
+    width:fit-content;
+    height: fit-content;
+    >table{
+      margin-bottom:0px;
+    }    
   }
 
   .expand-cell-header {
