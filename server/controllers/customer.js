@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const {Customer} = require("../models/customer");
+const {Invoice} = require("../models/invoice");
 const {Paid} = require("../models/paid");
 var moment = require('moment');
 const getCustomers = async (req, res) => {    
@@ -49,6 +50,7 @@ const updateCustomerAmount = async (req, res) => {
   var promises = customers.map(async (customer)=>{
     if(customer['amountPaid']?.length>0){
       customer['totalBalance'] = customer['totalBalance'] - customer['amountPaid'];
+      customer['outstandingBalance'] = customer['totalBalance'] ;
      const response  = await updateCustomerdetailsFunc(customer,req.user);    
      return new Promise((res, rej) => {res(response)});
     }
@@ -64,7 +66,15 @@ const updateCustomerdetailsFunc = async(customer,user) =>{
     totalBalance: customer.totalBalance,
     modifiedDate: new Date()
   };
- await Customer.findOneAndUpdate(myquery,newvalues,{
+  let myquery1 = { customerId: customer._id,modifiedDate : {$gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()} }
+  let newvalues1 = {    
+    outstandingBalance: customer.outstandingBalance,
+    modifiedDate: new Date()
+  };
+  await Customer.findOneAndUpdate(myquery,newvalues,{
+    returnOriginal: false
+  });
+ await Invoice.findOneAndUpdate(myquery1,{$inc:{outstandingBalance : - customer.amountPaid}},{
   returnOriginal: false
 });
 const paid = new Paid({

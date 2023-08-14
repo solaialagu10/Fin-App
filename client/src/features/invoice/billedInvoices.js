@@ -80,8 +80,8 @@ const BilledInvoices = React.memo(function BilledInvoices(props) {
                     })}              
               <td style={{background:"white",border:"none"}}></td>
               <td style={{fontWeight:"bold"}}>Old Balance</td>
-            <td>{prevBalance - paidTotal}</td>
-            </tr>:""}          
+            <td>{ prevBalance }</td>
+            </tr>:""}        
            {props.billedinvoices.filter(x => x.customerId === props.item).length >0 ? <tr style={{borderTop:"none",borderBottom:"none"}}>
               <td style={{background:"white",border:"none"}}></td>
               {(props.billedinvoices.filter(x => x.customerId === props.item)).map((billedInvoice,index) => {
@@ -93,7 +93,7 @@ const BilledInvoices = React.memo(function BilledInvoices(props) {
               <td style={{background:"white", border:"none"}}></td>
               <td style={{fontWeight:"bold"}}>Curr Balance</td>
             <td>{(Object.values(props.billedinvoices.filter(x => x.customerId === props.item))).map((billedInvoice) => 
-                      billedInvoice.billTotal - billedInvoice.winningAmount).reduce((a, b) => a + b, 0) + prevBalance - paidTotal
+                      billedInvoice.billTotal - billedInvoice.winningAmount).reduce((a, b) => a + b, 0) + prevBalance
             }</td>
             </tr>:""}
           </tbody>          
