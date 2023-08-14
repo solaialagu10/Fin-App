@@ -200,8 +200,11 @@ const handleRegistration = async (data) => {
               response = await axios.post("edit_invoice", data);  
               setAction('');
             }else{
-              let count = billedinvoices.filter(x => x.customerId === data.customerId).length;
-              if(count === 0){ data['outstandingBalance'] = data['totalBalance'];}
+              let invoice = billedinvoices.filter(x => x.customerId === data._id);
+              if(invoice.length === 0){ let value = data['totalBalance']; data['outstandingBalance'] = value;} 
+              else{
+                data['outstandingBalance'] = invoice[0].outstandingBalance
+              }             
               data['totalBalance'] = data['totalBalance'] + data['billTotal'] - data['winningAmount'];
               setValue('totalBalance',data['totalBalance']);
               setBalance(data['totalBalance']);

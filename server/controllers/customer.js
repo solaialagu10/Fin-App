@@ -62,19 +62,16 @@ const updateCustomerAmount = async (req, res) => {
 };
 const updateCustomerdetailsFunc = async(customer,user) =>{
   let myquery = { _id: customer._id }
-  let newvalues = {    
-    totalBalance: customer.totalBalance,
-    modifiedDate: new Date()
-  };
   let myquery1 = { customerId: customer._id,modifiedDate : {$gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()} }
-  let newvalues1 = {    
-    outstandingBalance: customer.outstandingBalance,
-    modifiedDate: new Date()
-  };
-  await Customer.findOneAndUpdate(myquery,newvalues,{
+  await Customer.findOneAndUpdate(myquery,
+    {
+      $inc:{outstandingBalance : - customer.amountPaid},
+      $set:{totalBalance:customer.totalBalance, modifiedDate : new Date()}
+    },
+    {
     returnOriginal: false
   });
- await Invoice.findOneAndUpdate(myquery1,{$inc:{outstandingBalance : - customer.amountPaid}},{
+ const value = await Invoice.updateMany(myquery1,{$inc:{outstandingBalance : - customer.amountPaid}},{
   returnOriginal: false
 });
 const paid = new Paid({
