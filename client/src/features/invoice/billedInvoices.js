@@ -8,12 +8,7 @@ const BilledInvoices = React.memo(function BilledInvoices(props) {
   const [body, setBody] = React.useState('');
   const [title, setTitle] = React.useState('');
   let prevBalance = (props.billedinvoices.find(x => x.customerId === props.item))?.outstandingBalance;
-  prevBalance = prevBalance !==undefined ? prevBalance : 0;
-  let paidTotal = 0;
-  if(props.paidTotals.length >0){  
-  const obj = props.paidTotals.find(x => x._id === props.item);
-  if(obj) paidTotal = obj["paidTotal"];
-  }
+  prevBalance = prevBalance !==undefined ? prevBalance : 0;  
   function callbackHandler(){
     if(props.action ==='DELETE'){
            props.deleteInvoice(invoice);

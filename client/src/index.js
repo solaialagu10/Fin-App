@@ -4,7 +4,7 @@ import App from "./App";
 import './index.css'
 import { BrowserRouter } from "react-router-dom";
 import {AuthProvider} from 'react-auth-kit';
-import MyContextProvider from "./context/Mycontext";
+import {MyContextProvider} from "./context/Mycontext";
 import './interceptors/axios';
 const root = ReactDOM.createRoot(
   document.getElementById("root")

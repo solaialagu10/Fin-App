@@ -45,28 +45,13 @@ const addCustomerInvoice = async (req, res) => {
               modifiedDate: new Date(),
               userId:req.user});
               sales.save();
-        })}
-        else{
-          Object.keys(req.body.qtys).forEach(function (key,index) {                 
-            updateFun(Sales,req,key,req.body.qtys[key]);
-        })
-        }      
+        })}     
         getCustomers(req,res);
       } catch (error) {
         console.log("<><>< error"+error);
         res.status(500).send(error);
       }  
 };
-
-
-const updateFun = async(Sales,req,key,value) =>{
-  await Sales.findOneAndUpdate({timeline : req.body.timeline, productName:key.substring(3), modifiedDate : {
-    $gte : moment().hours(0).minutes(0).seconds(0).milliseconds(0).toDate()
-    },userId:req.user},
-    {$inc:{qty : value}},{$set:{modifiedDate : new Date()}},{
-      returnOriginal: false
-    });
-}
 
 const editUpdateFun = async(Sales,req,key,value,customerId) =>{
   await Sales.findOneAndUpdate({timeline : req.body.timeline, productName:key.substring(3), modifiedDate : {

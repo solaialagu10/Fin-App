@@ -1,10 +1,10 @@
-import React, { useState,  useEffect } from "react";
+import React, { useState,  useEffect  } from "react";
 import { useForm, useController} from "react-hook-form"; 
 import '../../common/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios'; 
 import  BilledInvoices  from "./billedInvoices";
-import { useContextData } from "../../context/Mycontext";
+import  useContextData  from "../../context/Mycontext";
 import Select from 'react-select';
 import { ToastContainer, toast } from 'react-toastify';
 import { useNotificationCenter } from 'react-toastify/addons/use-notification-center';
@@ -13,7 +13,6 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function Home() {  
   const { notifications,clear } = useNotificationCenter();
   const [selectedOption, setSelectedOption] = useState("");
-  const [paidTotals, setPaidTotals] = useState("");
   const {products,customers, updateCustomers} = useContextData();  
   const [active, setActive]  = React.useState([]);
   const [balance, setBalance] = useState(0);
@@ -28,35 +27,38 @@ export default function Home() {
   });
   const { field: { value: customerValue, onChange: customerOnChange, ...customer } } = useController({ name: 'customer', control });
  useEffect(() => {
-  async function getValues() {    
-    try{
-      const response = await axios.get(`billedInvoices`);
-      setBilledinvoices(response.data);
-      const response2 = await axios.get(`paidTotals`);
-      setPaidTotals(response2.data);
-    }
-    catch(e){
-      toast.error('Service is down, please try again later !');
-    }
+  const cancelToken = axios.CancelToken.source();    
+  async function getValues() {        
+      await axios.get(`billedInvoices`,{
+        cancelToken : cancelToken.token
+      }).then((res)=>{
+        setBilledinvoices(res.data);
+      }).catch((err)=>{
+        if(axios.isCancel(err)){
+          console.log("cancelled");
+        } else {          
+          toast.error('Service is down, please try again later !') 
+        }
+      });
   }
   getValues();  
+  return()=>{
+    cancelToken.cancel();
+  }
 }, []);
-
-useEffect(() => {
-  const customer = customers.filter(x => x._id === selectedOption);
-  setForm(...customer)
-}, [selectedOption]);
 
 useEffect(() => {
   reset(form);
 }, [form]);
 
+
 const handleTypeSelect = (e) => {
   clear();
   setValue('timeline','');
   setSelectedOption(e.value);
+  const customer = customers.filter(x => x._id === e.value);  
+  setForm(...customer)
 };
-
 
 function getSum(prev, cur) {
   if(cur.length > 0){
@@ -83,19 +85,11 @@ async function  deleteInvoice (invoice) {
   }
 }
 
-
-
 function editInvoice(invoice) {
-  let value;
-  if(notifications[0]?.data.title === 'Success'){
-    value = balance;
-  }else{
-    value = getValues('totalBalance');  
-  }
   reset();  
   const customer = customers.filter(x => x._id === selectedOption);
   invoice['wholeSalePrices'] = customer[0].wholeSalePrices;
-  invoice['totalBalance'] = value;
+  invoice['totalBalance'] = getValues('totalBalance');
   setEditBillAmount(invoice['billTotal']);
   setForm(invoice);  
 }
@@ -271,12 +265,11 @@ const handleRegistration = async (data) => {
         <Select
           className='select-input'
           placeholder="Select Customers"
-          autoFocus={true}
           name="customer"   
           styles={customStyles} 
+          value={options.find(x => x.value === selectedOption) }  
           // onChange={option => customerOnChange(option ? option.value : option)}   
           onChange={handleTypeSelect}       
-          value={options.find(x => x.value === selectedOption) }     
           options= {options}                 
         />
      <div className="form-group col-md-12">
@@ -396,7 +389,6 @@ const handleRegistration = async (data) => {
               {
                 reset();
                 setAction('');
-                setSelectedOption('');
                 clear();
                 setForm({                
                 customer:''
@@ -412,7 +404,7 @@ const handleRegistration = async (data) => {
         item={selectedOption}
         deleteInvoice={deleteInvoice} editInvoice={editInvoice}
         action={action} setAction={(value)=>setAction(value)}
-        paidTotals={paidTotals}/>    
+        />    
       </form>
    </div>
  );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactBSTables from '../../common/tableBootstrap';
 import moment from "moment";
 import axios, { AxiosError } from "axios";
-import { useContextData } from "../../context/Mycontext";
+import useContextData  from "../../context/Mycontext";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -73,23 +73,28 @@ export default function CustomerList(props){
 }])
 
 useEffect(() => {
+  const cancelToken = axios.CancelToken.source();
   async function getPaidList() {
-    try{
-      setLoading(true);
-      // const obj = JSON.parse(Cookies.get("_auth_state"));        
-      const response = await axios.get("paidList");
-      setPaidlist(response.data);
-     }
-      catch (err) {
-        if(err && err instanceof AxiosError)
+      setLoading(true);     
+      await axios.get("paidList",{
+        cancelToken : cancelToken.token
+      }).then((res)=>{
+        setPaidlist(res.data);
+      }).catch((err)=>{
+        if(axios.isCancel(err)){
+          console.log("cancelled");
+        } else {
           console.log("error"+err);
           toast.error('Service is down, please try again later !') 
-      } finally{
+        }
+      }).finally(() =>{
         setLoading(false);
-      }
+      })
   }  
   getPaidList();
-  return;
+  return()=>{
+    cancelToken.cancel();
+  }
 }, []);
 
 // This method will delete a record

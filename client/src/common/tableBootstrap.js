@@ -7,7 +7,7 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
-import { useContextData } from "../context/Mycontext";
+import useContextData  from "../context/Mycontext";
   function ReactBSTables (props){
     const {customers, updateCustomers} =useContextData();
     const [selected, setSelected] = useState([]);

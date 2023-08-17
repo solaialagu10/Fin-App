@@ -2,7 +2,7 @@ import {  useNavigate } from 'react-router-dom';
 import '../App.css';
 import { useSignOut } from 'react-auth-kit';
 import {useAuthUser} from 'react-auth-kit';
-import { useContextData } from "../context/Mycontext";
+import  useContextData  from "../context/Mycontext";
 const Header = () => {
   const {customers,updateCustomers} =useContextData();
   const signOut = useSignOut();

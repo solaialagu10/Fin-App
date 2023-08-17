@@ -2,7 +2,7 @@ import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form"; 
 import '../../common/styles.css';
 import axios from "axios";
-import { useContextData } from "../../context/Mycontext";
+import useContextData from "../../context/Mycontext";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 export default function EditCustomers(props) {

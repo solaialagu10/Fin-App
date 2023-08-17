@@ -1,43 +1,86 @@
-import { createContext, useContext, useEffect,useState  } from 'react';
+import { createContext, useContext, useEffect,useState,useReducer  } from 'react';
 import axios from 'axios';
-const MyContext = createContext();
+import reducer,{initialState}from "../reducers/reducer";
+const MyContext = createContext(initialState);
 
-export function useContextData() {
-  return useContext(MyContext);
-}
 
-function MyContextProvider({ children }) {
-    // Initialize state
-    const [customers, setCustomers] = useState([]);
-    const [products, setProducts] = useState([]);
-    const [token, setToken] = useState('');
+export const MyContextProvider = ({ children }) =>{
+  const [state, dispatch] = useReducer(reducer, initialState);  
     const updateCustomers = (customers) => {
-      setCustomers(customers);
+          dispatch({
+            type: "ADD_CUSTOMERS",
+            payload: {
+              customers: customers
+            }
+          });
       };
       const updateProducts = (products) => {
-        
-        setProducts(products);
+        dispatch({
+          type: "ADD_PRODUCTS",
+          payload: {
+            products: products
+          }
+        });
         };
     
-    // Fetch data
     useEffect(() => {
-      axios.get("customers")  
+      const cancelToken = axios.CancelToken.source();
+      axios.get("customers",{
+        cancelToken : cancelToken.token
+      })  
         .then(function (response) {
-          setCustomers(response.data);
+          dispatch({
+            type: "ADD_CUSTOMERS",
+            payload: {
+              customers: response.data
+            }
+          });
         })
-        .catch((error) => console.log(error));
-        axios.get("products")  
+        .catch((error) => {if(axios.isCancel(error)){
+          console.log("cancelled");
+        } else { console.log(error)}});
+        axios.get("products",{
+          cancelToken : cancelToken.token
+        })  
         .then(function (response) {
-          setProducts(response.data);
+          dispatch({
+            type: "ADD_PRODUCTS",
+            payload: {
+              products: response.data
+            }
+          });
         })
-        .catch((error) => console.log(error));
-    }, [token]);
+        .catch((error) => {if(axios.isCancel(error)){
+          console.log("cancelled");
+        } else { console.log(error)}});
+    }, [state.token]);
 
-    return (
-        <MyContext.Provider value={{ customers,products,updateCustomers,updateProducts,setToken}} >
-          {children}
-        </MyContext.Provider>
-      );
+    const updateToken = (token) => {
+      dispatch({
+        type: "UPDATE_TOKEN",
+        payload: {
+          token: token
+        }
+      });
+    };
+
+    const value = {
+      products: state.products,
+      customers: state.customers,
+      updateProducts,
+      updateCustomers,
+      updateToken
+    };
+       return <MyContext.Provider value={value} >{children}</MyContext.Provider>      
     }
+
+    const useContextData = () => {
+      const context = useContext(MyContext);    
+      if (context === undefined) {
+        throw new Error("useContextData must be used within Mycontext provider");
+      }    
+      return context;
+    };
+    export default useContextData; 
+
     
-    export default MyContextProvider;
