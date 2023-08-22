@@ -1,4 +1,4 @@
-import React, { useState,  useEffect  } from "react";
+import React, { useState,  useEffect} from "react";
 import { useForm, useController} from "react-hook-form"; 
 import '../../common/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -24,8 +24,7 @@ export default function Home() {
   const { register, handleSubmit,watch,formState: { errors,isSubmitting },reset,setValue,getValues,control} = useForm()
   const options = Object.keys(customers).map(function(key) {
     return {value :customers[key]._id,label: customers[key].customerName};
-  });
-  const { field: { value: customerValue, onChange: customerOnChange, ...customer } } = useController({ name: 'customer', control });
+  });  
  useEffect(() => {
   const cancelToken = axios.CancelToken.source();    
   async function getValues() {        
@@ -51,15 +50,13 @@ useEffect(() => {
   reset(form);
 }, [form]);
 
-
 const handleTypeSelect = (e) => {
   clear();
   setValue('timeline','');
   setSelectedOption(e.value);
   const customer = customers.filter(x => x._id === e.value);  
-  setForm(...customer)
+  setForm(...customer)  
 };
-
 function getSum(prev, cur) {
   if(cur.length > 0){
   return parseInt(prev) + parseInt(cur);
@@ -75,8 +72,7 @@ async function  deleteInvoice (invoice) {
       toast.success('Invoice deleted successfully !');
       updateCustomers(response.data); 
       reset('');
-      setValue('totalBalance',value - (invoice.billTotal - invoice.winningAmount))
-      
+      setValue('totalBalance',value - (invoice.billTotal - invoice.winningAmount))      
   }
   catch(e){
     toast.error('Service is down, please try again later !');      
@@ -84,7 +80,6 @@ async function  deleteInvoice (invoice) {
     setLoading(false);
   }
 }
-
 function editInvoice(invoice) {
   reset();  
   const customer = customers.filter(x => x._id === selectedOption);
@@ -93,7 +88,6 @@ function editInvoice(invoice) {
   setEditBillAmount(invoice['billTotal']);
   setForm(invoice);  
 }
-
 const Record = (props) => (
   <tr>
     <td>{props.product.productName}</td>
@@ -265,17 +259,16 @@ const handleRegistration = async (data) => {
         <Select
           className='select-input'
           placeholder="Select Customers"
-          name="customer"   
           styles={customStyles} 
-          value={options.find(x => x.value === selectedOption) }  
+          value={selectedOption?.length > 0 ? options.find(x => x.value === selectedOption): {label:'Select Customers',value:''}}  
           // onChange={option => customerOnChange(option ? option.value : option)}   
           onChange={handleTypeSelect}       
-          options= {options}                 
+          options= {options}      
         />
      <div className="form-group col-md-12">
          <label htmlFor="name">Balance</label>         
          <input
-           type="text"
+           type="number"
            className="form-control"
            name="totalBalance"  
            placeholder="0"
@@ -343,7 +336,9 @@ const handleRegistration = async (data) => {
                      { let val = e.target.value; reset(); setValue('totalBalance',balance); 
                      setValue('timeline',val);  
                      clear();
-                    }},
+                    }
+                    setValue('winningAmount',0)       
+                  },
                     required: 'Please select any timeline option' })}
                 >
                   <option value="" disabled>Select Timeline</option>
@@ -390,9 +385,8 @@ const handleRegistration = async (data) => {
                 reset();
                 setAction('');
                 clear();
-                setForm({                
-                customer:''
-              });              
+                setForm([]);      
+                setSelectedOption('');    
             }}          
           ></input>
         </div>

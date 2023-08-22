@@ -26,7 +26,7 @@ export default function AddProducts(props) {
         ///have to add price value validation for less than 4 digits
 });
 const formOptions = { resolver: yupResolver(validationSchema) };
-const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset,setFocus } = useForm(formOptions)
+const { register, handleSubmit,formState: { errors,isSubmitting },setError,reset } = useForm(formOptions)
 const [form, setForm] = useState({
   productName: "",
   productId: "",
