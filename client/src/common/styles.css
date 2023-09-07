@@ -280,8 +280,7 @@ body, html {
   .edit-class{
     font-size: 10px;
 }
-.custom-table{
-    width: auto !important;    
+.custom-table{    
     > thead tr th{
         font-size:14px;
         background-color: palevioletred !important;

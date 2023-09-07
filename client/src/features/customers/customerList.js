@@ -18,7 +18,10 @@ export default function CustomerList(props){
   let [columns,setColumns]=useState([{
     "dataField": "customerName",
     "text": "Name",
-    "sort": true
+    "sort": true,
+    style:{
+      overflowWrap: 'anywhere'
+    }
 },{
   "dataField": "mobileNo",
   "text": "Mobile No",
@@ -28,6 +31,9 @@ export default function CustomerList(props){
   formatter : (cell, row) =>{
       if(cell === 0 || cell === null) {return '-';}
       return cell;
+  },
+  style:{
+    overflowWrap: 'anywhere'
   }
 },{
   "dataField": "totalBalance",

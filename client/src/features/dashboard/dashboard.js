@@ -131,8 +131,7 @@ export default function Dashboard() {
  return (
    <div>
       <ToastContainer />
-      <div style={{ display: 'block', 
-                  width: 1000, padding: 30 }}>
+      <div style={{ display: 'block', padding: 30 }}>
         <div className="datepicker-wrapper">
               <label> Select Date:</label> 
                 
@@ -152,21 +151,21 @@ export default function Dashboard() {
       <Accordion.Item eventKey="0">
         <Accordion.Header>Customer Report</Accordion.Header>
         <Accordion.Body>
-        <table className="table table-bordered sales-report-table" >       
+        <table className="table table-bordered sales-report-table table-fit" >       
           <thead>
             <tr>
-              <th>Customer Name</th>
+              <th>Name</th>
               <th>Prev Balance</th>
               <th>Total Bill</th>
               <th>Total Cost</th>
-              <th>W Amount</th>
+              <th>Excess</th>
               <th>Total Balance</th>
               <th>Profit</th>
             </tr>
           </thead>
           <tbody>{recordList()}
           <tr >
-            <td style={{fontWeight:800}}>Totals</td>
+            <td style={{fontWeight:800,overflowWrap: 'break-word'}}>Totals</td>
             <td>
             {Object.values(invoices).map((item) =>         
             (item.prevBalance)).reduce((a, b) => a + b, 0)         
@@ -223,9 +222,10 @@ export default function Dashboard() {
             </select>
         
         </div>
-        <div>
+        <div className="report-values">
         Winning total : <span className="green-class"> {amount} </span>
-        &nbsp;&nbsp;&nbsp;Final amount  :  <span className="red-class"> {(Object.values(sales).map((item) => 
+        &nbsp;&nbsp;&nbsp;
+       <span> Final amount  : </span> <span className="red-class"> {(Object.values(sales).map((item) => 
                       item.qty * item.price).reduce((a, b) => a + b, 0)
             ) - amount}</span>
         </div>

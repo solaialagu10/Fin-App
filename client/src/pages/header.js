@@ -2,6 +2,7 @@ import {  useNavigate } from 'react-router-dom';
 import '../App.css';
 import { useSignOut } from 'react-auth-kit';
 import {useAuthUser} from 'react-auth-kit';
+import Navbar from "../common/navbar";
 import  useContextData  from "../context/Mycontext";
 const Header = () => {
   const {customers,updateCustomers} =useContextData();
@@ -15,6 +16,7 @@ const Header = () => {
   }
   return (
          <div className="app-header">
+           <span className="header-nav"><Navbar /></span>
             <div className="header-text">Billing App</div>
             <div className="signout" >
               <div>Hi, {auth()?.id}</div>

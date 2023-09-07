@@ -141,6 +141,7 @@ import useContextData  from "../context/Mycontext";
           <div className="form-group delete-btn">
             <button
               value="Edit"
+              style={{marginTop:"25px"}}
               className="btn btn-primary"
               disabled={selectedRw.length !== 1}
               onClick={()=> props.editRecord(selectedRw)}
@@ -149,6 +150,7 @@ import useContextData  from "../context/Mycontext";
             <div className="form-group delete-btn">
             <input
               type="submit"
+              style={{marginTop:"25px"}}
               value="Delete"
               className="btn btn-primary"
               onClick={()=> props.deleteRecord(selected)}
@@ -157,6 +159,7 @@ import useContextData  from "../context/Mycontext";
           {keyField === "customerName" ? <div className="form-group delete-btn">
               <input
                 type="submit"
+                style={{marginTop:"25px"}}
                 value="Save"
                 className="btn btn-primary"
                 onClick={()=> savePaidrows()}

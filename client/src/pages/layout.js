@@ -5,16 +5,17 @@ import '../App.css';
 
 const Layout = () => { 
   return (
-    <div className="layout">
-         <Header />
-        <div className="app-container">
-            <div className="div-left">
-                <Navbar />
-            </div>
-            <div className="div-right">
+    <div className="layout container-fluid">         
+          <header className="header">
+               <Header />
+          </header>
+          <main class="main-content">
                 <Outlet />
-            </div>
-        </div>
+            </main>
+            <section class="left-sidebar">
+                <Navbar />
+            </section>
+           
     </div>
   );
 };

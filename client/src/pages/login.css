@@ -78,3 +78,7 @@
     left: 50%; 
     position: absolute;
   }
+
+  .header-nav{
+    display: none;
+  }
