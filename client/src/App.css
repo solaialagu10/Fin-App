@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #6d032b;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -41,7 +41,7 @@
   top: 0;
   left: 10;
   border-radius: 6px;
-  background-color: #31254c;
+  background-color: #6d032b;
   border: 1px solid var(--color-darkslateblue-100);
   box-sizing: border-box;
   height:60px;
@@ -67,7 +67,7 @@
   top: 53.96px;
   left: 39px;
   font-size: 32px;
-  color: #f8aa0d;
+  color: #fff;
   height: 57.09px;
   padding-left: 20px;
   padding-top:5px;
@@ -80,11 +80,11 @@
     margin-right: 15px;   
     display:inline-flex;
     > div:nth-child(1){
-      color: #f8aa0d;
+      color: #fff;
       margin-right:20px;
     }
     > div:nth-child(2){
-      color: #A29DAE;
+      color: #08FF08;
       cursor: pointer;
     }
 }
@@ -226,7 +226,7 @@ main {
         overflow-wrap: break-word;
       }      
 
-      .navbar-toggler>.close {
+       .navbar-toggler>.close {
         display:inline;
         font-size: 24px;
         color: #A29DAE;
@@ -235,7 +235,7 @@ main {
     }
     .navbar-toggler.collapsed>.close, .navbar-toggler:not(.collapsed)>.navbar-toggler-icon {
         display:none;
-    }
+    } 
 
     .invoice-container-head {
       display: block !important;

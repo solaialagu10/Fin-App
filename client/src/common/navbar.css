@@ -33,7 +33,7 @@ button.navbar-toggler:focus {
 }
 
 .nav-link.active{
-  background-color: #31254c;
+  background-color: #6d032b;
   color:white !important;
   border-radius: 5px;
 }
@@ -45,7 +45,7 @@ button.navbar-toggler:focus {
   background-color: white;
   /* margin:10px; */
   > li{
-    border: 1px solid #31254c;
+    border: 1px solid #6d032b;
     padding: 0.5rem;
     border-radius: 8px;
     text-align: center;
@@ -62,7 +62,7 @@ button.navbar-toggler:focus {
     top: 0;
     left: 0;
     border-radius: 18px;
-    background-color: #31254c;
+    background-color: #6d032b;
     border: 1px solid var(--color-darkslateblue-100);
     box-sizing: border-box;
     width: 1229px;

@@ -42,7 +42,7 @@ const BilledInvoices = React.memo(function BilledInvoices(props) {
           {((props.billedinvoices).filter(x => x.customerId === props.item)).map((billedInvoice,index) => {
               return (
                 <tr>
-                      <td style={{background:"lightgreen"}}>{billedInvoice.timeline}</td>
+                      <td >{billedInvoice.timeline}</td>
                       {Object.keys(billedInvoice.qtys).map((key,index) =>{ 
                      return (<td> {billedInvoice.qtys[key]} </td>)
                       })}

@@ -266,13 +266,13 @@ const handleRegistration = async (data) => {
           options= {options}      
         />
      <div className="form-group col-md-12">
-         <label htmlFor="name">Balance</label>         
+         <label htmlFor="name" style={{color:"#10a110",fontWeight :700}}>Balance</label>         
          <input
            type="number"
            className="form-control"
            name="totalBalance"  
            placeholder="0"
-           style={{background:"indianred"}}      
+           style={{background:"#42cdc8",fontWeight:"900"}}      
            disabled={true}        
            {...register('totalBalance',{
             value:0})}             
@@ -281,26 +281,26 @@ const handleRegistration = async (data) => {
      </div>
       <div className="invoice-timeframe">
       <div className="form-group col-md-12">
-         <label htmlFor="name">Bill total</label>         
+         <label htmlFor="name" style={{color:"#10a110",fontWeight :700}}>Bill total</label>         
          <input
            type="text"
            className="form-control"
            name="billTotal"     
            placeholder="0"    
-           style={{background:"lightpink"}}     
+           style={{background:"#42cdc8",fontWeight:"900"}}     
            disabled={true}        
            {...register('billTotal',{
             value:0})}             
          />
       </div>
       <div className="form-group col-md-12">
-         <label htmlFor="name">Excess</label>         
+         <label htmlFor="name"  style={{color:"#10a110",fontWeight :700}}>Excess</label>         
          <input
            className={`form-control  ${errors.winningAmount ? 'is-invalid' : ''}`}
            type="number"
            name="winningAmount"   
            placeholder="0"
-           style={{background:"greenyellow"}}
+           style={{background:"#4973a7"}}
            disabled = {notifications[0]?.data.title === 'Success' || isSubmitting}
            onWheel={(e) => e.target.blur()}    
            onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
@@ -329,7 +329,7 @@ const handleRegistration = async (data) => {
                   id="selectmethod"
                   defaultValue=""
                   name="timeline"
-                  style={{background:"lightgreen"}} 
+                  style={{background:"#42cdc8"}} 
                   disabled ={(selectedOption?.length >0 && action !== 'EDIT')  ? false : true}
                   {...register("timeline", { 
                     onChange:(e)=>{ if(notifications[0]?.data.title === 'Success')

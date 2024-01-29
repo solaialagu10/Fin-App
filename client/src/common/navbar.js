@@ -20,7 +20,7 @@ export default function Navbar() {
               <span className="navbar-dark navbar-toggler-icon custom-toggler"></span>
              </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-         <ul className="nav navbar-nav me-auto mb-2 mb-lg-0 navbar-1">
+         <ul className="nav navbar-nav ml-auto navbar-1">
            <li className="nav-item">
              <NavLink className="nav-link" to="/dashboard" >
              <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
@@ -30,21 +30,21 @@ export default function Navbar() {
             </li>
             <li className="nav-item "> 
              <NavLink className="nav-link " to="/customers">
-              <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+             <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                Customers
                </span>
              </NavLink>
             </li>
             <li className="nav-item"> 
              <NavLink className="nav-link" to="/invoices">
-              <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+             <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                Invoices
                </span>
              </NavLink>
             </li>            
             <li className="nav-item"> 
              <NavLink className="nav-link" to="/products">
-              <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+             <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                Products
                </span>
              </NavLink>

@@ -43,14 +43,14 @@
 
 .table {
     > thead tr th{
-    background-color: #31254c !important;
+    background-color: #6d032b !important;
     color:white;
     }
 }
 
 .pagination .active a{
-    background: #31254c !important;
-    border: 1px solid #31254c !important;   
+    background: #6d032b !important;
+    border: 1px solid #6d032b !important;   
 }
 
 .pagination .active{   
@@ -283,19 +283,15 @@ body, html {
 .custom-table{    
     > thead tr th{
         font-size:14px;
-        background-color: palevioletred !important;
+        background-color: #b71854 !important;
         text-align: center;
     }
     >tbody tr{
         font-size: 12px;
         text-align: center;
         font-style: italic;
-        background-color: lightpink;
         font-weight:700;
-    }
-    >tbody tr td{
-        background-color: lightpink;    
-    }
+    }    
 }
 
 .info-class{
@@ -350,33 +346,26 @@ body, html {
  
 
     .sales-report-table td:nth-of-type(1) {
-        background: #B8DAFF;
+        
       }
       .sales-report-table td:nth-of-type(2) {
-        background: #F5C6CB;
         font-weight: 800;
       }
       .sales-report-table td:nth-of-type(3) {
-        background: #FFEEBA;
       }
       .sales-report-table td:nth-of-type(4) {
-        background: #BEE5EB;
         font-weight: 800;
       }
       .sales-report-table td:nth-of-type(5) {
-        background: #DADADA;
       }
       .sales-report-table td:nth-of-type(6) {
-        background: #C3E6CB;
         font-weight: 800;
       }
       .sales-report-table td:nth-of-type(7) {
-        background: #F2AE43;
         font-weight: 800;
       }
 
       .sales-report-table tr:last-child td{
-        background-color: lightpink;
       }     
       
 
@@ -443,7 +432,7 @@ body, html {
     }
 
     .react-datepicker__header{
-      background-color: #31254c !important;
+      background-color: #6d032b !important;
     }
       .react-datepicker__header div{
       color:#fff !important;      
