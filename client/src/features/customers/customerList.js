@@ -11,7 +11,7 @@ export default function CustomerList(props){
   const {customers,updateCustomers} =useContextData();
    function dateFormatter(cell, row) {
     return (
-    <span>{moment(cell).format("LLL")}</span>
+    <span>{moment(cell).format("L")}</span>
   );  
   }
   const [paidlist, setPaidlist] = useState([]);

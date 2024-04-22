@@ -34,7 +34,7 @@ export default function ProductList(props){
     }]
   function dateFormatter(cell, row) {
     return (
-    <span>{moment(cell).format("LLL")}</span>
+    <span>{moment(cell).format("L")}</span>
   );
 }
 

@@ -6,8 +6,16 @@ import {Link} from 'react-router-dom';
 import { useSignIn } from "react-auth-kit";
 import axios, { AxiosError } from "axios";
 import  useContextData  from "../../context/Mycontext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+const eye = <FontAwesomeIcon icon={faEye} />;
+const eyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
 function Login() {
-    const {updateToken} =useContextData();
+    const {updateToken} =useContextData();     
+    const [passwordShown, setPasswordShown] = useState(false);
+    const togglePasswordVisiblity = () => {
+      setPasswordShown(passwordShown ? false : true);
+    };
     let navigate = useNavigate();
     const signIn = useSignIn();
     const [error,setError]=useState('')
@@ -39,10 +47,12 @@ function Login() {
                 axios.defaults.headers.common['Authorization']=`bearer ${response.data.token}`
                 navigate('/dashboard');    
             } catch (e) {        
-              console.log("<><<>< error"+e);
-              setTimeout(() => {
-                setError("Error in login, please try again later")
-              }, 10000);
+            //   setTimeout(() => {
+                if(e.response !== undefined)
+                     setError(e.response.data.message)
+                else
+                      setError("Network Error")
+            //   }, 1000);
           } 
     };
     return (
@@ -72,18 +82,22 @@ function Login() {
                            </small>
                           
                     <div className="form-group">
-                       <label htmlFor="password">Password</label>                       
-                        <input type="password" 
+                       <label htmlFor="password">Password</label>   
+                       <div className="pass-wrapper">                  
+                       {" "}
+                        <input  type={passwordShown ? "text" : "password"}
                         name="password"
                         className="form-control" 
-                        {...register("password",{ required: 'Password is mandatory' })} />                     
+                        {...register("password",{ required: 'Password is mandatory' })} /> 
+                         <i  className="pass-icon"  onClick={togglePasswordVisiblity}>{passwordShown ? eyeSlash : eye}</i>{" "}            
+                         </div>          
                     </div>
                     <small className="invalid-feedback">
                                 {errors.password?.message}
-                           </small>    
+                           </small>                       
+
                     <div className="form-group">
-                            <input type="submit" value="Login" className="btn btn-primary btn-block" disabled={isSubmitting} /> 
-                            
+                            <input type="submit" value="Login" className="btn btn-primary btn-block" disabled={isSubmitting} />                             
                            
                     </div>
                 </form>

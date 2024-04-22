@@ -82,3 +82,20 @@
   .header-nav{
     display: none;
   }
+
+  .pass-wrapper {
+    position:relative;
+  }
+  
+  .pass-icon {
+    height: 1.5rem;
+    width: 1.5rem;
+    padding: 4px;
+    position: absolute;
+    box-sizing: border-box;
+    top: 40%;
+    right: 5%;
+    cursor: pointer;
+    transform: translateY(-50%);
+    opacity:0.6;
+  }

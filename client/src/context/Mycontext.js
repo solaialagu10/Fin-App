@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect,useState,useReducer  } from 'react';
+import { createContext, useContext, useEffect,useState,useReducer, useRef  } from 'react';
 import axios from 'axios';
 import reducer,{initialState}from "../reducers/reducer";
 const MyContext = createContext(initialState);
@@ -6,6 +6,7 @@ const MyContext = createContext(initialState);
 
 export const MyContextProvider = ({ children }) =>{
   const [state, dispatch] = useReducer(reducer, initialState);  
+  const isMounted = useRef(false);
     const updateCustomers = (customers) => {
           dispatch({
             type: "ADD_CUSTOMERS",
@@ -24,6 +25,7 @@ export const MyContextProvider = ({ children }) =>{
         };
     
     useEffect(() => {
+      if (state.token?.length > 0){      
       const cancelToken = axios.CancelToken.source();
       axios.get("customers",{
         cancelToken : cancelToken.token
@@ -53,6 +55,8 @@ export const MyContextProvider = ({ children }) =>{
         .catch((error) => {if(axios.isCancel(error)){
           console.log("cancelled");
         } else { console.log(error)}});
+        isMounted.current = true;
+      }
     }, [state.token]);
 
     const updateToken = (token) => {
